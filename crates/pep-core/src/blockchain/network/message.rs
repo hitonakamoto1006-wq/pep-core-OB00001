@@ -394,51 +394,51 @@ impl Message {
      */
 
     pub fn hello_payload(
-        network: &str,
-        protocol: u32,
-        chain_id: u64,
-        height: u64,
-        tip: &str,
-    ) -> Vec<u8> {
-
-        format!(
-            "{}|{}|{}|{}|{}",
-            network,
-            protocol,
-            chain_id,
-            height,
-            tip,
-        )
-        .into_bytes()
-    }
+    network: &str,
+    protocol: u32,
+    chain_id: u64,
+    height: u64,
+    tip: &str,
+    advertised_address: &str,
+) -> Vec<u8> {
+    format!(
+        "{}|{}|{}|{}|{}|{}",
+        network,
+        protocol,
+        chain_id,
+        height,
+        tip,
+        advertised_address,
+    )
+    .into_bytes()
+}
 
 
     /*
-     * ========================================================
-     * HELLO ACK PAYLOAD
-     * ========================================================
-     *
-     * Uses exactly the same structure as HELLO.
-     *
-     * This allows the receiving node to immediately know
-     * the peer's current chain state.
-     * ========================================================
-     */
+ * Standard format:
+ *
+ * network|protocol|chain_id|height|tip|advertised_address
+ *
+ * Example:
+ *
+ * mainnet|1|1|123|abcdef...|192.168.1.29:6002
+ */
 
     pub fn hello_ack_payload(
-        network: &str,
-        protocol: u32,
-        chain_id: u64,
-        height: u64,
-        tip: &str,
-    ) -> Vec<u8> {
-
-        Self::hello_payload(
-            network,
-            protocol,
-            chain_id,
-            height,
-            tip,
-        )
-    }
+    network: &str,
+    protocol: u32,
+    chain_id: u64,
+    height: u64,
+    tip: &str,
+    advertised_address: &str,
+) -> Vec<u8> {
+    Self::hello_payload(
+        network,
+        protocol,
+        chain_id,
+        height,
+        tip,
+        advertised_address,
+    )
+}
 }
