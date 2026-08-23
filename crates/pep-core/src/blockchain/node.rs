@@ -41,8 +41,6 @@ use crate::wallet::Address;
 //     execute_transactions()
 // ============================================================
 
-const BLOCK_SIZE: usize = 1;
-
 
 pub struct Node {
 
@@ -245,79 +243,76 @@ impl Node {
     // ========================================================
 
     pub fn on_transaction(
-        &mut self,
-        tx: Transaction,
-    ) -> Result<(), StateError> {
+    &mut self,
+    tx: Transaction,
+) -> Result<bool, StateError> {
 
-        println!(
-            "Transaction received."
-        );
+    println!(
+        "Transaction received."
+    );
 
+    // ========================================================
+    // VERIFY
+    // ========================================================
 
-        /*
-         * Verify against current canonical state.
-         */
+    match Verifier::verify(
+        &self.blockchain.state,
+        &tx,
+    ) {
 
-        match Verifier::verify(
-            &self.blockchain.state,
-            &tx,
-        ) {
+        Ok(_) => {}
 
-            Ok(_) => {}
+        Err(error) => {
 
-
-            Err(error) => {
-
-                println!(
-                    "Transaction rejected: {:?}",
-                    error
-                );
-
-
-                /*
-                 * Preserve existing API:
-                 *
-                 * invalid transaction does not crash
-                 * the node.
-                 */
-
-                return Ok(());
-            }
-        }
-
-
-        /*
-         * Add verified transaction.
-         */
-
-        self.mempool
-            .add_transaction(
-                tx
+            println!(
+                "Transaction rejected: {:?}",
+                error
             );
 
+            return Ok(false);
+        }
+    }
 
+    // ========================================================
+    // DEDUPLICATE
+    // ========================================================
+
+    if self
+        .mempool
+        .contains_id(
+            &tx.id()
+        )
+    {
         println!(
-            "Mempool: {} transaction(s)",
-            self.mempool.len()
+            "Transaction already exists in mempool: {}",
+            tx.id()
         );
 
-
-        /*
-         * Current chain:
-         *
-         * one transaction per block.
-         */
-
-        if self.mempool.len()
-            >= BLOCK_SIZE
-        {
-
-            self.mine_pending()?;
-        }
-
-
-        Ok(())
+        return Ok(false);
     }
+
+    // ========================================================
+    // MEMPOOL
+    // ========================================================
+
+    self.mempool
+        .add_transaction(
+            tx
+        );
+
+    println!(
+        "Mempool: {} transaction(s)",
+        self.mempool.len()
+    );
+
+    // IMPORTANT:
+    //
+    // Receiving a transaction MUST NOT automatically mine.
+    //
+    // Mining is a separate block-production operation.
+
+    Ok(true)
+}
 
 
     // ========================================================
