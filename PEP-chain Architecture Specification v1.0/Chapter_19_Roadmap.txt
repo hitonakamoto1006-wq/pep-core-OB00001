@@ -1,0 +1,41 @@
+Chapter 19. Roadmap
+
+19.1 Devnet
+
+The Development Network validates protocol architecture, storage,
+networking and Proof of Lottery in a controlled environment.
+
+------------------------------------------------------------------------
+
+19.2 Testnet
+
+The Testnet evaluates protocol behavior under public participation,
+validator competition and realistic economic activity.
+
+------------------------------------------------------------------------
+
+19.3 Mainnet
+
+Mainnet represents the production deployment of PEP-chain where
+canonical protocol rules govern real assets and fund settlement.
+
+------------------------------------------------------------------------
+
+19.4 PVM
+
+Future protocol milestones include full deployment of the PEP Virtual
+Machine and Intent Programming toolchain.
+
+------------------------------------------------------------------------
+
+19.5 Cross-chain
+
+Long-term objectives include interoperability with external blockchain
+ecosystems through standardized cross-chain protocols.
+
+------------------------------------------------------------------------
+
+Summary
+
+The roadmap defines the staged evolution of PEP-chain from development
+to production and future ecosystem expansion.

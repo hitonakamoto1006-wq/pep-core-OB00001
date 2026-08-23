@@ -1,0 +1,84 @@
+Chapter 7. Ticket Protocol
+
+7.1 Overview
+
+A Ticket is a temporary consensus object generated after a successful
+redeem settlement.
+
+Tickets are not tokens, cannot be transferred, and exist solely for
+participation in one Proof of Lottery round.
+
+------------------------------------------------------------------------
+
+7.2 Ticket Structure
+
+Each Ticket contains:
+
+-   Ticket ID
+-   Redeem ID
+-   Validator ID
+-   Ticket Amount
+-   Timestamp
+-   Lottery Round
+
+Every field is deterministic and verifiable by all nodes.
+
+------------------------------------------------------------------------
+
+7.3 Ticket Amount
+
+Ticket Amount equals the USD value of the redeem request that generated
+the Ticket.
+
+Example:
+
+Redeem = 12,500 USD
+
+Ticket Amount = 12,500
+
+Ticket Amount determines the economic weight represented by the redeem
+event but does not guarantee lottery success.
+
+------------------------------------------------------------------------
+
+7.4 Ticket Lifetime
+
+Ticket lifecycle:
+
+Redeem Settlement → Ticket Created → Lottery Executed → Ticket Destroyed
+
+Tickets never survive beyond a single lottery round and cannot be
+reused.
+
+------------------------------------------------------------------------
+
+7.5 Ticket Burn
+
+After the lottery:
+
+-   Winning Ticket → Block created → Ticket burned.
+-   Losing Ticket → Ticket burned.
+
+No Ticket may participate in more than one lottery.
+
+------------------------------------------------------------------------
+
+7.6 Ticket Serialization
+
+A serialized Ticket contains all deterministic fields required for
+verification.
+
+Canonical order:
+
+TicketID | RedeemID | ValidatorID | Amount | Timestamp | Round
+
+Serialization must be deterministic so every node derives identical
+hashes and validation results.
+
+------------------------------------------------------------------------
+
+Summary
+
+Tickets bridge redeem settlement and Proof of Lottery. They provide a
+deterministic, single-use consensus object linking real economic
+activity to block production.

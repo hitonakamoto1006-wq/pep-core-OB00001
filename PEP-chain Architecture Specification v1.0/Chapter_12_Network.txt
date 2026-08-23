@@ -1,0 +1,152 @@
+Chapter 12. Network
+
+12.1 Overview
+
+The Network Layer enables communication between independent PEP-chain
+nodes. Every node exchanges protocol information to maintain a
+consistent canonical blockchain and deterministic global state.
+
+The network subsystem consists of:
+
+-   Header Sync
+-   Block Sync
+-   Snapshot Sync
+-   Peer-to-Peer (P2P)
+-   Remote Procedure Call (RPC)
+-   Explorer
+
+------------------------------------------------------------------------
+
+12.2 Header Sync
+
+Header Sync allows a node to synchronize blockchain headers before
+downloading complete block data.
+
+Responsibilities:
+
+-   Exchange block headers.
+-   Verify header continuity.
+-   Verify previous block hashes.
+-   Identify the best canonical chain.
+-   Detect missing blocks.
+
+Header synchronization minimizes bandwidth while allowing rapid chain
+verification.
+
+------------------------------------------------------------------------
+
+12.3 Block Sync
+
+After Header Sync completes, Block Sync retrieves complete block
+contents.
+
+Responsibilities:
+
+-   Download missing blocks.
+-   Verify Lottery Proof.
+-   Verify Merkle Root.
+-   Execute transactions.
+-   Update local state.
+
+Nodes process blocks sequentially to guarantee deterministic execution.
+
+------------------------------------------------------------------------
+
+12.4 Snapshot Sync
+
+Snapshot Sync accelerates node synchronization by downloading a recent
+protocol snapshot instead of replaying the entire blockchain history.
+
+Snapshots include:
+
+-   Current protocol state.
+-   Validator state.
+-   Claims.
+-   Pools.
+-   CCQs.
+-   Metadata.
+
+After restoring a snapshot, the node downloads only the remaining blocks
+produced after the snapshot height.
+
+------------------------------------------------------------------------
+
+12.5 Peer-to-Peer (P2P)
+
+The P2P network forms the communication backbone of PEP-chain.
+
+Nodes exchange:
+
+-   Peer discovery messages.
+-   Headers.
+-   Blocks.
+-   Transactions.
+-   Snapshots.
+-   Protocol announcements.
+
+Each node may simultaneously operate as both a client and a server.
+
+------------------------------------------------------------------------
+
+12.6 Remote Procedure Call (RPC)
+
+RPC provides an external interface for wallets, applications and
+infrastructure services.
+
+Typical RPC functions include:
+
+-   Query blockchain status.
+-   Retrieve blocks.
+-   Retrieve transactions.
+-   Query account state.
+-   Broadcast transactions.
+-   Query validators.
+-   Query protocol metadata.
+
+RPC does not participate in consensus and must never modify canonical
+state directly.
+
+------------------------------------------------------------------------
+
+12.7 Explorer
+
+The Explorer provides a human-readable interface to blockchain data.
+
+Typical Explorer features include:
+
+-   Latest blocks.
+-   Transactions.
+-   Validators.
+-   Redeem events.
+-   Lottery results.
+-   Asset Pools.
+-   CCQs.
+-   Protocol statistics.
+
+Explorer data is derived from canonical blockchain state and serves
+informational purposes only.
+
+------------------------------------------------------------------------
+
+12.8 Network Consistency
+
+Every node must:
+
+-   Verify all received data.
+-   Reject invalid blocks.
+-   Reject malformed messages.
+-   Maintain deterministic state transitions.
+-   Follow the canonical chain selected by protocol rules.
+
+Network communication never overrides consensus validation.
+
+------------------------------------------------------------------------
+
+Summary
+
+The Network Layer distributes protocol information across all
+participating nodes. Header Sync minimizes synchronization cost, Block
+Sync reconstructs blockchain history, Snapshot Sync accelerates node
+bootstrap, P2P enables decentralized communication, RPC exposes protocol
+services, and the Explorer presents canonical blockchain data in a
+user-friendly form.

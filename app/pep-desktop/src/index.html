@@ -1,0 +1,3661 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>PEP Wallet</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        html,
+        body {
+            margin: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+
+            font-family:
+                Inter,
+                -apple-system,
+                BlinkMacSystemFont,
+                "Segoe UI",
+                sans-serif;
+
+            background: #0b0b0f;
+            color: #ffffff;
+        }
+
+        body {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .app {
+            width: 100%;
+            height: 100%;
+
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* =========================
+           TOP BAR
+           ========================= */
+
+        .topbar {
+            height: 64px;
+
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            padding: 0 28px;
+
+            border-bottom: 1px solid #24242c;
+            background: #0f0f14;
+
+            flex: 0 0 auto;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .brand-mark {
+            width: 32px;
+            height: 32px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            border: 2px solid #8b5cf6;
+            border-radius: 50%;
+
+            color: #8b5cf6;
+
+            font-weight: 700;
+            font-size: 15px;
+        }
+
+        .brand-name {
+            font-size: 18px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+
+        /* =========================
+           NETWORK STATUS
+           ========================= */
+
+        .network {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+
+            font-size: 13px;
+            color: #8f8f9b;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+
+            flex: 0 0 auto;
+
+            border-radius: 50%;
+
+            background: #777;
+        }
+
+        .status-dot.connected {
+            background: #32d583;
+
+            box-shadow:
+                0 0 10px
+                rgba(50, 213, 131, 0.5);
+        }
+
+        .status-dot.error {
+            background: #ff4d6d;
+
+            box-shadow:
+                0 0 10px
+                rgba(255, 77, 109, 0.4);
+        }
+
+        /* =========================
+           CONTENT
+           ========================= */
+
+        .content {
+            flex: 1;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            padding: 32px;
+
+            overflow: auto;
+        }
+
+        /* =========================
+           WALLET CARD
+           ========================= */
+
+        .wallet-card {
+            width: 420px;
+
+            padding: 40px;
+
+            border: 1px solid #292932;
+            border-radius: 18px;
+
+            background: #111117;
+
+            box-shadow:
+                0 20px 60px
+                rgba(0, 0, 0, 0.35);
+        }
+
+        .wallet-title {
+            margin: 0 0 8px;
+
+            font-size: 28px;
+            font-weight: 700;
+        }
+
+        .wallet-subtitle {
+            margin: 0 0 32px;
+
+            color: #858592;
+            font-size: 14px;
+        }
+
+        /* =========================
+           CORE STATUS
+           ========================= */
+
+        .core-status {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+
+            padding: 14px 16px;
+
+            border-radius: 10px;
+
+            background: #18181f;
+            border: 1px solid #292932;
+
+            margin-bottom: 28px;
+        }
+
+        .core-status-text {
+            font-size: 13px;
+            color: #a5a5b1;
+        }
+
+        /* =========================
+           ACTIONS
+           ========================= */
+
+        .actions {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        button {
+            width: 100%;
+            height: 48px;
+
+            border: 0;
+            border-radius: 10px;
+
+            font-size: 14px;
+            font-weight: 600;
+
+            cursor: pointer;
+
+            transition:
+                transform 0.1s ease,
+                opacity 0.1s ease,
+                background 0.15s ease;
+        }
+
+        button:hover {
+            opacity: 0.9;
+        }
+
+        button:active {
+            transform: scale(0.99);
+        }
+
+        button:disabled {
+            opacity: 0.35;
+            cursor: not-allowed;
+        }
+
+        .primary {
+            background: #7c3aed;
+            color: #ffffff;
+        }
+
+        .primary:hover:not(:disabled) {
+            background: #8b5cf6;
+        }
+
+        .secondary {
+            background: #1c1c24;
+            color: #ffffff;
+
+            border: 1px solid #30303a;
+        }
+
+        .secondary:hover:not(:disabled) {
+            background: #23232d;
+        }
+
+        /* =========================
+           FOOTER
+           ========================= */
+
+        .footer {
+            margin-top: 24px;
+
+            text-align: center;
+
+            color: #5f5f6b;
+
+            font-size: 11px;
+        }
+
+        /* =========================
+           BACKUP SCREEN
+           ========================= */
+
+        .backup-card {
+            width: 620px;
+
+            padding: 40px;
+
+            border: 1px solid #292932;
+            border-radius: 18px;
+
+            background: #111117;
+
+            box-shadow:
+                0 20px 60px
+                rgba(0, 0, 0, 0.35);
+        }
+
+        .screen-header {
+            margin-bottom: 28px;
+        }
+
+        .screen-title {
+            margin: 0 0 8px;
+
+            font-size: 28px;
+            font-weight: 700;
+        }
+
+        .screen-subtitle {
+            margin: 0;
+
+            color: #858592;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .warning-box {
+            display: flex;
+            gap: 12px;
+
+            padding: 16px;
+
+            margin-bottom: 24px;
+
+            border: 1px solid #59451d;
+            border-radius: 10px;
+
+            background: #1b1811;
+
+            color: #d9c58b;
+
+            font-size: 13px;
+            line-height: 1.5;
+        }
+
+        .warning-icon {
+            width: 22px;
+            height: 22px;
+
+            flex: 0 0 auto;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            border-radius: 50%;
+
+            background: #8a6419;
+
+            color: #fff;
+
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .mnemonic-grid {
+            display: grid;
+
+            grid-template-columns:
+                repeat(3, minmax(0, 1fr));
+
+            gap: 10px;
+
+            margin-bottom: 20px;
+        }
+
+        .mnemonic-word {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+
+            min-height: 48px;
+
+            padding: 10px 12px;
+
+            border: 1px solid #30303a;
+            border-radius: 9px;
+
+            background: #18181f;
+        }
+
+        .word-number {
+            color: #686875;
+
+            font-size: 11px;
+            font-weight: 600;
+
+            min-width: 18px;
+        }
+
+        .word-text {
+            color: #ffffff;
+
+            font-size: 13px;
+            font-weight: 600;
+
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .address-box {
+            margin-top: 8px;
+            margin-bottom: 20px;
+        }
+
+        .field-label {
+            display: block;
+
+            margin-bottom: 8px;
+
+            color: #747480;
+
+            font-size: 11px;
+            font-weight: 600;
+
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .address-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .address-value {
+            flex: 1;
+
+            min-width: 0;
+
+            padding: 13px 14px;
+
+            border: 1px solid #292932;
+            border-radius: 9px;
+
+            background: #18181f;
+
+            color: #b8b8c3;
+
+            font-family:
+                "SFMono-Regular",
+                Consolas,
+                "Liberation Mono",
+                monospace;
+
+            font-size: 11px;
+
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .small-button {
+            width: auto;
+
+            height: 44px;
+
+            padding: 0 16px;
+
+            flex: 0 0 auto;
+
+            font-size: 12px;
+        }
+
+        .backup-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+
+            margin-top: 22px;
+        }
+
+        .confirm-row {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+
+            padding: 13px 14px;
+
+            border: 1px solid #292932;
+            border-radius: 9px;
+
+            background: #15151c;
+
+            cursor: pointer;
+        }
+
+        .confirm-row input {
+            margin-top: 2px;
+
+            width: 15px;
+            height: 15px;
+
+            accent-color: #7c3aed;
+
+            cursor: pointer;
+        }
+
+        .confirm-text {
+            color: #a5a5b1;
+
+            font-size: 12px;
+            line-height: 1.5;
+        }
+
+        /* =========================
+           DASHBOARD
+           ========================= */
+
+        .dashboard {
+            width: min(960px, 100%);
+
+            display: flex;
+            flex-direction: column;
+
+            gap: 18px;
+        }
+
+        .dashboard-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            padding: 22px 24px;
+
+            border: 1px solid #292932;
+            border-radius: 16px;
+
+            background: #111117;
+        }
+
+        .dashboard-wallet-info {
+            min-width: 0;
+            flex: 1;
+        }
+
+        .dashboard-title {
+            margin: 0 0 5px;
+
+            font-size: 22px;
+            font-weight: 700;
+        }
+
+        .dashboard-address-row {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+
+            min-width: 0;
+        }
+
+        .dashboard-address {
+            min-width: 0;
+            max-width: 560px;
+
+            color: #70707d;
+
+            font-family:
+                "SFMono-Regular",
+                Consolas,
+                "Liberation Mono",
+                monospace;
+
+            font-size: 11px;
+
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .dashboard-copy-button {
+            width: 24px;
+            height: 24px;
+
+            padding: 0;
+
+            flex: 0 0 24px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            border: 0;
+            border-radius: 6px;
+
+            background: transparent;
+            color: #777783;
+
+            cursor: pointer;
+
+            opacity: 0.8;
+
+            transition:
+                background 0.15s ease,
+                color 0.15s ease,
+                opacity 0.15s ease;
+        }
+
+        .dashboard-copy-button:hover {
+            background: #1c1c24;
+            color: #ffffff;
+            opacity: 1;
+        }
+
+        .dashboard-copy-button:active {
+            transform: scale(0.94);
+        }
+
+        .dashboard-copy-button svg {
+            width: 14px;
+            height: 14px;
+
+            display: block;
+        }
+
+        .dashboard-network {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+
+            color: #32d583;
+
+            font-size: 12px;
+
+            flex: 0 0 auto;
+        }
+
+        .balance-card {
+            padding: 28px;
+
+            border: 1px solid #292932;
+            border-radius: 16px;
+
+            background: #111117;
+        }
+
+        .balance-label {
+            color: #777783;
+
+            font-size: 12px;
+            font-weight: 600;
+
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .balance-value {
+            margin-top: 10px;
+
+            font-size: 40px;
+            font-weight: 700;
+            letter-spacing: -1px;
+        }
+
+        .balance-symbol {
+            margin-left: 7px;
+
+            color: #858592;
+
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .asset-grid {
+            display: grid;
+
+            grid-template-columns:
+                repeat(3, minmax(0, 1fr));
+
+            gap: 14px;
+        }
+
+        .asset-card {
+            padding: 20px;
+
+            border: 1px solid #292932;
+            border-radius: 14px;
+
+            background: #111117;
+        }
+
+        .asset-name {
+            color: #9a9aa6;
+
+            font-size: 12px;
+        }
+
+        .asset-value {
+            margin-top: 8px;
+
+            font-size: 18px;
+            font-weight: 650;
+        }
+
+        .dashboard-actions {
+            display: grid;
+
+            grid-template-columns:
+                repeat(2, minmax(0, 1fr));
+
+            gap: 12px;
+        }
+
+        /* =========================
+           RECEIVE SCREEN
+           ========================= */
+
+        .receive-screen {
+            width: min(620px, 100%);
+
+            padding: 28px;
+
+            border: 1px solid #292932;
+            border-radius: 18px;
+
+            background: #111117;
+
+            box-shadow:
+                0 20px 60px
+                rgba(0, 0, 0, 0.35);
+        }
+
+        .receive-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+
+            margin-bottom: 24px;
+        }
+
+        .receive-back {
+            width: 34px;
+            height: 34px;
+
+            padding: 0;
+
+            flex: 0 0 34px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            border: 1px solid #292932;
+            border-radius: 8px;
+
+            background: transparent;
+            color: #a5a5b1;
+
+            font-size: 18px;
+        }
+
+        .receive-back:hover {
+            background: #1c1c24;
+            color: #ffffff;
+        }
+
+        .receive-header-text {
+            min-width: 0;
+        }
+
+        .receive-title {
+            margin: 0;
+
+            color: #f2f2f5;
+
+            font-size: 22px;
+            font-weight: 700;
+        }
+
+        .receive-subtitle {
+            margin: 4px 0 0;
+
+            color: #777783;
+
+            font-size: 12px;
+        }
+
+        .receive-card {
+            padding: 20px;
+
+            border-radius: 12px;
+
+            background: #18181f;
+            border: 1px solid #292932;
+        }
+
+        .receive-asset {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            margin-bottom: 20px;
+        }
+
+        .receive-asset-name {
+            color: #eeeeF4;
+
+            font-size: 15px;
+            font-weight: 700;
+        }
+
+        .receive-asset-type {
+            margin-top: 3px;
+
+            color: #696976;
+
+            font-size: 10px;
+        }
+
+        .receive-asset-network {
+            color: #2bd17e;
+
+            font-size: 10px;
+            font-weight: 700;
+        }
+
+        .receive-address-label {
+            margin-bottom: 8px;
+
+            color: #696976;
+
+            font-size: 10px;
+            font-weight: 700;
+
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+        }
+
+        .receive-address-box {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+
+            padding: 10px 10px 10px 12px;
+
+            border-radius: 9px;
+
+            background: #111118;
+            border: 1px solid #292932;
+        }
+
+        .receive-address {
+            min-width: 0;
+            flex: 1;
+
+            color: #d9d9e2;
+
+            font-family:
+                "SFMono-Regular",
+                Consolas,
+                "Liberation Mono",
+                monospace;
+
+            font-size: 12px;
+            line-height: 1.5;
+
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .receive-copy-button {
+            width: 28px;
+            height: 28px;
+
+            padding: 0;
+
+            flex: 0 0 28px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            border: 0;
+            border-radius: 6px;
+
+            background: transparent;
+            color: #777783;
+
+            cursor: pointer;
+
+            transition:
+                background 0.15s ease,
+                color 0.15s ease;
+        }
+
+        .receive-copy-button:hover {
+            background: #24242d;
+            color: #ffffff;
+        }
+
+        .receive-copy-button:active {
+            transform: scale(0.94);
+        }
+
+        .receive-copy-button svg {
+            width: 14px;
+            height: 14px;
+
+            display: block;
+        }
+
+        .receive-note {
+            margin-top: 14px;
+
+            color: #62626f;
+
+            font-size: 10px;
+            line-height: 1.5;
+
+            text-align: center;
+        }
+
+        /* =========================
+           SEND SCREEN
+           ========================= */
+
+        .send-screen {
+            width: min(620px, 100%);
+
+            padding: 28px;
+
+            border: 1px solid #292932;
+            border-radius: 18px;
+
+            background: #111117;
+
+            box-shadow:
+                0 20px 60px
+                rgba(0, 0, 0, 0.35);
+        }
+
+        .send-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+
+            margin-bottom: 24px;
+        }
+
+        .send-back {
+            width: 34px;
+            height: 34px;
+
+            padding: 0;
+
+            flex: 0 0 34px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            border: 1px solid #292932;
+            border-radius: 8px;
+
+            background: transparent;
+            color: #a5a5b1;
+
+            font-size: 18px;
+        }
+
+        .send-back:hover {
+            background: #1c1c24;
+            color: #ffffff;
+        }
+
+        .send-header-text {
+            min-width: 0;
+        }
+
+        .send-title {
+            margin: 0;
+
+            color: #f2f2f5;
+
+            font-size: 22px;
+            font-weight: 700;
+        }
+
+        .send-subtitle {
+            margin: 4px 0 0;
+
+            color: #777783;
+
+            font-size: 12px;
+        }
+
+        .send-card {
+            padding: 20px;
+
+            border-radius: 12px;
+
+            background: #18181f;
+            border: 1px solid #292932;
+        }
+
+        .send-asset {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            margin-bottom: 24px;
+        }
+
+        .send-asset-name {
+            color: #eeeeF4;
+
+            font-size: 15px;
+            font-weight: 700;
+        }
+
+        .send-asset-type {
+            margin-top: 3px;
+
+            color: #696976;
+
+            font-size: 10px;
+        }
+
+        .send-balance {
+            color: #777783;
+
+            font-size: 11px;
+        }
+
+        .send-balance strong {
+            color: #d9d9e2;
+        }
+
+        .send-field {
+            margin-bottom: 18px;
+        }
+
+        .send-label {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            margin-bottom: 8px;
+
+            color: #696976;
+
+            font-size: 10px;
+            font-weight: 700;
+
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+        }
+
+        .send-input-wrap {
+            display: flex;
+            align-items: center;
+
+            min-height: 48px;
+
+            border-radius: 9px;
+
+            background: #111118;
+            border: 1px solid #292932;
+
+            transition:
+                border-color 0.15s ease,
+                box-shadow 0.15s ease;
+        }
+
+        .send-input-wrap:focus-within {
+            border-color: #7c3aed;
+
+            box-shadow:
+                0 0 0 2px
+                rgba(124, 58, 237, 0.12);
+        }
+
+        .send-input {
+            width: 100%;
+
+            min-width: 0;
+
+            padding: 14px;
+
+            border: 0;
+            outline: 0;
+
+            background: transparent;
+
+            color: #ffffff;
+
+            font-family: inherit;
+            font-size: 13px;
+        }
+
+        .send-input::placeholder {
+            color: #555562;
+        }
+
+        .send-amount-input {
+            padding-right: 4px;
+        }
+
+        .send-max {
+            width: auto;
+            height: 30px;
+
+            margin-right: 8px;
+            padding: 0 9px;
+
+            border-radius: 6px;
+
+            background: #24242d;
+            color: #9d7cff;
+
+            font-size: 10px;
+            font-weight: 700;
+        }
+
+        .send-max:hover {
+            background: #30263f;
+            color: #b39aff;
+        }
+
+        .send-unit {
+            padding-right: 14px;
+
+            color: #8d8d99;
+
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .send-network {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            padding: 13px 14px;
+
+            margin-bottom: 18px;
+
+            border-radius: 9px;
+
+            background: #15151c;
+            border: 1px solid #292932;
+        }
+
+        .send-network-left {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+        }
+
+        .send-network-name {
+            color: #bcbcc7;
+
+            font-size: 12px;
+        }
+
+        .send-network-right {
+            color: #32d583;
+
+            font-size: 10px;
+            font-weight: 700;
+        }
+
+        .send-fee-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            margin-bottom: 20px;
+
+            color: #696976;
+
+            font-size: 11px;
+        }
+
+        .send-fee-value {
+            color: #a5a5b1;
+        }
+
+        .send-error {
+            min-height: 17px;
+
+            margin-top: 7px;
+
+            color: #ff5c7a;
+
+            font-size: 10px;
+        }
+
+        .send-review {
+            margin-top: 4px;
+        }
+
+        @media (max-width: 700px) {
+
+            .content {
+                padding: 20px;
+            }
+
+            .wallet-card,
+            .backup-card,
+            .receive-screen,
+            .send-screen {
+                width: 100%;
+                padding: 28px;
+            }
+
+            .mnemonic-grid {
+                grid-template-columns:
+                    repeat(2, minmax(0, 1fr));
+            }
+
+            .asset-grid {
+                grid-template-columns:
+                    1fr;
+            }
+
+            .dashboard-header {
+                align-items: flex-start;
+
+                flex-direction: column;
+
+                gap: 12px;
+            }
+
+            .dashboard-actions {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* =========================
+           TOAST
+           ========================= */
+
+        .toast {
+            position: fixed;
+
+            left: 50%;
+            bottom: 28px;
+
+            transform:
+                translateX(-50%)
+                translateY(20px);
+
+            opacity: 0;
+            pointer-events: none;
+
+            padding: 11px 16px;
+
+            border: 1px solid #30303a;
+            border-radius: 9px;
+
+            background: #18181f;
+
+            color: #ffffff;
+
+            font-size: 12px;
+
+            transition:
+                opacity 0.2s ease,
+                transform 0.2s ease;
+
+            z-index: 1000;
+        }
+
+        .toast.visible {
+            opacity: 1;
+
+            transform:
+                translateX(-50%)
+                translateY(0);
+        }
+        /* ==========================================
+   IMPORT WALLET
+   ========================================== */
+
+.mnemonic-input {
+    width: 100%;
+    min-height: 150px;
+
+    resize: vertical;
+
+    padding: 14px;
+
+    border: 1px solid #292932;
+    border-radius: 9px;
+
+    outline: none;
+
+    background: #18181f;
+
+    color: #ffffff;
+
+    font-family:
+        "SFMono-Regular",
+        Consolas,
+        "Liberation Mono",
+        monospace;
+
+    font-size: 13px;
+
+    line-height: 1.6;
+
+    transition:
+        border-color 0.15s ease,
+        background 0.15s ease;
+}
+
+.mnemonic-input::placeholder {
+    color: #5f5f6b;
+}
+
+.mnemonic-input:focus {
+    border-color: #7c3aed;
+    background: #1a1a22;
+}
+
+.import-word-count {
+    margin-top: 8px;
+
+    color: #686875;
+
+    font-size: 11px;
+
+    text-align: right;
+}
+
+.import-error {
+    min-height: 18px;
+
+    margin-top: 12px;
+
+    color: #ff4d6d;
+
+    font-size: 12px;
+}
+    </style>
+</head>
+
+
+<body>
+
+<div class="app">
+
+    <!-- =========================
+         TOP BAR
+         ========================= -->
+
+    <header class="topbar">
+
+        <div class="brand">
+
+            <div class="brand-mark">
+                P
+            </div>
+
+            <div class="brand-name">
+                PEP Wallet
+            </div>
+
+        </div>
+
+
+        <div class="network">
+
+            <span
+                id="status-dot"
+                class="status-dot"
+            ></span>
+
+            <span id="network-status">
+                Connecting
+            </span>
+
+        </div>
+
+    </header>
+
+
+    <!-- =========================
+         MAIN CONTENT
+         ========================= -->
+
+    <main
+        id="content"
+        class="content"
+    ></main>
+
+</div>
+
+
+<!-- =========================
+     TOAST
+     ========================= -->
+
+<div
+    id="toast"
+    class="toast"
+>
+    Copied
+</div>
+
+
+<script>
+(() => {
+
+    /* ==========================================
+       STATE
+       ========================================== */
+
+    let walletAddress = null;
+    let walletMnemonic = null;
+
+
+    /* ==========================================
+       DOM
+       ========================================== */
+
+    const content =
+        document.getElementById(
+            "content"
+        );
+
+    const networkStatus =
+        document.getElementById(
+            "network-status"
+        );
+
+    const networkDot =
+        document.getElementById(
+            "status-dot"
+        );
+
+    const toast =
+        document.getElementById(
+            "toast"
+        );
+
+
+    /* ==========================================
+       TOAST
+       ========================================== */
+
+    let toastTimer = null;
+
+    function showToast(message) {
+
+        toast.textContent =
+            message;
+
+        toast.classList.add(
+            "visible"
+        );
+
+
+        if (toastTimer) {
+
+            clearTimeout(
+                toastTimer
+            );
+        }
+
+
+        toastTimer =
+            setTimeout(() => {
+
+                toast.classList.remove(
+                    "visible"
+                );
+
+            }, 1800);
+    }
+
+
+    /* ==========================================
+       COPY
+       ========================================== */
+
+    async function copyText(text, message) {
+
+        if (!text) {
+            return;
+        }
+
+
+        try {
+
+            if (
+                navigator.clipboard
+                &&
+                typeof navigator.clipboard.writeText === "function"
+            ) {
+
+                await navigator.clipboard.writeText(
+                    text
+                );
+
+                showToast(
+                    message || "Copied"
+                );
+
+                return;
+            }
+
+        } catch (error) {
+
+            console.warn(
+                "[PEP] navigator.clipboard failed:",
+                error
+            );
+        }
+
+
+        try {
+
+            const textarea =
+                document.createElement(
+                    "textarea"
+                );
+
+            textarea.value =
+                text;
+
+            textarea.setAttribute(
+                "readonly",
+                ""
+            );
+
+            textarea.style.position =
+                "fixed";
+
+            textarea.style.left =
+                "-9999px";
+
+            textarea.style.top =
+                "0";
+
+            textarea.style.opacity =
+                "0";
+
+            document.body.appendChild(
+                textarea
+            );
+
+            textarea.focus();
+
+            textarea.select();
+
+            textarea.setSelectionRange(
+                0,
+                textarea.value.length
+            );
+
+
+            const copied =
+                document.execCommand(
+                    "copy"
+                );
+
+
+            textarea.remove();
+
+
+            if (!copied) {
+
+                throw new Error(
+                    "Clipboard fallback failed"
+                );
+            }
+
+
+            showToast(
+                message || "Copied"
+            );
+
+        } catch (error) {
+
+            console.error(
+                "[PEP] Clipboard failed:",
+                error
+            );
+
+            showToast(
+                "Copy failed"
+            );
+        }
+    }
+
+
+    /* ==========================================
+       CORE STATUS
+       ========================================== */
+
+    function updateCoreStatus(status) {
+
+        console.log(
+            "[PEP] Core status:",
+            status
+        );
+
+
+        const coreStatusElement =
+            document.getElementById(
+                "core-status"
+            );
+
+        const coreDot =
+            document.getElementById(
+                "core-dot"
+            );
+
+
+        if (!coreStatusElement) {
+
+            if (
+                status ===
+                "PEP Core connected."
+            ) {
+
+                networkStatus.textContent =
+                    "Connected";
+
+                networkDot.classList.add(
+                    "connected"
+                );
+
+                networkDot.classList.remove(
+                    "error"
+                );
+
+            }
+
+            return;
+        }
+
+
+        coreStatusElement.textContent =
+            status;
+
+
+        const connected =
+            status ===
+            "PEP Core connected.";
+
+
+        const lowerStatus =
+            status.toLowerCase();
+
+
+        const error =
+            lowerStatus.includes(
+                "failed"
+            )
+            ||
+            lowerStatus.includes(
+                "not found"
+            )
+            ||
+            lowerStatus.includes(
+                "unable"
+            )
+            ||
+            lowerStatus.includes(
+                "unavailable"
+            );
+
+
+        if (connected) {
+
+            coreDot.classList.add(
+                "connected"
+            );
+
+            coreDot.classList.remove(
+                "error"
+            );
+
+
+            networkDot.classList.add(
+                "connected"
+            );
+
+            networkDot.classList.remove(
+                "error"
+            );
+
+
+            networkStatus.textContent =
+                "Connected";
+
+
+            const createButton =
+                document.getElementById(
+                    "create-wallet"
+                );
+
+            const importButton =
+                document.getElementById(
+                    "import-wallet"
+                );
+
+
+            if (createButton) {
+                createButton.disabled = false;
+            }
+
+            if (importButton) {
+                importButton.disabled = false;
+            }
+
+
+            return;
+        }
+
+
+        if (error) {
+
+            coreDot.classList.remove(
+                "connected"
+            );
+
+            coreDot.classList.add(
+                "error"
+            );
+
+
+            networkDot.classList.remove(
+                "connected"
+            );
+
+            networkDot.classList.add(
+                "error"
+            );
+
+
+            networkStatus.textContent =
+                "Offline";
+
+
+            const createButton =
+                document.getElementById(
+                    "create-wallet"
+                );
+
+            const importButton =
+                document.getElementById(
+                    "import-wallet"
+                );
+
+
+            if (createButton) {
+                createButton.disabled = true;
+            }
+
+            if (importButton) {
+                importButton.disabled = true;
+            }
+
+
+            return;
+        }
+
+
+        coreDot.classList.remove(
+            "connected"
+        );
+
+        coreDot.classList.remove(
+            "error"
+        );
+
+
+        networkDot.classList.remove(
+            "connected"
+        );
+
+        networkDot.classList.remove(
+            "error"
+        );
+
+
+        networkStatus.textContent =
+            "Connecting";
+
+
+        const createButton =
+            document.getElementById(
+                "create-wallet"
+            );
+
+        const importButton =
+            document.getElementById(
+                "import-wallet"
+            );
+
+
+        if (createButton) {
+            createButton.disabled = true;
+        }
+
+        if (importButton) {
+            importButton.disabled = true;
+        }
+    }
+
+
+    /* ==========================================
+       HOME SCREEN
+       ========================================== */
+
+    function renderHome() {
+
+        content.innerHTML = `
+            <section class="wallet-card">
+
+                <h1 class="wallet-title">
+                    PEP Wallet
+                </h1>
+
+                <p class="wallet-subtitle">
+                    Secure access to the PEP Network
+                </p>
+
+
+                <div class="core-status">
+
+                    <span
+                        id="core-dot"
+                        class="status-dot"
+                    ></span>
+
+                    <span
+                        id="core-status"
+                        class="core-status-text"
+                    >
+                        Starting PEP Core...
+                    </span>
+
+                </div>
+
+
+                <div class="actions">
+
+                    <button
+                        id="create-wallet"
+                        class="primary"
+                        disabled
+                    >
+                        Create Wallet
+                    </button>
+
+
+                    <button
+                        id="import-wallet"
+                        class="secondary"
+                        disabled
+                    >
+                        Import Wallet
+                    </button>
+
+                </div>
+
+
+                <div class="footer">
+                    PEP Chain
+                </div>
+
+            </section>
+        `;
+
+
+        const createWallet =
+            document.getElementById(
+                "create-wallet"
+            );
+
+        const importWallet =
+            document.getElementById(
+                "import-wallet"
+            );
+
+
+        createWallet.addEventListener(
+            "click",
+            createWalletHandler
+        );
+
+
+        importWallet.addEventListener(
+            "click",
+            importWalletHandler
+        );
+
+
+        getCoreStatus();
+    }
+    /* ==========================================
+   IMPORT WALLET SCREEN
+   ========================================== */
+
+function renderImportScreen() {
+
+    content.innerHTML = `
+        <section class="backup-card">
+
+            <div class="screen-header">
+
+                <h1 class="screen-title">
+                    Import Wallet
+                </h1>
+
+                <p class="screen-subtitle">
+                    Enter your recovery phrase to restore
+                    your PEP wallet.
+                </p>
+
+            </div>
+
+
+            <div class="warning-box">
+
+                <div class="warning-icon">
+                    !
+                </div>
+
+                <div>
+                    Never share your recovery phrase
+                    with anyone. Anyone who has it can
+                    access this wallet.
+                </div>
+
+            </div>
+
+
+            <div class="address-box">
+
+                <span class="field-label">
+                    Recovery Phrase
+                </span>
+
+                <textarea
+                    id="import-mnemonic"
+                    class="mnemonic-input"
+                    placeholder="Enter your recovery phrase..."
+                    spellcheck="false"
+                    autocomplete="off"
+                ></textarea>
+
+                <div
+                    id="import-word-count"
+                    class="import-word-count"
+                >
+                    0 words
+                </div>
+
+            </div>
+
+
+            <div
+                id="import-error"
+                class="import-error"
+            ></div>
+
+
+            <div class="backup-actions">
+
+                <button
+                    id="import-submit"
+                    class="primary"
+                    disabled
+                >
+                    Import Wallet
+                </button>
+
+
+                <button
+                    id="import-back"
+                    class="secondary"
+                >
+                    Back
+                </button>
+
+            </div>
+
+
+            <div class="footer">
+                PEP Chain
+            </div>
+
+        </section>
+    `;
+
+
+    const mnemonicInput =
+        document.getElementById(
+            "import-mnemonic"
+        );
+
+    const wordCount =
+        document.getElementById(
+            "import-word-count"
+        );
+
+    const importError =
+        document.getElementById(
+            "import-error"
+        );
+
+    const importSubmit =
+        document.getElementById(
+            "import-submit"
+        );
+
+    const importBack =
+        document.getElementById(
+            "import-back"
+        );
+
+
+    function updateImportState() {
+
+        const phrase =
+            mnemonicInput.value
+                .trim()
+                .replace(/\s+/g, " ");
+
+
+        const words =
+            phrase
+                ? phrase.split(" ")
+                : [];
+
+
+        wordCount.textContent =
+            `${words.length} ${
+                words.length === 1
+                    ? "word"
+                    : "words"
+            }`;
+
+
+        importError.textContent =
+            "";
+
+
+        /*
+         * Don't hardcode 12/24 here.
+         * The Core remains authoritative about
+         * the actual recovery phrase format.
+         */
+
+        importSubmit.disabled =
+            words.length === 0;
+    }
+
+
+    mnemonicInput.addEventListener(
+        "input",
+        updateImportState
+    );
+
+
+    importSubmit.addEventListener(
+        "click",
+        async () => {
+
+            const phrase =
+                mnemonicInput.value
+                    .trim()
+                    .replace(/\s+/g, " ");
+
+
+            if (!phrase) {
+                return;
+            }
+
+
+            importSubmit.disabled =
+                true;
+
+            importSubmit.textContent =
+                "Importing Wallet...";
+
+
+            importError.textContent =
+                "";
+
+
+            try {
+
+                const tauri =
+                    window.__TAURI__;
+
+
+                if (
+                    !tauri
+                    ||
+                    !tauri.core
+                ) {
+
+                    throw new Error(
+                        "Tauri Core API unavailable."
+                    );
+                }
+
+
+                console.log(
+                    "[PEP] Importing wallet..."
+                );
+
+
+                const result =
+                    await tauri.core.invoke(
+                        "import_wallet",
+                        {
+                            mnemonic: phrase
+                        }
+                    );
+
+
+                console.log(
+                    "[PEP] Wallet imported:",
+                    result
+                );
+
+
+                if (
+                    !result
+                    ||
+                    !result.address
+                ) {
+
+                    throw new Error(
+                        "Invalid wallet response from PEP Core."
+                    );
+                }
+
+
+                /*
+                 * Store only the address.
+                 *
+                 * The recovery phrase must not remain
+                 * in frontend state after import.
+                 */
+
+                walletAddress =
+                    result.address;
+
+                walletMnemonic =
+                    null;
+
+
+                renderDashboard();
+
+
+                showToast(
+                    "Wallet imported"
+                );
+
+
+            } catch (error) {
+
+                console.error(
+                    "[PEP] Import Wallet failed:",
+                    error
+                );
+
+
+                importSubmit.disabled =
+                    false;
+
+                importSubmit.textContent =
+                    "Import Wallet";
+
+
+                importError.textContent =
+                    "Invalid recovery phrase or wallet import failed.";
+            }
+        }
+    );
+
+
+    importBack.addEventListener(
+        "click",
+        () => {
+
+            renderHome();
+
+        }
+    );
+
+
+    mnemonicInput.focus();
+}
+
+
+    /* ==========================================
+       BACKUP SCREEN
+       ========================================== */
+
+    function renderBackupScreen() {
+
+        if (
+            !walletAddress
+            ||
+            !walletMnemonic
+        ) {
+
+            console.error(
+                "[PEP] Missing wallet data."
+            );
+
+            renderHome();
+
+            return;
+        }
+
+
+        const words =
+            walletMnemonic
+                .trim()
+                .split(/\s+/)
+                .filter(Boolean);
+
+
+        const wordMarkup =
+            words
+                .map(
+                    (word, index) => `
+                        <div class="mnemonic-word">
+
+                            <span class="word-number">
+                                ${index + 1}
+                            </span>
+
+                            <span class="word-text">
+                                ${escapeHtml(word)}
+                            </span>
+
+                        </div>
+                    `
+                )
+                .join("");
+
+
+        content.innerHTML = `
+            <section class="backup-card">
+
+                <div class="screen-header">
+
+                    <h1 class="screen-title">
+                        Backup your wallet
+                    </h1>
+
+                    <p class="screen-subtitle">
+                        Your recovery phrase is the only
+                        way to restore this wallet.
+                    </p>
+
+                </div>
+
+
+                <div class="warning-box">
+
+                    <div class="warning-icon">
+                        !
+                    </div>
+
+                    <div>
+                        Write these words down and keep
+                        them somewhere safe. Never share
+                        your recovery phrase with anyone.
+                    </div>
+
+                </div>
+
+
+                <div
+                    id="mnemonic-grid"
+                    class="mnemonic-grid"
+                >
+                    ${wordMarkup}
+                </div>
+
+
+                <div class="backup-actions">
+
+                    <button
+                        id="copy-mnemonic"
+                        class="secondary"
+                        type="button"
+                    >
+                        Copy Recovery Phrase
+                    </button>
+
+
+                    <div class="address-box">
+
+                        <span class="field-label">
+                            Wallet Address
+                        </span>
+
+                        <div class="address-row">
+
+                            <div
+                                id="backup-address"
+                                class="address-value"
+                            >
+                                ${escapeHtml(walletAddress)}
+                            </div>
+
+                            <button
+                                id="copy-address"
+                                class="secondary small-button"
+                                type="button"
+                            >
+                                Copy
+                            </button>
+
+                        </div>
+
+                    </div>
+
+
+                    <label
+                        class="confirm-row"
+                        for="backup-confirm"
+                    >
+
+                        <input
+                            id="backup-confirm"
+                            type="checkbox"
+                        >
+
+                        <span class="confirm-text">
+                            I have securely backed up my
+                            recovery phrase and understand
+                            that anyone who has it can
+                            access this wallet.
+                        </span>
+
+                    </label>
+
+
+                    <button
+                        id="continue-wallet"
+                        class="primary"
+                        disabled
+                        type="button"
+                    >
+                        Continue to Wallet
+                    </button>
+
+                </div>
+
+
+                <div class="footer">
+                    PEP Chain
+                </div>
+
+            </section>
+        `;
+
+
+        const copyMnemonic =
+            document.getElementById(
+                "copy-mnemonic"
+            );
+
+        const copyAddress =
+            document.getElementById(
+                "copy-address"
+            );
+
+        const backupConfirm =
+            document.getElementById(
+                "backup-confirm"
+            );
+
+        const continueWallet =
+            document.getElementById(
+                "continue-wallet"
+            );
+
+
+        copyMnemonic.addEventListener(
+            "click",
+            async () => {
+
+                await copyText(
+                    walletMnemonic,
+                    "Recovery phrase copied"
+                );
+            }
+        );
+
+
+        copyAddress.addEventListener(
+            "click",
+            async () => {
+
+                await copyText(
+                    walletAddress,
+                    "Address copied"
+                );
+            }
+        );
+
+
+        backupConfirm.addEventListener(
+            "change",
+            () => {
+
+                continueWallet.disabled =
+                    !backupConfirm.checked;
+            }
+        );
+
+
+        continueWallet.addEventListener(
+            "click",
+            () => {
+
+                if (
+                    !backupConfirm.checked
+                ) {
+                    return;
+                }
+
+
+                walletMnemonic =
+                    null;
+
+
+                renderDashboard();
+            }
+        );
+    }
+
+
+    /* ==========================================
+       DASHBOARD
+       ========================================== */
+
+    function renderDashboard() {
+
+        if (!walletAddress) {
+
+            renderHome();
+
+            return;
+        }
+
+
+        content.innerHTML = `
+            <section class="dashboard">
+
+                <div class="dashboard-header">
+
+                    <div class="dashboard-wallet-info">
+
+                        <h1 class="dashboard-title">
+                            Wallet
+                        </h1>
+
+                        <div class="dashboard-address-row">
+
+                            <div
+                                id="dashboard-address"
+                                class="dashboard-address"
+                                title="${escapeHtml(walletAddress)}"
+                            >
+                                ${escapeHtml(walletAddress)}
+                            </div>
+
+                            <button
+                                id="copy-dashboard-address"
+                                class="dashboard-copy-button"
+                                type="button"
+                                title="Copy address"
+                                aria-label="Copy wallet address"
+                            >
+
+                                <svg
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    aria-hidden="true"
+                                >
+
+                                    <rect
+                                        x="8"
+                                        y="8"
+                                        width="11"
+                                        height="11"
+                                        rx="2"
+                                        stroke="currentColor"
+                                        stroke-width="1.8"
+                                    />
+
+                                    <path
+                                        d="M16 8V6C16 4.89543 15.1046 4 14 4H6C4.89543 4 4 4.89543 4 6V14C4 15.1046 5 16 6 16H8"
+                                        stroke="currentColor"
+                                        stroke-width="1.8"
+                                        stroke-linecap="round"
+                                    />
+
+                                </svg>
+
+                            </button>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="dashboard-network">
+
+                        <span
+                            class="status-dot connected"
+                        ></span>
+
+                        PEP Network
+
+                    </div>
+
+                </div>
+
+
+                <div class="balance-card">
+
+                    <div class="balance-label">
+                        Total Balance
+                    </div>
+
+                    <div class="balance-value">
+                        0
+
+                        <span class="balance-symbol">
+                            PEP
+                        </span>
+                    </div>
+
+                </div>
+
+
+                <div class="asset-grid">
+
+                    <div class="asset-card">
+
+                        <div class="asset-name">
+                            PEP
+                        </div>
+
+                        <div class="asset-value">
+                            0 PEP
+                        </div>
+
+                    </div>
+
+
+                    <div class="asset-card">
+
+                        <div class="asset-name">
+                            Assets
+                        </div>
+
+                        <div class="asset-value">
+                            0
+                        </div>
+
+                    </div>
+
+
+                    <div class="asset-card">
+
+                        <div class="asset-name">
+                            Network
+                        </div>
+
+                        <div class="asset-value">
+                            PEP Chain
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <div class="dashboard-actions">
+
+                    <button
+                        id="receive-button"
+                        class="primary"
+                        type="button"
+                    >
+                        Receive
+                    </button>
+
+
+                    <button
+                        id="send-button"
+                        class="secondary"
+                        type="button"
+                    >
+                        Send
+                    </button>
+
+                </div>
+
+
+                <div class="footer">
+                    ${escapeHtml(walletAddress)}
+                </div>
+
+            </section>
+        `;
+
+
+        const receiveButton =
+            document.getElementById(
+                "receive-button"
+            );
+
+        const sendButton =
+            document.getElementById(
+                "send-button"
+            );
+
+        const copyDashboardAddress =
+            document.getElementById(
+                "copy-dashboard-address"
+            );
+
+
+        copyDashboardAddress.addEventListener(
+            "click",
+            async () => {
+
+                await copyText(
+                    walletAddress,
+                    "Address copied"
+                );
+            }
+        );
+
+
+        receiveButton.addEventListener(
+            "click",
+            () => {
+
+                renderReceive();
+            }
+        );
+
+
+        sendButton.addEventListener(
+            "click",
+            () => {
+
+                renderSendScreen();
+            }
+        );
+    }
+
+
+    /* ==========================================
+       RECEIVE SCREEN
+       ========================================== */
+
+    function renderReceive() {
+
+        if (!walletAddress) {
+
+            renderHome();
+
+            return;
+        }
+
+
+        content.innerHTML = `
+            <section class="receive-screen">
+
+                <div class="receive-header">
+
+                    <button
+                        id="receive-back"
+                        class="receive-back"
+                        type="button"
+                        title="Back"
+                        aria-label="Back to wallet"
+                    >
+                        ←
+                    </button>
+
+
+                    <div class="receive-header-text">
+
+                        <h1 class="receive-title">
+                            Receive
+                        </h1>
+
+                        <p class="receive-subtitle">
+                            Receive assets on PEP Chain
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="receive-card">
+
+                    <div class="receive-asset">
+
+                        <div>
+
+                            <div class="receive-asset-name">
+                                PEP
+                            </div>
+
+                            <div class="receive-asset-type">
+                                Native Asset
+                            </div>
+
+                        </div>
+
+
+                        <div class="receive-asset-network">
+                            PEP NETWORK
+                        </div>
+
+                    </div>
+
+
+                    <div class="receive-address-label">
+                        Your wallet address
+                    </div>
+
+
+                    <div class="receive-address-box">
+
+                        <div
+                            id="receive-address"
+                            class="receive-address"
+                            title="${escapeHtml(walletAddress)}"
+                        >
+                            ${escapeHtml(walletAddress)}
+                        </div>
+
+
+                        <button
+                            id="receive-copy"
+                            class="receive-copy-button"
+                            type="button"
+                            title="Copy address"
+                            aria-label="Copy wallet address"
+                        >
+
+                            <svg
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                xmlns="http://www.w3.org/2000/svg"
+                                aria-hidden="true"
+                            >
+
+                                <rect
+                                    x="8"
+                                    y="8"
+                                    width="11"
+                                    height="11"
+                                    rx="2"
+                                    stroke="currentColor"
+                                    stroke-width="1.8"
+                                />
+
+                                <path
+                                    d="M16 8V6C16 4.89543 15.1046 4 14 4H6C4.89543 4 4 4.89543 4 6V14C4 15.1046 5 16 6 16H8"
+                                    stroke="currentColor"
+                                    stroke-width="1.8"
+                                    stroke-linecap="round"
+                                />
+
+                            </svg>
+
+                        </button>
+
+                    </div>
+
+
+                    <div class="receive-note">
+                        Only send assets supported by PEP Chain
+                        to this address.
+                    </div>
+
+                </div>
+
+
+                <div class="footer">
+                    PEP Chain
+                </div>
+
+            </section>
+        `;
+
+
+        const backButton =
+            document.getElementById(
+                "receive-back"
+            );
+
+        const copyButton =
+            document.getElementById(
+                "receive-copy"
+            );
+
+
+        backButton.addEventListener(
+            "click",
+            () => {
+
+                renderDashboard();
+            }
+        );
+
+
+        copyButton.addEventListener(
+            "click",
+            async () => {
+
+                await copyText(
+                    walletAddress,
+                    "Address copied"
+                );
+            }
+        );
+    }
+
+
+    /* ==========================================
+       SEND SCREEN
+       ========================================== */
+
+    function renderSendScreen() {
+
+        if (!walletAddress) {
+
+            renderHome();
+
+            return;
+        }
+
+
+        content.innerHTML = `
+            <section class="send-screen">
+
+                <div class="send-header">
+
+                    <button
+                        id="send-back"
+                        class="send-back"
+                        type="button"
+                        title="Back"
+                        aria-label="Back to wallet"
+                    >
+                        ←
+                    </button>
+
+
+                    <div class="send-header-text">
+
+                        <h1 class="send-title">
+                            Send
+                        </h1>
+
+                        <p class="send-subtitle">
+                            Send assets on PEP Chain
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="send-card">
+
+                    <div class="send-asset">
+
+                        <div>
+
+                            <div class="send-asset-name">
+                                PEP
+                            </div>
+
+                            <div class="send-asset-type">
+                                Native Asset
+                            </div>
+
+                        </div>
+
+
+                        <div class="send-balance">
+                            Balance:
+                            <strong>0 PEP</strong>
+                        </div>
+
+                    </div>
+
+
+                    <!-- RECIPIENT -->
+
+                    <div class="send-field">
+
+                        <label
+                            class="send-label"
+                            for="send-recipient"
+                        >
+                            Recipient Address
+                        </label>
+
+
+                        <div class="send-input-wrap">
+
+                            <input
+                                id="send-recipient"
+                                class="send-input"
+                                type="text"
+                                autocomplete="off"
+                                spellcheck="false"
+                                placeholder="pep42..."
+                            >
+
+                        </div>
+
+
+                        <div
+                            id="recipient-error"
+                            class="send-error"
+                        ></div>
+
+                    </div>
+
+
+                    <!-- AMOUNT -->
+
+                    <div class="send-field">
+
+                        <label
+                            class="send-label"
+                            for="send-amount"
+                        >
+                            Amount
+                        </label>
+
+
+                        <div class="send-input-wrap">
+
+                            <input
+                                id="send-amount"
+                                class="send-input send-amount-input"
+                                type="text"
+                                inputmode="decimal"
+                                autocomplete="off"
+                                placeholder="0.00"
+                            >
+
+
+                            <button
+                                id="send-max"
+                                class="send-max"
+                                type="button"
+                            >
+                                MAX
+                            </button>
+
+
+                            <span class="send-unit">
+                                PEP
+                            </span>
+
+                        </div>
+
+
+                        <div
+                            id="amount-error"
+                            class="send-error"
+                        ></div>
+
+                    </div>
+
+
+                    <!-- NETWORK -->
+
+                    <div class="send-network">
+
+                        <div class="send-network-left">
+
+                            <span
+                                class="status-dot connected"
+                            ></span>
+
+                            <span class="send-network-name">
+                                PEP Network
+                            </span>
+
+                        </div>
+
+
+                        <div class="send-network-right">
+                            PEP
+                        </div>
+
+                    </div>
+
+
+                    <!-- FEE -->
+
+                    <div class="send-fee-row">
+
+                        <span>
+                            Network Fee
+                        </span>
+
+                        <span
+                            id="send-fee"
+                            class="send-fee-value"
+                        >
+                            -- PEP
+                        </span>
+
+                    </div>
+
+
+                    <button
+                        id="review-send"
+                        class="primary send-review"
+                        type="button"
+                        disabled
+                    >
+                        Review Send
+                    </button>
+
+                </div>
+
+
+                <div class="footer">
+                    PEP Chain
+                </div>
+
+            </section>
+        `;
+
+
+        const backButton =
+            document.getElementById(
+                "send-back"
+            );
+
+        const recipientInput =
+            document.getElementById(
+                "send-recipient"
+            );
+
+        const amountInput =
+            document.getElementById(
+                "send-amount"
+            );
+
+        const maxButton =
+            document.getElementById(
+                "send-max"
+            );
+
+        const reviewButton =
+            document.getElementById(
+                "review-send"
+            );
+
+        const recipientError =
+            document.getElementById(
+                "recipient-error"
+            );
+
+        const amountError =
+            document.getElementById(
+                "amount-error"
+            );
+
+
+        /* =========================
+           BACK
+           ========================= */
+
+        backButton.addEventListener(
+            "click",
+            () => {
+
+                renderDashboard();
+            }
+        );
+
+
+        /* =========================
+           VALIDATE
+           ========================= */
+
+        function validateSendForm() {
+
+            const recipient =
+                recipientInput.value.trim();
+
+            const amount =
+                amountInput.value.trim();
+
+
+            recipientError.textContent =
+                "";
+
+            amountError.textContent =
+                "";
+
+
+            let valid = true;
+
+
+            /*
+             * Recipient
+             */
+
+            if (!recipient) {
+
+                recipientError.textContent =
+                    "Recipient address is required.";
+
+                valid = false;
+
+            } else if (
+                !recipient.toLowerCase().startsWith("pep")
+            ) {
+
+                recipientError.textContent =
+                    "Invalid PEP address.";
+
+                valid = false;
+            }
+
+
+            /*
+             * Amount
+             */
+
+            if (!amount) {
+
+                amountError.textContent =
+                    "Amount is required.";
+
+                valid = false;
+
+            } else {
+
+                const numericAmount =
+                    Number(amount);
+
+
+                if (
+                    !Number.isFinite(
+                        numericAmount
+                    )
+                    ||
+                    numericAmount <= 0
+                ) {
+
+                    amountError.textContent =
+                        "Enter a valid amount.";
+
+                    valid = false;
+                }
+            }
+
+
+            reviewButton.disabled =
+                !valid;
+
+
+            return valid;
+        }
+
+
+        recipientInput.addEventListener(
+            "input",
+            validateSendForm
+        );
+
+
+        amountInput.addEventListener(
+            "input",
+            () => {
+
+                /*
+                 * Only numbers and decimal point.
+                 */
+
+                amountInput.value =
+                    amountInput.value
+                        .replace(
+                            /[^0-9.]/g,
+                            ""
+                        );
+
+
+                /*
+                 * Only one decimal point.
+                 */
+
+                const parts =
+                    amountInput.value.split(".");
+
+
+                if (parts.length > 2) {
+
+                    amountInput.value =
+                        parts[0]
+                        + "."
+                        + parts
+                            .slice(1)
+                            .join("");
+                }
+
+
+                validateSendForm();
+            }
+        );
+
+
+        /* =========================
+           MAX
+           ========================= */
+
+        maxButton.addEventListener(
+            "click",
+            () => {
+
+                /*
+                 * Balance is still hardcoded to 0
+                 * until Core balance RPC is connected.
+                 */
+
+                showToast(
+                    "Balance not available yet"
+                );
+            }
+        );
+
+
+        /* =========================
+           REVIEW
+           ========================= */
+
+        reviewButton.addEventListener(
+            "click",
+            () => {
+
+                if (
+                    !validateSendForm()
+                ) {
+                    return;
+                }
+
+
+                const recipient =
+                    recipientInput.value.trim();
+
+                const amount =
+                    amountInput.value.trim();
+
+
+                console.log(
+                    "[PEP] Send review:",
+                    {
+                        asset: "PEP",
+                        recipient,
+                        amount
+                    }
+                );
+
+
+                showToast(
+                    "Review — next step"
+                );
+            }
+        );
+    }
+
+
+    /* ==========================================
+       CREATE WALLET
+       ========================================== */
+
+    async function createWalletHandler() {
+
+        const createButton =
+            document.getElementById(
+                "create-wallet"
+            );
+
+
+        if (
+            !createButton
+            ||
+            createButton.disabled
+        ) {
+            return;
+        }
+
+
+        createButton.disabled =
+            true;
+
+        createButton.textContent =
+            "Creating Wallet...";
+
+
+        try {
+
+            console.log(
+                "[PEP] Creating wallet..."
+            );
+
+
+            const tauri =
+                window.__TAURI__;
+
+
+            if (
+                !tauri
+                ||
+                !tauri.core
+            ) {
+
+                throw new Error(
+                    "Tauri Core API unavailable."
+                );
+            }
+
+
+            const result =
+                await tauri.core.invoke(
+                    "create_wallet"
+                );
+
+
+            console.log(
+                "[PEP] Wallet created:",
+                result
+            );
+
+
+            if (
+                !result
+                ||
+                !result.address
+                ||
+                !result.mnemonic
+            ) {
+
+                throw new Error(
+                    "Invalid wallet response from PEP Core."
+                );
+            }
+
+
+            walletAddress =
+                result.address;
+
+            walletMnemonic =
+                result.mnemonic;
+
+
+            renderBackupScreen();
+
+
+        } catch (error) {
+
+            console.error(
+                "[PEP] Create Wallet failed:",
+                error
+            );
+
+
+            createButton.disabled =
+                false;
+
+            createButton.textContent =
+                "Create Wallet";
+
+
+            showToast(
+                "Create Wallet failed"
+            );
+        }
+    }
+
+
+    /* ==========================================
+       IMPORT WALLET
+       ========================================== */
+
+    function importWalletHandler() {
+
+    renderImportScreen();
+
+}
+
+
+    /* ==========================================
+       HTML ESCAPE
+       ========================================== */
+
+    function escapeHtml(value) {
+
+        return String(value)
+            .replace(
+                /&/g,
+                "&amp;"
+            )
+            .replace(
+                /</g,
+                "&lt;"
+            )
+            .replace(
+                />/g,
+                "&gt;"
+            )
+            .replace(
+                /"/g,
+                "&quot;"
+            )
+            .replace(
+                /'/g,
+                "&#039;"
+            );
+    }
+
+
+    /* ==========================================
+       QUERY TAURI
+       ========================================== */
+
+    async function getCoreStatus() {
+
+        console.log(
+            "[PEP] Checking Tauri API..."
+        );
+
+
+        const tauri =
+            window.__TAURI__;
+
+
+        if (!tauri) {
+
+            console.error(
+                "[PEP] window.__TAURI__ unavailable"
+            );
+
+
+            updateCoreStatus(
+                "Desktop API unavailable."
+            );
+
+
+            return;
+        }
+
+
+        if (!tauri.core) {
+
+            console.error(
+                "[PEP] Tauri core API unavailable"
+            );
+
+
+            updateCoreStatus(
+                "Desktop Core API unavailable."
+            );
+
+
+            return;
+        }
+
+
+        console.log(
+            "[PEP] Tauri API detected."
+        );
+
+
+        try {
+
+            const status =
+                await tauri.core.invoke(
+                    "core_status"
+                );
+
+
+            console.log(
+                "[PEP] Initial Core status:",
+                status
+            );
+
+
+            updateCoreStatus(
+                status
+            );
+
+        } catch (error) {
+
+            console.error(
+                "[PEP] core_status failed:",
+                error
+            );
+
+
+            updateCoreStatus(
+                "Unable to query PEP Core."
+            );
+        }
+    }
+
+
+    /* ==========================================
+       CORE STATUS EVENTS
+       ========================================== */
+
+    async function listenCoreStatus() {
+
+        const tauri =
+            window.__TAURI__;
+
+
+        if (
+            !tauri
+            ||
+            !tauri.event
+        ) {
+            return;
+        }
+
+
+        try {
+
+            await tauri.event.listen(
+                "core-status",
+                (event) => {
+
+                    console.log(
+                        "[PEP] Core event:",
+                        event.payload
+                    );
+
+
+                    updateCoreStatus(
+                        event.payload
+                    );
+                }
+            );
+
+        } catch (error) {
+
+            console.error(
+                "[PEP] Event listener failed:",
+                error
+            );
+        }
+    }
+
+
+    /* ==========================================
+       START
+       ========================================== */
+
+    async function start() {
+
+        console.log(
+            "[PEP] PEP Wallet UI started."
+        );
+
+
+        renderHome();
+
+
+        await listenCoreStatus();
+
+
+        await getCoreStatus();
+
+
+        const statusTimer =
+            setInterval(
+                async () => {
+
+                    const statusElement =
+                        document.getElementById(
+                            "core-status"
+                        );
+
+
+                    if (!statusElement) {
+
+                        clearInterval(
+                            statusTimer
+                        );
+
+                        return;
+                    }
+
+
+                    const status =
+                        statusElement.textContent;
+
+
+                    if (
+                        status ===
+                        "PEP Core connected."
+                    ) {
+
+                        clearInterval(
+                            statusTimer
+                        );
+
+                        return;
+                    }
+
+
+                    await getCoreStatus();
+
+                },
+                500
+            );
+    }
+
+
+    /* ==========================================
+       BOOT
+       ========================================== */
+
+    start();
+
+})();
+</script>
+
+
+</body>
+</html>

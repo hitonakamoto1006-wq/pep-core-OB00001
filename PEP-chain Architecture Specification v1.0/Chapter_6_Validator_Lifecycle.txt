@@ -1,0 +1,93 @@
+Chapter 6. Validator Lifecycle
+
+6.1 Overview
+
+A Validator participates in the PEP-chain protocol by providing
+redeemable liquidity. Unlike Proof of Stake systems, validators do not
+lock native PEP tokens. They lock supported assets and receive Claim.
+
+Lifecycle:
+
+Join → Deposit Assets → Mint Claim → Redeem → Ticket → Lottery → Create
+Block → Exit
+
+------------------------------------------------------------------------
+
+6.2 Join
+
+A participant registers as a validator by satisfying protocol
+requirements and creating a validator identity.
+
+State Changes: - Validator record created. - Status = Pending.
+
+------------------------------------------------------------------------
+
+6.3 Deposit Assets
+
+The validator deposits supported assets into protocol Asset Pools.
+
+State Changes: - Locked Assets increase. - Pool assets increase.
+
+------------------------------------------------------------------------
+
+6.4 Mint Claim
+
+After deposits are verified, the protocol mints non-transferable Claim.
+
+Claim represents redeem capacity and is proportional to deposited asset
+value.
+
+------------------------------------------------------------------------
+
+6.5 Redeem Participation
+
+When a redeem request arrives:
+
+1.  Filter validators with sufficient Claim.
+2.  Execute Claim-weighted roulette.
+3.  Select one validator.
+4.  Settle redeem.
+5.  Reduce Claim.
+
+------------------------------------------------------------------------
+
+6.6 Ticket Generation
+
+A successful redeem generates one Ticket.
+
+Ticket Amount equals the USD value of the completed redeem.
+
+------------------------------------------------------------------------
+
+6.7 Lottery
+
+The generated Ticket enters one lottery round.
+
+If the Ticket satisfies the current protocol difficulty, the validator
+receives block production rights.
+
+Otherwise, the Ticket is burned.
+
+------------------------------------------------------------------------
+
+6.8 Block Creation
+
+Winning validators assemble transactions, construct the block, attach
+the Lottery Proof and broadcast the new block.
+
+------------------------------------------------------------------------
+
+6.9 Exit
+
+Validators may voluntarily leave the protocol after satisfying exit
+conditions.
+
+Remaining locked assets become withdrawable according to protocol rules.
+
+------------------------------------------------------------------------
+
+Summary
+
+The validator lifecycle connects liquidity provision directly to
+consensus participation, ensuring that block production opportunities
+originate from real economic activity.

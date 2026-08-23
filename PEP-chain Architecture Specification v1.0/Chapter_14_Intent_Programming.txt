@@ -1,0 +1,85 @@
+Chapter 14. Intent Programming
+
+14.1 Overview
+
+Intent Programming enables developers to describe desired behavior using
+natural language instead of writing low-level bytecode directly.
+
+The protocol transforms human intent into deterministic executable
+programs.
+
+Pipeline:
+
+Natural Language → LLM → PEP IR → Bytecode → PVM
+
+------------------------------------------------------------------------
+
+14.2 Natural Language
+
+Developers describe application logic using structured natural language.
+
+Example objectives include:
+
+-   Create a fund.
+-   Issue CCQs.
+-   Execute buyback.
+-   Rebalance portfolio.
+-   Perform governance voting.
+
+Natural language represents developer intent rather than executable
+code.
+
+------------------------------------------------------------------------
+
+14.3 Large Language Model (LLM)
+
+The LLM translates validated natural language into PEP Intermediate
+Representation (PEP IR).
+
+The LLM is a development tool and is not part of blockchain consensus.
+
+Consensus begins only after deterministic IR and bytecode are produced.
+
+------------------------------------------------------------------------
+
+14.4 PEP IR
+
+PEP IR is the canonical intermediate representation.
+
+Responsibilities:
+
+-   Normalize developer intent.
+-   Detect semantic errors.
+-   Enable optimization.
+-   Produce deterministic bytecode.
+
+PEP IR is platform-independent.
+
+------------------------------------------------------------------------
+
+14.5 Bytecode
+
+The compiler converts PEP IR into PVM Bytecode.
+
+Bytecode is deterministic, portable and directly executable by every PVM
+implementation.
+
+------------------------------------------------------------------------
+
+14.6 Execution
+
+PVM executes compiled bytecode.
+
+Execution updates protocol state only after successful validation.
+
+All state transitions remain deterministic across every node.
+
+------------------------------------------------------------------------
+
+Summary
+
+Intent Programming separates application design from low-level
+implementation. Developers express intent using natural language, an LLM
+converts that intent into PEP IR, the compiler generates deterministic
+bytecode, and the PVM executes the resulting program consistently across
+the network.

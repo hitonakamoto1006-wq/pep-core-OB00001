@@ -1,0 +1,113 @@
+PEP39CL-0004 Encoding Algorithm
+
+Version: 0.1 Draft
+
+===========================================================
+
+1.  Abstract
+
+This specification defines the deterministic algorithm used to encode a
+PEP39CL Binary Payload into a mnemonic and decode the mnemonic back into
+the original Binary Payload.
+
+This specification SHALL NOT define chain-specific key derivation,
+wallet formats or recovery phrases.
+
+===========================================================
+
+2.  Goals
+
+-   Deterministic
+-   Reversible
+-   Lossless
+-   Version-aware
+-   Error Detectable
+
+===========================================================
+
+3.  Encoding Algorithm
+
+Entropy ↓ Build Binary Payload ↓ Split into 25 groups ↓ 12 bits per
+group ↓ Convert each group to a numeric index ↓ Lookup canonical
+wordlist ↓ 25-word mnemonic
+
+===========================================================
+
+4.  Binary Partition
+
+The Binary Payload SHALL contain exactly 300 bits.
+
+The payload SHALL be divided into 25 consecutive groups.
+
+Each group SHALL contain exactly 12 bits.
+
+Each 12-bit group represents one unsigned integer in the range 0–4095.
+
+===========================================================
+
+5.  Word Lookup
+
+Each numeric index SHALL map to exactly one word in the canonical
+PEP39CL wordlist.
+
+The mapping SHALL be deterministic.
+
+===========================================================
+
+6.  Decoding Algorithm
+
+25-word mnemonic ↓ Word indices ↓ 300-bit Binary Payload ↓ Read Version
+↓ Read Entropy ↓ Verify Checksum ↓ Verify Reserved Bits ↓ Accept Payload
+
+===========================================================
+
+7.  Validation
+
+Implementations SHALL reject:
+
+-   Unknown words
+-   Invalid mnemonic length
+-   Unsupported version
+-   Invalid checksum
+-   Reserved bits not equal to zero in Version 1
+
+===========================================================
+
+8.  Error Handling
+
+INVALID_WORD
+
+INVALID_LENGTH
+
+INVALID_CHECKSUM
+
+UNSUPPORTED_VERSION
+
+RESERVED_BITS_SET
+
+===========================================================
+
+9.  Determinism
+
+The same Binary Payload SHALL always produce the same mnemonic.
+
+The same valid mnemonic SHALL always decode to the same Binary Payload.
+
+===========================================================
+
+10. Compatibility
+
+PEP39CL SHALL remain chain-agnostic.
+
+This specification SHALL NOT define blockchain-specific key derivation,
+wallet formats or recovery phrases.
+
+===========================================================
+
+11. Future Work
+
+PEP39CL-0005 Import & Export
+
+PEP32 Master Seed
+
+PEP32 Chain Adapter

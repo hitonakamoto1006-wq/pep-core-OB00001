@@ -1,0 +1,90 @@
+PEP32-0001 Master Seed
+
+Version: 0.1 Draft
+
+===========================================================
+
+1.  Abstract
+
+This specification defines the Master Seed architecture used by PEP32.
+
+The Master Seed is the root secret from which chain-specific secrets may
+be deterministically derived.
+
+This specification SHALL NOT define mnemonic encoding or decoding. Those
+responsibilities belong to PEP39CL.
+
+===========================================================
+
+2.  Goals
+
+-   Chain Independent
+-   Deterministic
+-   Secure
+-   Forward Compatible
+-   Extensible
+
+===========================================================
+
+3.  Architecture
+
+PEP39CL Mnemonic ↓ Entropy ↓ Master Seed ↓ Chain Adapter ↓
+Chain-specific Secret
+
+===========================================================
+
+4.  Master Seed
+
+The Master Seed is the canonical root secret of a PEP wallet.
+
+All chain-specific secrets SHALL originate from the same Master Seed.
+
+Only one Master Seed SHALL exist for a wallet.
+
+===========================================================
+
+5.  Requirements
+
+The Master Seed SHALL:
+
+-   Be deterministic.
+-   Remain immutable.
+-   Never be modified after creation.
+-   Never be exposed unless explicitly exported.
+-   Be suitable for deterministic derivation.
+
+===========================================================
+
+6.  Chain Independence
+
+PEP32 SHALL remain chain-agnostic.
+
+PEP32 SHALL NOT define blockchain-specific key derivation algorithms,
+wallet formats or recovery phrases.
+
+Chain-specific behavior SHALL be implemented by Chain Adapters.
+
+===========================================================
+
+7.  Security Considerations
+
+Implementations SHOULD:
+
+-   Keep the Master Seed in protected memory.
+-   Erase the Master Seed from memory when no longer required.
+-   Avoid logging or transmitting the Master Seed.
+-   Prevent unauthorized disclosure.
+
+===========================================================
+
+8.  Future Work
+
+PEP32-0002 Chain Adapter Interface
+
+PEP32-0003 Derivation Path
+
+PEP32-0004 Extended Keys
+
+PEP32-0005 HD Wallet
+
+PEP32-0006 Export & Compatibility

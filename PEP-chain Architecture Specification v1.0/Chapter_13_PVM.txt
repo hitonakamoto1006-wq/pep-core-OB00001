@@ -1,0 +1,109 @@
+Chapter 13. PVM
+
+13.1 Overview
+
+The PEP Virtual Machine (PVM) is the deterministic execution environment
+of PEP-chain. It executes smart contracts, validates state transitions,
+and guarantees identical execution results on every node.
+
+Unlike conventional virtual machines designed for general-purpose
+decentralized applications, PVM is optimized for programmable fund
+management and protocol-native financial operations.
+
+------------------------------------------------------------------------
+
+13.2 Architecture
+
+PVM consists of the following components:
+
+-   Bytecode Loader
+-   Instruction Decoder
+-   Execution Engine
+-   Memory Manager
+-   Persistent Storage Interface
+-   Gas Meter
+-   Runtime Environment
+
+Every component executes deterministically to ensure consensus
+consistency.
+
+------------------------------------------------------------------------
+
+13.3 Instruction Set
+
+PVM executes a predefined instruction set.
+
+Instruction categories include:
+
+-   Arithmetic
+-   Logical
+-   Comparison
+-   Memory
+-   Storage
+-   Control Flow
+-   Cryptography
+-   Fund Operations
+-   System Calls
+
+Future protocol upgrades may extend the instruction set while
+maintaining backward compatibility.
+
+------------------------------------------------------------------------
+
+13.4 Execution
+
+Contract execution follows the lifecycle:
+
+Load Bytecode → Decode Instructions → Execute Sequentially → Update
+Temporary State → Commit Changes → Return Result
+
+Execution is deterministic. Given identical bytecode and input, every
+honest node must produce identical output.
+
+------------------------------------------------------------------------
+
+13.5 Memory
+
+Memory is temporary execution space.
+
+Characteristics:
+
+-   Volatile
+-   Cleared after execution
+-   Sequentially addressable
+-   Isolated per execution context
+
+Memory is never persisted to blockchain state.
+
+------------------------------------------------------------------------
+
+13.6 Storage
+
+Storage is persistent protocol state owned by contracts.
+
+Storage characteristics:
+
+-   Persistent across blocks
+-   Deterministic
+-   Addressable by keys
+-   Versioned through state transitions
+
+Only successfully committed executions modify persistent storage.
+
+------------------------------------------------------------------------
+
+13.7 Gas
+
+Every instruction consumes Gas.
+
+Gas prevents resource abuse and guarantees bounded execution.
+
+Execution terminates immediately if available Gas is exhausted.
+
+------------------------------------------------------------------------
+
+Summary
+
+PVM provides a deterministic execution environment combining bytecode
+execution, temporary memory, persistent storage and protocol-defined
+instructions to support programmable financial logic on PEP-chain.

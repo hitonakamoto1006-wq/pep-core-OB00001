@@ -1,0 +1,87 @@
+PEP32-0005 HD Wallet
+
+Version: 0.1 Draft
+
+===========================================================
+
+1.  Abstract
+
+This specification defines the architecture of a Hierarchical
+Deterministic (HD) Wallet within the PEP ecosystem.
+
+An HD Wallet SHALL deterministically derive all wallet objects from a
+single Master Seed.
+
+===========================================================
+
+2.  Goals
+
+-   Single Backup
+-   Deterministic
+-   Hierarchical
+-   Chain Independent
+-   Extensible
+-   Secure
+
+===========================================================
+
+3.  Architecture
+
+PEP39CL Mnemonic ↓ Entropy ↓ Master Seed ↓ Chain Adapter ↓ Derivation
+Path ↓ Extended Keys ↓ Accounts ↓ Addresses
+
+===========================================================
+
+4.  Wallet Model
+
+An HD Wallet SHALL:
+
+-   Own exactly one Master Seed.
+-   Support multiple Chain Adapters.
+-   Support multiple Accounts.
+-   Support deterministic Address generation.
+-   Preserve hierarchical structure.
+
+===========================================================
+
+5.  Recovery
+
+Restoring the same PEP39CL mnemonic SHALL recreate the same HD Wallet.
+
+No chain-specific recovery phrase is required.
+
+===========================================================
+
+6.  Watch-only
+
+Implementations MAY create watch-only wallets using Extended Public
+Keys.
+
+Watch-only wallets SHALL NOT sign transactions.
+
+===========================================================
+
+7.  Security Considerations
+
+Implementations SHOULD:
+
+-   Protect the Master Seed.
+-   Protect Extended Private Keys.
+-   Erase temporary secrets after use.
+-   Never expose sensitive material unnecessarily.
+
+===========================================================
+
+8.  Compatibility
+
+PEP32 SHALL remain independent of blockchain-specific wallet
+implementations.
+
+Support for additional blockchains SHALL be provided through Chain
+Adapters.
+
+===========================================================
+
+9.  Future Work
+
+PEP32-0006 Export & Compatibility

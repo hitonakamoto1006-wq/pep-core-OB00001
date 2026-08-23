@@ -1,0 +1,36 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "productName": "PEP Wallet",
+  "version": "0.1.0",
+  "identifier": "com.pepchain.wallet",
+
+  "build": {
+    "frontendDist": "../src"
+  },
+
+  "app": {
+    "withGlobalTauri": true,
+
+    "windows": [
+      {
+        "title": "PEP Wallet",
+        "width": 1200,
+        "height": 800,
+        "resizable": true
+      }
+    ],
+
+    "security": {
+      "csp": null
+    }
+  },
+
+  "bundle": {
+    "active": true,
+    "targets": "all",
+
+    "icon": [
+      "icons/icon.ico"
+    ]
+  }
+}

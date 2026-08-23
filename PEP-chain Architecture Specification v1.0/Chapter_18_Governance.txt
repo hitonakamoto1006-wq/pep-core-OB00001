@@ -1,0 +1,57 @@
+Chapter 18. Governance
+
+18.1 Overview
+
+Governance enables the protocol to evolve while preserving deterministic
+consensus.
+
+Core governance functions include:
+
+-   Proposal
+-   Voting
+-   Upgrade
+
+------------------------------------------------------------------------
+
+18.2 Proposal
+
+Protocol participants may submit proposals describing modifications to
+protocol behavior.
+
+Examples include:
+
+-   Parameter changes
+-   Protocol improvements
+-   New fund standards
+-   PVM extensions
+
+------------------------------------------------------------------------
+
+18.3 Voting
+
+Eligible participants vote according to protocol governance rules.
+
+Voting results are recorded on-chain and executed only after satisfying
+protocol-defined approval conditions.
+
+------------------------------------------------------------------------
+
+18.4 Upgrade
+
+Approved proposals may activate protocol upgrades.
+
+Upgrade objectives include:
+
+-   Security improvements
+-   Performance improvements
+-   New protocol features
+-   Backward-compatible evolution
+
+Every upgrade must preserve deterministic execution across all nodes.
+
+------------------------------------------------------------------------
+
+Summary
+
+Governance provides a structured process for proposing, approving and
+deploying protocol evolution.

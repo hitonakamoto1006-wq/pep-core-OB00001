@@ -1,0 +1,54 @@
+Appendix
+
+A. Glossary
+
+PEP
+    Native ecosystem index token.
+
+CCQ
+    Capital Contribution Quota.
+
+NAV
+    Net Asset Value.
+
+STC
+    Standard Token Cost (NAV / Supply).
+
+Claim
+    Validator liquidity capacity.
+
+Ticket
+    Temporary Proof of Lottery object.
+
+PoL
+    Proof of Lottery.
+
+Validator
+    Liquidity provider participating in consensus.
+
+Redeem
+    Conversion of CCQs into underlying assets.
+
+Asset Pool
+    Locked assets backing protocol liquidity.
+
+B. Mathematics
+
+Standard Token Cost:
+
+STC = NAV / Supply
+
+Claim Weight:
+
+Weight(i) = Claim(i)
+
+Validator Eligibility:
+
+Claim >= Redeem Amount
+
+Lottery Condition:
+
+Matched Hex Suffix Length >= Difficulty
+
+These equations define the deterministic mathematical foundation of
+PEP-chain.

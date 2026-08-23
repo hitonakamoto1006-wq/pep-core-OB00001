@@ -1,0 +1,98 @@
+PEP39CL-0005 Import & Export
+
+Version: 0.1 Draft
+
+===========================================================
+
+1.  Abstract
+
+This specification defines the requirements for importing and exporting
+PEP39CL mnemonics.
+
+It specifies validation rules and interoperability requirements.
+
+This specification SHALL NOT define chain-specific recovery phrases,
+wallet formats or key derivation algorithms.
+
+===========================================================
+
+2.  Goals
+
+-   Secure
+-   Deterministic
+-   Interoperable
+-   Forward Compatible
+-   User Friendly
+
+===========================================================
+
+3.  Import
+
+An implementation importing a mnemonic SHALL:
+
+1.  Verify the mnemonic contains exactly 25 words.
+2.  Verify every word exists in the canonical wordlist.
+3.  Decode the mnemonic into a Binary Payload.
+4.  Verify the Version field.
+5.  Verify the Checksum.
+6.  Verify Reserved Bits.
+7.  Accept the mnemonic only if all validation steps succeed.
+
+===========================================================
+
+4.  Export
+
+An implementation exporting a mnemonic SHALL:
+
+1.  Build a valid Binary Payload.
+2.  Encode the payload using the PEP39CL encoding algorithm.
+3.  Output exactly 25 words.
+4.  Preserve the canonical word order.
+
+===========================================================
+
+5.  Validation Errors
+
+-   INVALID_WORD
+-   INVALID_LENGTH
+-   INVALID_VERSION
+-   INVALID_CHECKSUM
+-   RESERVED_BITS_SET
+
+Implementations SHALL reject invalid mnemonics.
+
+===========================================================
+
+6.  Compatibility
+
+Implementations SHALL support the canonical English wordlist.
+
+Future localized wordlists SHALL preserve identical numeric indices.
+
+===========================================================
+
+7.  Security Considerations
+
+PEP39CL mnemonics represent sensitive recovery material.
+
+Implementations SHOULD avoid logging, exposing or transmitting mnemonics
+without explicit user consent.
+
+===========================================================
+
+8.  Chain Independence
+
+PEP39CL SHALL remain chain-agnostic.
+
+This specification SHALL NOT define or expose blockchain-specific
+recovery phrases, wallet formats or key derivation algorithms.
+
+===========================================================
+
+9.  Future Work
+
+PEP32 Master Seed
+
+PEP32 HD Wallet
+
+PEP32 Chain Adapter

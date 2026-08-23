@@ -1,0 +1,88 @@
+Chapter 16. Cryptography
+
+16.1 Overview
+
+Cryptographic primitives provide integrity, authenticity and
+deterministic verification throughout PEP-chain.
+
+------------------------------------------------------------------------
+
+16.2 SHA-256
+
+SHA-256 is used for:
+
+-   Block Hashes
+-   Transaction Hashes
+-   Ticket Hashes
+-   Metadata Integrity
+-   General protocol hashing
+
+The hash function provides collision resistance and deterministic
+output.
+
+------------------------------------------------------------------------
+
+16.3 AES-CTR
+
+AES-CTR is used as the protocol pseudorandom generation mechanism.
+
+Applications include:
+
+-   Ticket Number generation
+-   Winning Number generation
+-   Lottery randomness
+
+Every node executes the same algorithm using identical protocol inputs.
+
+------------------------------------------------------------------------
+
+16.4 Merkle Tree
+
+Merkle Trees summarize all transactions within a block.
+
+Benefits:
+
+-   Efficient verification
+-   Data integrity
+-   Compact commitment
+-   Simplified proof generation
+
+The resulting Merkle Root is stored inside the Block Header.
+
+------------------------------------------------------------------------
+
+16.5 Digital Signature
+
+Every transaction must be digitally signed.
+
+Digital signatures provide:
+
+-   Authentication
+-   Integrity
+-   Non-repudiation
+
+Nodes reject transactions with invalid signatures.
+
+------------------------------------------------------------------------
+
+16.6 HD Wallet
+
+PEP-chain supports Hierarchical Deterministic (HD) Wallets.
+
+Features:
+
+-   Deterministic key derivation
+-   Single recovery seed
+-   Multiple account generation
+-   Standard wallet backup
+
+HD Wallets simplify secure key management for users and applications.
+
+------------------------------------------------------------------------
+
+Summary
+
+SHA-256, AES-CTR, Merkle Trees, Digital Signatures and HD Wallets
+collectively provide the cryptographic foundation required for
+deterministic consensus, secure transactions and reliable state
+verification in PEP-chain.

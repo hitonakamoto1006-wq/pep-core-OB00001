@@ -1,0 +1,103 @@
+PEP32-0002 Chain Adapter Interface
+
+Version: 0.1 Draft
+
+===========================================================
+
+1.  Abstract
+
+This specification defines the standard interface between the PEP32
+Master Seed and supported blockchain implementations.
+
+PEP32 SHALL remain chain-agnostic.
+
+This specification SHALL NOT define blockchain-specific derivation
+algorithms, wallet formats or recovery phrases.
+
+===========================================================
+
+2.  Goals
+
+-   Chain Independent
+-   Deterministic
+-   Extensible
+-   Interoperable
+-   Forward Compatible
+
+===========================================================
+
+3.  Architecture
+
+PEP39CL Mnemonic ↓ Entropy ↓ Master Seed ↓ Chain Adapter Interface ↓
+Chain-specific Implementation
+
+===========================================================
+
+4.  Responsibilities
+
+A Chain Adapter SHALL:
+
+-   Accept a Master Seed.
+-   Derive a chain-specific root secret.
+-   Derive accounts deterministically.
+-   Derive addresses deterministically.
+-   Return chain-specific public information.
+
+===========================================================
+
+5.  Interface
+
+Input: - Master Seed
+
+Output: - Chain Root Secret - Account - Address - Public Information
+
+===========================================================
+
+6.  Requirements
+
+Every Chain Adapter SHALL:
+
+-   Produce deterministic results.
+-   Be independent of other adapters.
+-   Never modify the Master Seed.
+-   Never expose the Master Seed.
+-   Support future protocol versions.
+
+===========================================================
+
+7.  Isolation
+
+Compromise of one Chain Adapter SHALL NOT require exposing the Master
+Seed or the internal state of other adapters.
+
+===========================================================
+
+8.  Compatibility
+
+PEP32 defines only the interface.
+
+Each blockchain SHALL implement its own adapter while conforming to this
+interface.
+
+===========================================================
+
+9.  Security Considerations
+
+Implementations SHOULD:
+
+-   Protect derived secrets in memory.
+-   Erase temporary secrets after use.
+-   Avoid logging sensitive material.
+-   Validate adapter inputs.
+
+===========================================================
+
+10. Future Work
+
+PEP32-0003 Derivation Path
+
+PEP32-0004 Extended Keys
+
+PEP32-0005 HD Wallet
+
+PEP32-0006 Export & Compatibility

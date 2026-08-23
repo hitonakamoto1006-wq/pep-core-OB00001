@@ -1,0 +1,155 @@
+Chapter 10. Block
+
+10.1 Overview
+
+The Block is the canonical container that records validated protocol
+state transitions.
+
+In PEP-chain, a block is produced only after a validator wins the Proof
+of Lottery (PoL) process. Redeem settlement occurs before block
+creation, while the block permanently records the resulting state.
+
+A block consists of five primary components:
+
+-   Block Header
+-   Lottery Proof
+-   Merkle Root
+-   Transactions
+-   Metadata
+
+------------------------------------------------------------------------
+
+10.2 Block Header
+
+The Block Header uniquely identifies a block and provides the
+information required for validation.
+
+A typical header contains:
+
+-   Block Height
+-   Previous Block Hash
+-   Merkle Root
+-   Timestamp
+-   Difficulty
+-   Winning Ticket Hash
+-   Block Hash
+
+The Block Hash is calculated deterministically from the serialized Block
+Header.
+
+------------------------------------------------------------------------
+
+10.3 Lottery Proof
+
+Lottery Proof demonstrates that the block producer legitimately won the
+current Proof of Lottery round.
+
+Lottery Proof contains:
+
+-   Validator Identifier
+-   Redeem Identifier
+-   Ticket Identifier
+-   Winning Number
+-   Ticket Number
+-   Difficulty
+-   Matching Result
+
+Every node independently verifies the Lottery Proof before accepting the
+block.
+
+------------------------------------------------------------------------
+
+10.4 Merkle Root
+
+The Merkle Root is the cryptographic commitment to every transaction
+included in the block.
+
+Construction:
+
+1.  Compute the hash of every transaction.
+2.  Pair adjacent hashes.
+3.  Hash each pair.
+4.  Repeat until a single hash remains.
+
+The resulting value becomes the Merkle Root recorded in the Block
+Header.
+
+Any modification to a transaction changes the Merkle Root and
+invalidates the block.
+
+------------------------------------------------------------------------
+
+10.5 Transactions
+
+Transactions define all state transitions recorded in the block.
+
+Supported transaction categories include:
+
+-   Transfer
+-   Mint
+-   Burn
+-   Stake
+-   Redeem
+-   Vote
+-   Create Fund
+-   Issue CCQ
+-   Buyback
+-   Rebalance
+
+Transactions are executed deterministically before block commitment.
+
+------------------------------------------------------------------------
+
+10.6 Metadata
+
+Each block stores protocol metadata required for synchronization.
+
+Metadata may include:
+
+-   Chain ID
+-   Protocol Version
+-   Current Difficulty
+-   Lottery Round
+-   Block Height
+-   Block Timestamp
+
+Metadata assists nodes in validating and synchronizing the canonical
+chain.
+
+------------------------------------------------------------------------
+
+10.7 Block Validation
+
+Every node validates a received block by performing the following
+checks:
+
+1.  Verify Previous Block Hash.
+2.  Verify Lottery Proof.
+3.  Verify Difficulty.
+4.  Verify Merkle Root.
+5.  Verify every transaction.
+6.  Recalculate Block Hash.
+7.  Confirm deterministic state transition.
+
+A block failing any verification step is rejected.
+
+------------------------------------------------------------------------
+
+10.8 Block Commitment
+
+After successful validation:
+
+-   Transactions become part of the canonical chain.
+-   Global state is updated.
+-   Metadata advances.
+-   The block becomes eligible as the parent of the next block.
+
+------------------------------------------------------------------------
+
+Summary
+
+The Block is the immutable record of consensus on PEP-chain. Its Block
+Header identifies the block, the Lottery Proof proves consensus
+legitimacy, the Merkle Root guarantees transaction integrity,
+Transactions define deterministic state transitions, and Metadata
+maintains protocol synchronization across the network.

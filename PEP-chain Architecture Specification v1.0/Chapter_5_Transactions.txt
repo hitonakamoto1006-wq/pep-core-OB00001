@@ -1,0 +1,186 @@
+Chapter 5. Transactions
+
+5.1 Overview
+
+Transactions are the only mechanism capable of changing the canonical
+state of PEP-chain. Each transaction must be deterministic,
+authenticated, replay-resistant and verifiable by every node.
+
+General lifecycle:
+
+Create → Sign → Broadcast → Verify → Execute → Update State → Record in
+Block
+
+------------------------------------------------------------------------
+
+5.2 Common Transaction Structure
+
+Every transaction contains:
+
+-   Transaction Type
+-   Sender
+-   Nonce
+-   Timestamp
+-   Payload
+-   Public Key
+-   Signature
+
+A transaction is valid only if its signature, nonce and protocol rules
+are satisfied.
+
+------------------------------------------------------------------------
+
+5.3 Transfer
+
+Transfers move supported assets between accounts without changing
+protocol ownership structures.
+
+State Changes: - Sender Balance decreases - Receiver Balance increases -
+Sender Nonce increments
+
+------------------------------------------------------------------------
+
+5.4 Mint
+
+Mint creates new protocol assets according to predefined protocol rules.
+
+Mint operations are only permitted where explicitly authorized by
+protocol logic.
+
+State Changes: - Supply increases - Receiver Balance increases
+
+------------------------------------------------------------------------
+
+5.5 Burn
+
+Burn permanently removes assets from circulation.
+
+State Changes: - Supply decreases - Holder Balance decreases
+
+Burn operations cannot be reversed.
+
+------------------------------------------------------------------------
+
+5.6 Stake
+
+Stake locks supported assets into protocol pools.
+
+Successful staking creates or increases validator Claim.
+
+State Changes: - Account Balance decreases - Pool Assets increase -
+Validator Claim increases
+
+Stake does not mint PEP.
+
+------------------------------------------------------------------------
+
+5.7 Redeem
+
+Redeem converts CCQs into underlying assets.
+
+Execution sequence:
+
+1.  Validate redeem request.
+2.  Determine redeem amount.
+3.  Select eligible validators.
+4.  Execute Claim-weighted roulette.
+5.  Choose one validator.
+6.  Transfer underlying assets.
+7.  Reduce validator Claim.
+8.  Transfer redeemed CCQs.
+9.  Generate Ticket.
+
+Redeem settlement is independent from block creation.
+
+------------------------------------------------------------------------
+
+5.8 Vote
+
+Vote represents governance participation.
+
+Voting may apply to protocol upgrades, fund governance or future
+protocol-defined proposals.
+
+State Changes: - Governance records update. - Proposal status may
+change.
+
+------------------------------------------------------------------------
+
+5.9 Create Fund
+
+Create Fund initializes a new investment fund.
+
+Initialization includes:
+
+-   Fund Identifier
+-   Initial Asset Configuration
+-   Supported Assets
+-   Governance Parameters
+-   Fee Configuration
+
+Successful execution creates a new Asset Pool and enables future CCQ
+issuance.
+
+------------------------------------------------------------------------
+
+5.10 Issue CCQ
+
+Issue CCQ creates Capital Contribution Quotas representing proportional
+ownership of a fund.
+
+State Changes: - CCQ Supply increases. - Investor receives newly issued
+CCQs. - Fund ownership records update.
+
+CCQ valuation follows STC.
+
+------------------------------------------------------------------------
+
+5.11 Buyback
+
+Buyback acquires existing CCQs using protocol-defined assets.
+
+State Changes: - Pool Assets decrease. - CCQs return to protocol. -
+Depending on protocol policy, repurchased CCQs may be burned or
+retained.
+
+Buyback supports long-term fund management.
+
+------------------------------------------------------------------------
+
+5.12 Rebalance
+
+Rebalance adjusts portfolio composition while preserving fund
+objectives.
+
+Typical actions include:
+
+-   Buying assets.
+-   Selling assets.
+-   Adjusting target allocation.
+
+State Changes: - Pool asset balances change. - NAV updates. - STC
+recalculates automatically.
+
+------------------------------------------------------------------------
+
+5.13 Transaction Validation
+
+Every node validates:
+
+-   Transaction format
+-   Signature
+-   Nonce
+-   Permission
+-   Sufficient balances
+-   Protocol-specific rules
+
+Any failed validation causes immediate rejection.
+
+------------------------------------------------------------------------
+
+Summary
+
+Transactions define every legal state transition within PEP-chain.
+Transfer, Stake, Redeem and fund-management transactions collectively
+transform protocol state while preserving deterministic execution across
+all nodes.

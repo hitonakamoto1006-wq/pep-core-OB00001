@@ -1,0 +1,81 @@
+Chapter 17. Tokenomics
+
+17.1 Overview
+
+The Tokenomics Layer defines the issuance, circulation, valuation and
+incentive mechanisms of PEP-chain.
+
+Core economic objects include:
+
+-   PEP
+-   CCQ
+-   Mint
+-   Burn
+-   Reward
+
+------------------------------------------------------------------------
+
+17.2 PEP
+
+PEP is the native index token of the protocol.
+
+PEP represents the aggregate value of all Capital Contribution Quotas
+(CCQs) existing within the ecosystem.
+
+Its intrinsic valuation follows the STC principle.
+
+------------------------------------------------------------------------
+
+17.3 CCQ
+
+Capital Contribution Quotas (CCQs) represent proportional ownership in a
+specific fund.
+
+CCQs may be issued, transferred, redeemed and managed according to
+protocol rules.
+
+Their value is derived from NAV and STC rather than speculative price
+discovery.
+
+------------------------------------------------------------------------
+
+17.4 Mint
+
+Mint creates protocol assets under deterministic protocol conditions.
+
+Typical mint events include:
+
+-   Initial CCQ issuance
+-   Fund expansion
+-   Protocol-authorized issuance
+
+Mint operations must be verifiable by every node.
+
+------------------------------------------------------------------------
+
+17.5 Burn
+
+Burn permanently removes assets from circulation.
+
+Burn may occur after protocol-defined redemption or supply management
+events.
+
+Burn decreases circulating supply while preserving deterministic
+accounting.
+
+------------------------------------------------------------------------
+
+17.6 Reward
+
+Rewards incentivize validators that successfully produce valid blocks.
+
+Reward policy is protocol-defined and may include newly issued assets,
+fees or other governance-approved incentives.
+
+------------------------------------------------------------------------
+
+Summary
+
+The Tokenomics Layer aligns asset valuation, ownership and validator
+incentives around deterministic economic rules rather than speculative
+market mechanisms.

@@ -1,0 +1,178 @@
+PEP-chain Architecture Specification v1.0
+
+Status: Draft Version: 0.1
+
+PART I — FOUNDATION
+
+Chapter 1. Introduction
+
+-   Vision
+-   Design Philosophy
+-   Terminology
+-   Objectives
+-   Non-objectives
+
+Chapter 2. Economic Layer
+
+-   Fund Market
+-   NAV
+-   STC (NAV / Supply)
+-   PEP Index Token
+-   CCQ
+-   Asset Pool
+
+Chapter 3. Proof of Lottery (PoL)
+
+-   Validator
+-   Claim
+-   Redeem
+-   Roulette
+-   Ticket
+-   Lottery
+-   Difficulty
+-   Block Creation
+-   Finality
+
+PART II — PROTOCOL
+
+Chapter 4. State Machine
+
+-   Accounts
+-   Validators
+-   Claims
+-   Pools
+-   CCQs
+-   Tickets
+-   Metadata
+
+Chapter 5. Transactions
+
+-   Transfer
+-   Mint
+-   Burn
+-   Stake
+-   Redeem
+-   Vote
+-   Create Fund
+-   Issue CCQ
+-   Buyback
+-   Rebalance
+
+Chapter 6. Validator Lifecycle
+
+Join → Deposit Assets → Mint Claim → Redeem → Ticket → Lottery → Create
+Block → Exit
+
+Chapter 7. Ticket Protocol
+
+-   Ticket Structure
+-   Ticket Amount
+-   Ticket Lifetime
+-   Ticket Burn
+-   Ticket Serialization
+
+Chapter 8. Lottery Engine
+
+Redeem → Eligible Validators → Claim-weighted Roulette → Settlement →
+Ticket Generation → AES-CTR Random → Hex Matching → Difficulty Check →
+Block
+
+Chapter 9. Difficulty
+
+-   Winning Threshold
+-   Hex Matching
+-   Adaptive Difficulty
+-   Target Block Time
+
+Chapter 10. Block
+
+-   Block Header
+-   Lottery Proof
+-   Merkle Root
+-   Transactions
+-   Metadata
+
+Chapter 11. Storage
+
+-   BlockStore
+-   StateStore
+-   ClaimStore
+-   TicketStore
+-   MetadataStore
+-   SnapshotStore
+-   BlockIndex
+
+Chapter 12. Network
+
+-   Header Sync
+-   Block Sync
+-   Snapshot Sync
+-   P2P
+-   RPC
+-   Explorer
+
+PART III — PVM
+
+Chapter 13. PVM
+
+-   Architecture
+-   Instruction Set
+-   Execution
+-   Memory
+-   Storage
+
+Chapter 14. Intent Programming
+
+Natural Language → LLM → PEP IR → Bytecode → PVM
+
+PART IV — SECURITY
+
+Chapter 15. Security
+
+-   Sybil
+-   Double Redeem
+-   Offline Validator
+-   Fork
+-   Replay
+-   Randomness
+
+Chapter 16. Cryptography
+
+-   SHA-256
+-   AES-CTR
+-   Merkle Tree
+-   Digital Signature
+-   HD Wallet
+
+PART V — ECONOMICS
+
+Chapter 17. Tokenomics
+
+-   PEP
+-   CCQ
+-   Mint
+-   Burn
+-   Reward
+
+Chapter 18. Governance
+
+-   Proposal
+-   Voting
+-   Upgrade
+
+Chapter 19. Roadmap
+
+-   Devnet
+-   Testnet
+-   Mainnet
+-   PVM
+-   Cross-chain
+
+APPENDIX
+
+-   Glossary
+-   Mathematics
+-   Consensus Algorithms
+-   Data Structures
+-   Pseudocode
+-   Rust Mapping

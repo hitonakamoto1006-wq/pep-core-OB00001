@@ -1,0 +1,106 @@
+Chapter 15. Security
+
+15.1 Overview
+
+Security in PEP-chain protects consensus, protocol state, validator
+participation, and economic integrity. Every node independently verifies
+protocol rules before accepting blocks or state transitions.
+
+------------------------------------------------------------------------
+
+15.2 Sybil Attack
+
+A Sybil attack attempts to gain disproportionate influence by creating
+many validator identities.
+
+Mitigation:
+
+-   Validators must deposit real assets.
+-   Claim is backed by locked liquidity.
+-   Consensus opportunity originates from redeem activity rather than
+    validator count.
+
+------------------------------------------------------------------------
+
+15.3 Double Redeem
+
+Double Redeem is an attempt to redeem the same CCQs multiple times.
+
+Protection:
+
+-   Unique Redeem ID.
+-   Deterministic state transition.
+-   Immediate state update after successful settlement.
+-   Replay rejection.
+
+Only one valid redeem may consume a specific CCQ balance.
+
+------------------------------------------------------------------------
+
+15.4 Offline Validator
+
+Validators may become unavailable after being selected by the roulette
+process.
+
+Protocol behavior:
+
+-   Detect validator timeout.
+-   Exclude unavailable validator.
+-   Select a replacement according to protocol rules.
+-   Continue redeem settlement.
+
+Consensus must remain available despite validator failures.
+
+------------------------------------------------------------------------
+
+15.5 Fork
+
+Forks occur when competing blocks exist simultaneously.
+
+Every node validates:
+
+-   Previous Block Hash.
+-   Lottery Proof.
+-   Difficulty.
+-   Protocol rules.
+
+Only the canonical chain is accepted for state advancement.
+
+------------------------------------------------------------------------
+
+15.6 Replay Attack
+
+Replay attacks reuse previously valid transactions.
+
+Mitigation:
+
+-   Account Nonce.
+-   Transaction Signature.
+-   Chain Identifier.
+-   Deterministic transaction validation.
+
+A previously executed transaction cannot be executed again.
+
+------------------------------------------------------------------------
+
+15.7 Randomness
+
+Proof of Lottery requires deterministic pseudorandom generation.
+
+Requirements:
+
+-   Every honest node derives identical values.
+-   Random generation is reproducible.
+-   Inputs are protocol-defined.
+-   Lottery results are independently verifiable.
+
+Randomness supports Ticket generation, Winning Number generation and
+lottery verification.
+
+------------------------------------------------------------------------
+
+Summary
+
+PEP-chain security combines deterministic execution, liquidity-backed
+participation and verifiable lottery consensus to protect the protocol
+against common network and economic attacks.

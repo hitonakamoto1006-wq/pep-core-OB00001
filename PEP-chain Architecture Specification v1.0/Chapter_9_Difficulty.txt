@@ -1,0 +1,137 @@
+Chapter 9. Difficulty
+
+9.1 Overview
+
+Difficulty is the consensus threshold used by Proof of Lottery (PoL) to
+determine whether a Ticket is eligible to produce a block.
+
+Unlike Proof of Work, where difficulty measures computational effort,
+PEP-chain difficulty represents the minimum hexadecimal suffix match
+required between a Ticket Number and the Winning Number.
+
+The objective of Difficulty is to maintain a stable average block
+interval while preserving fairness among validators.
+
+------------------------------------------------------------------------
+
+9.2 Winning Threshold
+
+The Winning Threshold defines the minimum number of matching hexadecimal
+characters required for a Ticket to become a winning Ticket.
+
+Example:
+
+Difficulty = 4
+
+Winning Number:
+
+A91CF8B42D
+
+Ticket Number:
+
+781CF8B42D
+
+Matching suffix:
+
+B42D
+
+Result:
+
+Winning Ticket
+
+Only Tickets satisfying or exceeding the current threshold may create a
+block.
+
+------------------------------------------------------------------------
+
+9.3 Hex Matching
+
+PEP-chain evaluates lottery results using hexadecimal suffix matching.
+
+Each hexadecimal character has sixteen possible values:
+
+0–9, A–F
+
+Matching begins from the least significant hexadecimal digit and
+continues backwards until a mismatch occurs.
+
+Example:
+
+Winning:
+
+5FA2BC91E4
+
+Ticket:
+
+A0D2BC91E4
+
+Matched suffix:
+
+BC91E4
+
+Matched Length:
+
+6 Hex Digits
+
+The matched suffix length is compared against the current Difficulty.
+
+------------------------------------------------------------------------
+
+9.4 Adaptive Difficulty
+
+Difficulty is adjusted dynamically according to recent block production.
+
+If blocks are produced faster than the protocol target interval:
+
+-   Increase Difficulty.
+-   Require longer hexadecimal matches.
+
+If blocks are produced slower than the target interval:
+
+-   Decrease Difficulty.
+-   Require fewer hexadecimal matches.
+
+Adaptive Difficulty enables the protocol to respond automatically to
+changing economic activity without manual intervention.
+
+------------------------------------------------------------------------
+
+9.5 Target Block Time
+
+The protocol maintains a configurable Target Block Time.
+
+Its purpose is to stabilize:
+
+-   Network synchronization.
+-   State persistence.
+-   Consensus frequency.
+-   Resource consumption.
+
+Difficulty adjustments are performed to keep the observed average block
+interval close to this target.
+
+The exact adjustment algorithm is protocol-defined and may evolve
+through governance upgrades while preserving deterministic execution.
+
+------------------------------------------------------------------------
+
+9.6 Difficulty Validation
+
+Every node independently verifies:
+
+-   Winning Number.
+-   Ticket Number.
+-   Matching hexadecimal suffix.
+-   Current protocol Difficulty.
+
+A block is valid only if its Lottery Proof satisfies the active Winning
+Threshold.
+
+------------------------------------------------------------------------
+
+Summary
+
+Difficulty is the adaptive control mechanism of Proof of Lottery. By
+expressing consensus as hexadecimal suffix matching instead of
+computational work, PEP-chain aligns block production with deterministic
+lottery outcomes while maintaining a stable average block interval.

@@ -1,0 +1,33 @@
+[package]
+name = "pep-node"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+pep-core = { path = "../../crates/pep-core" }
+
+axum = "0.8"
+
+tokio = {
+    version = "1",
+    features = [
+        "full",
+    ],
+}
+
+serde = {
+    version = "1",
+    features = [
+        "derive",
+    ],
+}
+
+serde_json = "1"
+
+[[bin]]
+name = "pep-node"
+path = "scr/main.rs"
+
+[[bin]]
+name = "pep-node-console"
+path = "scr/bin/pep-node-console.rs"

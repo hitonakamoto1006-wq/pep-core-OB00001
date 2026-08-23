@@ -1,0 +1,227 @@
+Chapter 3. Proof of Lottery (PoL)
+
+3.1 Overview
+
+Proof of Lottery (PoL) is the native consensus mechanism of PEP-chain.
+
+Unlike Proof of Work (PoW), where computational power determines block
+production, or Proof of Stake (PoS), where token ownership determines
+validator selection, PoL derives consensus opportunities from real
+liquidity activities.
+
+A validator only participates in consensus after successfully completing
+a redeem request.
+
+The consensus pipeline is:
+
+Deposit Assets → Claim → Redeem → Roulette → Ticket → Lottery → Block
+
+------------------------------------------------------------------------
+
+3.2 Validator
+
+A validator is a protocol participant that deposits supported assets
+into the Asset Pool.
+
+Supported assets may include BTC, ETH, stablecoins, and other
+protocol-approved assets.
+
+Deposited assets are locked by the protocol and become available to
+satisfy future redeem requests.
+
+Validators are responsible for:
+
+-   Providing redeem liquidity.
+-   Maintaining network availability.
+-   Participating in lottery consensus.
+-   Producing blocks after winning the lottery.
+
+Validators do not stake PEP tokens.
+
+------------------------------------------------------------------------
+
+3.3 Claim
+
+Claim represents liquidity capacity.
+
+Claim is not:
+
+-   a token,
+-   a transferable asset,
+-   a governance right.
+
+Instead, Claim measures how much redeem value a validator is capable of
+serving.
+
+Example:
+
+Validator deposits:
+
+-   BTC = 500,000 USD
+-   ETH = 200,000 USD
+
+Total Claim:
+
+700,000 Claim
+
+Whenever a redeem is completed, Claim decreases by the redeemed amount.
+
+Additional deposits increase Claim accordingly.
+
+------------------------------------------------------------------------
+
+3.4 Redeem
+
+Redeem is the process of converting CCQs into their underlying assets.
+
+For every redeem request:
+
+1.  Determine redeem amount.
+2.  Filter validators whose Claim is greater than or equal to the redeem
+    amount.
+3.  Build the eligible validator set.
+4.  Execute weighted roulette.
+5.  Select exactly one validator.
+6.  Settle the redeem.
+7.  Reduce validator Claim.
+8.  Transfer CCQs to the selected validator.
+9.  Generate a Ticket.
+
+Redeem settlement is independent from block production.
+
+------------------------------------------------------------------------
+
+3.5 Roulette
+
+Roulette determines which validator is responsible for servicing a
+redeem request.
+
+Each validator receives probability proportional to its remaining Claim.
+
+Weight:
+
+Weight(i) = Claim(i)
+
+Validators with insufficient Claim are excluded before roulette begins.
+
+Roulette produces exactly one validator.
+
+If the selected validator is offline, protocol-defined fallback rules
+determine the next eligible validator.
+
+------------------------------------------------------------------------
+
+3.6 Ticket
+
+A Ticket is a temporary consensus object.
+
+Tickets are generated only after successful redeem settlement.
+
+Ticket fields include:
+
+-   Redeem ID
+-   Validator ID
+-   Ticket Amount
+-   Timestamp
+
+Ticket Amount equals the USD value of the redeem request.
+
+Example:
+
+Redeem = 5,000 USD
+
+Ticket Amount = 5,000
+
+Tickets are non-transferable and valid for only one lottery round.
+
+After the lottery, every Ticket is permanently destroyed.
+
+------------------------------------------------------------------------
+
+3.7 Lottery
+
+Lottery determines whether a validator receives block production rights.
+
+Ticket numbers and the Winning Number are deterministically generated
+from protocol inputs using the protocol random generation algorithm.
+
+Every node independently computes identical results.
+
+A Ticket either:
+
+-   Wins and creates one block.
+-   Loses and is burned.
+
+Lottery never changes redeem settlement.
+
+Redeem is final regardless of lottery outcome.
+
+------------------------------------------------------------------------
+
+3.8 Difficulty
+
+Difficulty defines the winning threshold.
+
+PEP-chain expresses difficulty as hexadecimal suffix matching.
+
+Example:
+
+Winning Number
+
+A91CF8B42D
+
+Ticket
+
+7F1CF8B42D
+
+Matching suffix:
+
+CF8B42D
+
+Difficulty therefore represents the minimum required hexadecimal suffix
+length for a winning Ticket.
+
+Dynamic difficulty adjusts this threshold to maintain the protocol
+target block interval.
+
+------------------------------------------------------------------------
+
+3.9 Block Creation
+
+If a Ticket satisfies the current difficulty:
+
+1.  Validator receives block production rights.
+2.  Transactions are collected.
+3.  Block Header is generated.
+4.  Merkle Root is calculated.
+5.  Lottery Proof is attached.
+6.  Block is broadcast to the network.
+
+Exactly one Ticket creates one block.
+
+------------------------------------------------------------------------
+
+3.10 Finality
+
+Redeem settlement and consensus are intentionally separated.
+
+Redeem finality occurs immediately after settlement.
+
+Block finality records protocol history and synchronizes network state.
+
+This separation ensures liquidity services remain available regardless
+of temporary lottery outcomes.
+
+------------------------------------------------------------------------
+
+Summary
+
+Proof of Lottery transforms liquidity provision into consensus
+participation.
+
+Validators earn opportunities to produce blocks by servicing real redeem
+requests instead of expending computational power or locking protocol
+tokens.
+
+The protocol therefore aligns consensus incentives directly with
+economic activity occurring inside the decentralized fund market.

@@ -1,0 +1,8 @@
+[workspace]
+members = [
+    "crates/pep-core",
+    "app/pep-node",
+    "app/pep-desktop/scr-tauri",
+]
+
+resolver = "2"

@@ -1,0 +1,115 @@
+Chapter 2. Economic Layer
+
+2.1 Fund Market
+
+PEP-chain is designed as a decentralized infrastructure for the fund
+market rather than a payment network. The protocol provides a settlement
+layer where capital providers, liquidity providers, and fund
+participants interact through deterministic economic rules.
+
+Each fund is represented by Capital Contribution Quotas (CCQs). Users
+subscribe to or redeem CCQs while the protocol manages liquidity through
+validator-operated asset pools.
+
+The economic activity of subscriptions and redeems is the primary driver
+of protocol operation and Proof of Lottery participation.
+
+------------------------------------------------------------------------
+
+2.2 Net Asset Value (NAV)
+
+Net Asset Value (NAV) is the total market value of assets held by a
+fund.
+
+NAV includes all supported assets deposited into the fund, such as BTC,
+ETH, stablecoins, or other approved assets.
+
+Mathematically:
+
+NAV = Σ(Value of all assets in the fund)
+
+NAV is continuously updated according to market prices and represents
+the intrinsic value of the fund.
+
+------------------------------------------------------------------------
+
+2.3 Standard Token Cost (STC)
+
+PEP-chain introduces Standard Token Cost (STC) as the deterministic
+pricing model for all native ecosystem assets.
+
+STC is defined as:
+
+STC = NAV / Supply
+
+where: - NAV is the Net Asset Value. - Supply is the circulating supply
+of the corresponding asset.
+
+Unlike traditional cryptocurrencies, STC removes internal price
+discovery for native assets. Prices are derived directly from underlying
+asset value rather than speculative order books.
+
+------------------------------------------------------------------------
+
+2.4 PEP Index Token
+
+PEP is the native index token of the ecosystem.
+
+Rather than representing a single fund, PEP reflects the aggregate value
+of all Capital Contribution Quotas existing across the protocol.
+
+Conceptually:
+
+PEP Value = Aggregate NAV of all CCQs / PEP Supply
+
+PEP therefore functions as an ecosystem-wide index rather than an
+individual investment vehicle.
+
+------------------------------------------------------------------------
+
+2.5 Capital Contribution Quota (CCQ)
+
+A Capital Contribution Quota (CCQ) represents proportional ownership in
+a specific investment fund.
+
+Each CCQ grants its holder exposure to the assets managed by that fund.
+
+CCQs may be: - Issued when capital enters a fund. - Redeemed for
+underlying assets. - Held as long-term investment positions. - Used
+within protocol-defined economic operations.
+
+Every CCQ derives its intrinsic value from STC.
+
+------------------------------------------------------------------------
+
+2.6 Asset Pool
+
+An Asset Pool contains the underlying assets supplied by validators.
+
+Validators lock assets into pools and receive non-transferable Claim
+proportional to the deposited value.
+
+When a redeem request occurs:
+
+1.  Eligible validators are selected according to Claim.
+2.  A weighted roulette chooses one validator.
+3.  The selected validator fulfills the redeem.
+4.  Claim is reduced by the redeemed value.
+5.  The validator receives CCQs.
+6.  A consensus Ticket is generated for the completed redeem.
+
+Asset Pools therefore provide liquidity for fund settlement while
+simultaneously supporting Proof of Lottery consensus.
+
+------------------------------------------------------------------------
+
+Summary
+
+The Economic Layer defines the intrinsic financial foundation of
+PEP-chain.
+
+Instead of relying on speculative token pricing, the protocol is built
+upon measurable economic quantities including NAV, STC, Asset Pools,
+Claims, and CCQs. These components collectively support decentralized
+fund settlement and serve as the economic basis for the Proof of Lottery
+consensus mechanism.

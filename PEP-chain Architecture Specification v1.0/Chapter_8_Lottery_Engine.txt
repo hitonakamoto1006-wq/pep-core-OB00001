@@ -1,0 +1,200 @@
+Chapter 8. Lottery Engine
+
+8.1 Overview
+
+The Lottery Engine is the consensus execution component of Proof of
+Lottery (PoL).
+
+Its responsibility is to transform a completed redeem settlement into an
+opportunity to produce the next block.
+
+Execution pipeline:
+
+Redeem → Eligible Validators → Claim-weighted Roulette → Settlement →
+Ticket Generation → AES-CTR Random → Hex Matching → Difficulty Check →
+Block
+
+The Lottery Engine never determines redeem settlement. Redeem is
+completed before the lottery begins.
+
+------------------------------------------------------------------------
+
+8.2 Redeem
+
+A user submits a redeem request for a specified amount of CCQs.
+
+The protocol calculates the corresponding redeem value and begins
+validator selection.
+
+Inputs:
+
+-   Redeem ID
+-   Redeem Amount
+-   Asset Type
+-   Timestamp
+
+------------------------------------------------------------------------
+
+8.3 Eligible Validators
+
+The protocol constructs the eligible validator set.
+
+Eligibility rule:
+
+Claim ≥ Redeem Amount
+
+Validators with insufficient Claim are excluded before roulette
+execution.
+
+------------------------------------------------------------------------
+
+8.4 Claim-weighted Roulette
+
+Each eligible validator receives probability proportional to its
+remaining Claim.
+
+Weight(i) = Claim(i)
+
+Exactly one validator is selected.
+
+The selected validator becomes responsible for settling the redeem.
+
+If the selected validator is unavailable, protocol fallback rules
+determine the next validator according to future protocol
+specifications.
+
+------------------------------------------------------------------------
+
+8.5 Settlement
+
+Settlement executes immediately after validator selection.
+
+State changes:
+
+-   Validator Claim decreases.
+-   Pool assets decrease.
+-   User receives underlying assets.
+-   Validator receives redeemed CCQs.
+
+Settlement is final and independent of block production.
+
+------------------------------------------------------------------------
+
+8.6 Ticket Generation
+
+Successful settlement creates one Ticket.
+
+Ticket Amount equals the USD value of the completed redeem.
+
+Each Ticket contains:
+
+-   Ticket ID
+-   Redeem ID
+-   Validator ID
+-   Ticket Amount
+-   Timestamp
+-   Lottery Round
+
+One redeem always creates one Ticket.
+
+------------------------------------------------------------------------
+
+8.7 AES-CTR Random
+
+The protocol generates deterministic pseudorandom values using AES-CTR.
+
+Every node executes the same algorithm using identical protocol inputs.
+
+The output produces:
+
+-   Ticket Number
+-   Winning Number
+
+The protocol requires every honest node to derive identical lottery
+results.
+
+------------------------------------------------------------------------
+
+8.8 Hex Matching
+
+Lottery results are determined by hexadecimal suffix matching.
+
+Example:
+
+Winning Number
+
+A91CF8B42D
+
+Ticket Number
+
+781CF8B42D
+
+Matching suffix:
+
+CF8B42D
+
+The number of matching hexadecimal digits determines whether the Ticket
+satisfies the current protocol difficulty.
+
+------------------------------------------------------------------------
+
+8.9 Difficulty Check
+
+Difficulty defines the minimum hexadecimal suffix required to win.
+
+Examples:
+
+Difficulty 2 → Match last 2 hexadecimal digits
+
+Difficulty 4 → Match last 4 hexadecimal digits
+
+Difficulty 8 → Match last 8 hexadecimal digits
+
+The protocol adjusts difficulty dynamically to maintain the desired
+average block interval.
+
+------------------------------------------------------------------------
+
+8.10 Block Production
+
+If a Ticket satisfies the current difficulty:
+
+1.  Validator receives block production rights.
+2.  Transactions are assembled.
+3.  Merkle Root is calculated.
+4.  Lottery Proof is attached.
+5.  Block Header is finalized.
+6.  Block is broadcast.
+
+If the Ticket does not satisfy difficulty:
+
+-   No block is produced.
+-   Ticket is permanently burned.
+
+Redeem settlement remains valid regardless of lottery outcome.
+
+------------------------------------------------------------------------
+
+8.11 Lottery Proof
+
+Every produced block contains a Lottery Proof.
+
+Lottery Proof enables every node to verify:
+
+-   Ticket authenticity.
+-   Winning Number.
+-   Difficulty.
+-   Validator identity.
+-   Lottery result.
+
+Lottery Proof is part of block validation.
+
+------------------------------------------------------------------------
+
+Summary
+
+The Lottery Engine converts completed economic activity into
+deterministic consensus opportunities. Rather than competing through
+computational work or token ownership, validators earn block production
+rights only after successfully providing liquidity to redeem requests
+and satisfying the protocol lottery.

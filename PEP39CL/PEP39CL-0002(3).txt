@@ -1,0 +1,95 @@
+PEP39CL-0002 Wordlist Specification
+
+Version: 0.1 Draft
+
+===========================================================
+
+1.  Abstract
+
+This document defines the wordlist used by PEP39CL.
+
+The wordlist provides a deterministic mapping between binary values and
+human-readable words.
+
+This specification does not define the encoding algorithm.
+
+===========================================================
+
+2.  Goals
+
+-   Human-readable
+-   Easy to pronounce
+-   Easy to distinguish
+-   Deterministic
+-   Language-independent
+-   Forward compatible
+
+===========================================================
+
+3.  Word Requirements
+
+Each word:
+
+-   MUST be unique.
+-   MUST contain only lowercase letters (a-z).
+-   MUST NOT contain spaces.
+-   MUST NOT contain digits.
+-   MUST NOT contain punctuation.
+-   MUST NOT contain accented characters.
+-   SHOULD be easy to pronounce.
+-   SHOULD avoid visually similar spellings.
+
+===========================================================
+
+4.  Word Length
+
+Minimum Length: 3 characters Maximum Length: 8 characters Recommended
+Length: 4-7 characters
+
+===========================================================
+
+5.  Wordlist Size
+
+4096 words.
+
+Each word SHALL have a fixed numeric index in the range 0-4095.
+
+===========================================================
+
+6.  Word Ordering
+
+-   Words SHALL have a fixed ordering.
+-   The numeric index SHALL NEVER change.
+-   New words SHALL NOT be inserted between existing words.
+-   Future revisions MAY append new words.
+
+===========================================================
+
+7.  Reserved Words
+
+No reserved words are defined in Version 1.
+
+===========================================================
+
+8.  Localization
+
+The canonical wordlist SHALL be English.
+
+Localized wordlists MAY be defined in future specifications.
+
+All localized wordlists SHALL preserve the same word index.
+
+===========================================================
+
+9.  Compatibility
+
+Implementations SHALL use the canonical word index.
+
+Implementations SHALL NOT reorder or modify the wordlist.
+
+===========================================================
+
+10. Future Work
+
+PEP39CL-0003 Binary Layout PEP39CL-0004 Encoding Algorithm PEP39CL-0005
+Import & Export

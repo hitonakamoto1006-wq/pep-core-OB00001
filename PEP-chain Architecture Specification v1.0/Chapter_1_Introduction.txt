@@ -1,0 +1,81 @@
+Chapter 1. Introduction
+
+1.1 Vision
+
+PEP-chain is a Layer-1 blockchain designed for the Fund Market rather
+than the payment market. Its primary mission is to become a
+decentralized settlement infrastructure for tokenized investment funds,
+asset pools, and liquidity providers.
+
+The protocol introduces a new economic model in which network consensus
+is derived from real liquidity activities. Validators contribute assets
+to protocol pools, receive Claim as liquidity capacity, and participate
+in Proof of Lottery through redeem events.
+
+The native asset, PEP, is an index token representing the aggregate
+value of Capital Contribution Quotas (CCQs) across the ecosystem.
+Internal valuation follows the STC principle, where value is determined
+by Net Asset Value (NAV) divided by circulating supply.
+
+1.2 Design Philosophy
+
+-   Economy First
+-   Liquidity-backed Security
+-   Deterministic Settlement
+-   Intrinsic Asset Valuation
+-   Modular Protocol Design
+-   Long-term Upgradeability
+
+1.3 Terminology
+
+PEP
+    Native index token of the ecosystem.
+
+CCQ
+    Capital Contribution Quota representing ownership of a fund.
+
+NAV
+    Net Asset Value.
+
+STC
+    Standard Token Cost = NAV / Supply.
+
+Claim
+    Non-transferable liquidity capacity assigned to validators.
+
+Validator
+    Liquidity provider participating in Proof of Lottery.
+
+Redeem
+    Conversion of CCQ into underlying assets.
+
+Ticket
+    Temporary consensus object created after redeem settlement.
+
+Lottery
+    Consensus mechanism deciding block production rights.
+
+Difficulty
+    Winning threshold measured by hexadecimal suffix matching.
+
+1.4 Objectives
+
+-   Build a decentralized settlement layer for fund markets.
+-   Secure consensus using real liquidity.
+-   Maintain deterministic valuation through STC.
+-   Support tokenized investment products.
+-   Enable programmable fund management through PVM.
+-   Preserve modularity for future protocol evolution.
+
+1.5 Non-objectives
+
+PEP-chain is not intended to be:
+
+-   A payment-first blockchain.
+-   A Bitcoin or Ethereum clone.
+-   A Proof-of-Work mining network.
+-   A staking-only consensus network.
+-   A speculative pricing protocol for native ecosystem assets.
+
+Instead, PEP-chain is designed specifically for decentralized fund
+settlement and Proof of Lottery consensus.

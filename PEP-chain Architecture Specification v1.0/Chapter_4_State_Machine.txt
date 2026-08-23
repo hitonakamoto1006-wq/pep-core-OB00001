@@ -1,0 +1,203 @@
+Chapter 4. State Machine
+
+4.1 Overview
+
+The State Machine defines the canonical state of the PEP-chain protocol.
+
+Every valid transaction transforms the global state deterministically.
+Given the same genesis state and identical transaction sequence, every
+node must compute the same resulting state.
+
+The protocol state is composed of six primary objects:
+
+-   Accounts
+-   Validators
+-   Claims
+-   Pools
+-   CCQs
+-   Tickets
+
+Metadata provides protocol-level information but does not directly
+represent economic ownership.
+
+------------------------------------------------------------------------
+
+4.2 Accounts
+
+Accounts represent user identities within the protocol.
+
+Each Account maintains:
+
+-   Address
+-   Nonce
+-   Balances
+-   Owned CCQs
+-   Permissions
+
+Accounts may submit transactions including transfer, redeem,
+subscription, governance voting, and other protocol-defined operations.
+
+The account state changes only through valid state transitions.
+
+------------------------------------------------------------------------
+
+4.3 Validators
+
+Validators provide liquidity to the protocol.
+
+Each Validator maintains:
+
+-   Validator ID
+-   Status
+-   Locked Assets
+-   Current Claim
+-   Total Redeemed Value
+-   Last Activity
+-   Network Information
+
+Validator states include:
+
+-   Pending
+-   Active
+-   Offline
+-   Suspended
+-   Exited
+
+Validators participate in consensus only while Active.
+
+------------------------------------------------------------------------
+
+4.4 Claims
+
+Claim represents redeem capacity.
+
+Claim is generated when a validator deposits assets into protocol pools.
+
+Claim changes according to the following rules:
+
+Deposit Assets → Claim increases
+
+Successful Redeem → Claim decreases
+
+Additional Deposit → Claim increases
+
+Validator Exit → Remaining Claim is removed after protocol requirements
+are satisfied.
+
+Claim is non-transferable and cannot be traded.
+
+------------------------------------------------------------------------
+
+4.5 Pools
+
+Pools contain the underlying assets backing CCQs.
+
+Each Pool maintains:
+
+-   Pool ID
+-   Asset List
+-   Asset Balances
+-   NAV
+-   Total CCQ Supply
+-   Supported Assets
+
+Pool state changes occur through:
+
+-   Deposit
+-   Subscription
+-   Redeem
+-   Buyback
+-   Rebalance
+
+Pool integrity is essential because NAV is derived directly from pool
+assets.
+
+------------------------------------------------------------------------
+
+4.6 CCQs
+
+Capital Contribution Quotas (CCQs) represent proportional ownership in a
+fund.
+
+Each CCQ tracks:
+
+-   Fund Identifier
+-   Total Supply
+-   Current STC
+-   NAV Share
+
+CCQs may be:
+
+-   Minted
+-   Burned
+-   Transferred
+-   Redeemed
+
+The protocol always derives CCQ value from STC rather than market
+speculation.
+
+------------------------------------------------------------------------
+
+4.7 Tickets
+
+Tickets are temporary consensus objects.
+
+Each Ticket contains:
+
+-   Ticket ID
+-   Redeem ID
+-   Validator ID
+-   Ticket Amount
+-   Creation Time
+-   Lottery Round
+
+Ticket lifecycle:
+
+Redeem Settlement → Ticket Created → Lottery Executed → Ticket Burned
+
+Tickets never persist beyond a single lottery round.
+
+------------------------------------------------------------------------
+
+4.8 Metadata
+
+Metadata stores protocol-wide information.
+
+Typical metadata includes:
+
+-   Chain ID
+-   Current Height
+-   Current Difficulty
+-   Best Block Hash
+-   Genesis Hash
+-   Protocol Version
+-   Current Lottery Round
+
+Metadata is replicated across all nodes and is updated whenever the
+canonical chain advances.
+
+------------------------------------------------------------------------
+
+4.9 State Transition
+
+Every accepted transaction follows the same deterministic process:
+
+1.  Validate transaction.
+2.  Verify signatures and permissions.
+3.  Execute state transition.
+4.  Update affected state objects.
+5.  Persist state.
+6.  Broadcast updated state through the blockchain.
+
+Nodes must reject any transition producing an invalid state.
+
+------------------------------------------------------------------------
+
+Summary
+
+The PEP-chain State Machine separates protocol data into specialized
+state objects. Accounts represent users, Validators provide liquidity,
+Claims measure redeem capacity, Pools secure underlying assets, CCQs
+represent fund ownership, Tickets support Proof of Lottery, and Metadata
+maintains global protocol information. Together these objects define the
+complete deterministic state of the network.

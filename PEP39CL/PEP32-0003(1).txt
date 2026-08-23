@@ -1,0 +1,93 @@
+PEP32-0003 Derivation Path
+
+Version: 0.1 Draft
+
+===========================================================
+
+1.  Abstract
+
+This specification defines the logical derivation path model used by
+PEP32.
+
+The derivation path provides a deterministic hierarchy from the Master
+Seed to chain-specific objects.
+
+This specification SHALL NOT define blockchain-specific derivation
+algorithms.
+
+===========================================================
+
+2.  Goals
+
+-   Deterministic
+-   Hierarchical
+-   Chain Independent
+-   Extensible
+-   Forward Compatible
+
+===========================================================
+
+3.  Architecture
+
+Master Seed ↓ Chain Adapter ↓ Account ↓ Address ↓ Application Object
+
+===========================================================
+
+4.  Derivation Levels
+
+Level 0 : Master Seed
+
+Level 1 : Chain
+
+Level 2 : Account
+
+Level 3 : Address
+
+Level 4 : Future Extension
+
+===========================================================
+
+5.  Requirements
+
+A derivation path SHALL:
+
+-   Produce deterministic results.
+-   Preserve hierarchy.
+-   Never modify the Master Seed.
+-   Support future path levels.
+
+===========================================================
+
+6.  Independence
+
+Each Chain Adapter SHALL define its own internal derivation rules.
+
+PEP32 defines only the logical hierarchy and SHALL remain
+chain-agnostic.
+
+===========================================================
+
+7.  Security Considerations
+
+Implementations SHOULD isolate derived secrets between accounts and
+addresses.
+
+Temporary secrets SHOULD be erased after use.
+
+===========================================================
+
+8.  Compatibility
+
+Future specifications MAY introduce additional derivation levels.
+
+Existing levels SHALL retain their semantic meaning.
+
+===========================================================
+
+9.  Future Work
+
+PEP32-0004 Extended Keys
+
+PEP32-0005 HD Wallet
+
+PEP32-0006 Export & Compatibility

@@ -1,0 +1,161 @@
+Chapter 11. Storage
+
+11.1 Overview
+
+The Storage Layer provides persistent data management for PEP-chain.
+Every node maintains identical protocol data so that the blockchain can
+be reconstructed and verified deterministically.
+
+The storage subsystem is divided into specialized stores, each
+responsible for a single category of protocol state.
+
+Core storage components include:
+
+-   BlockStore
+-   StateStore
+-   ClaimStore
+-   TicketStore
+-   MetadataStore
+-   SnapshotStore
+-   BlockIndex
+
+------------------------------------------------------------------------
+
+11.2 BlockStore
+
+BlockStore persists every canonical block.
+
+Responsibilities:
+
+-   Store complete blocks.
+-   Retrieve blocks by height.
+-   Retrieve blocks by hash.
+-   Persist new blocks after validation.
+-   Support chain synchronization.
+
+BlockStore is append-only for the canonical chain except during
+protocol-defined chain reorganization.
+
+------------------------------------------------------------------------
+
+11.3 StateStore
+
+StateStore maintains the latest global protocol state.
+
+Stored objects include:
+
+-   Accounts
+-   Validators
+-   Claims
+-   Pools
+-   CCQs
+-   Governance State
+
+After every committed block, StateStore records the updated canonical
+state.
+
+------------------------------------------------------------------------
+
+11.4 ClaimStore
+
+ClaimStore records validator liquidity capacity.
+
+Each entry contains:
+
+-   Validator ID
+-   Current Claim
+-   Locked Asset Value
+-   Last Update
+
+ClaimStore is updated whenever assets are deposited or redeem requests
+are settled.
+
+------------------------------------------------------------------------
+
+11.5 TicketStore
+
+TicketStore temporarily stores Tickets participating in the current
+Proof of Lottery round.
+
+Responsibilities:
+
+-   Store newly generated Tickets.
+-   Retrieve Tickets for lottery execution.
+-   Remove burned Tickets.
+-   Prevent Ticket reuse.
+
+Tickets are ephemeral and do not persist beyond their lottery round.
+
+------------------------------------------------------------------------
+
+11.6 MetadataStore
+
+MetadataStore maintains protocol-wide information.
+
+Typical records include:
+
+-   Chain ID
+-   Protocol Version
+-   Current Height
+-   Best Block Hash
+-   Genesis Hash
+-   Current Difficulty
+-   Lottery Round
+
+Metadata enables nodes to identify and synchronize the canonical chain.
+
+------------------------------------------------------------------------
+
+11.7 SnapshotStore
+
+SnapshotStore periodically saves complete protocol state.
+
+Snapshots support:
+
+-   Fast node synchronization.
+-   State recovery.
+-   Rollback during development.
+-   Historical state inspection.
+
+A snapshot represents a deterministic image of protocol state at a
+specific block height.
+
+------------------------------------------------------------------------
+
+11.8 BlockIndex
+
+BlockIndex provides efficient lookup structures for stored blocks.
+
+Typical indexes include:
+
+-   Height → Block Hash
+-   Block Hash → Storage Location
+-   Timestamp → Height
+-   Validator → Produced Blocks
+
+Indexes improve retrieval performance without changing canonical data.
+
+------------------------------------------------------------------------
+
+11.9 Storage Consistency
+
+All storage components must satisfy the following properties:
+
+-   Deterministic serialization.
+-   Atomic updates.
+-   Crash recovery.
+-   Integrity verification.
+-   Canonical consistency.
+
+Nodes must reject corrupted or inconsistent storage during validation.
+
+------------------------------------------------------------------------
+
+Summary
+
+The Storage Layer separates blockchain persistence into dedicated
+components. BlockStore records immutable history, StateStore maintains
+the current protocol state, ClaimStore tracks validator liquidity,
+TicketStore manages temporary consensus objects, MetadataStore preserves
+network information, SnapshotStore accelerates recovery, and BlockIndex
+enables efficient access to canonical blockchain data.

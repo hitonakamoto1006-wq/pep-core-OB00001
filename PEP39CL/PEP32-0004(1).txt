@@ -1,0 +1,92 @@
+PEP32-0004 Extended Keys
+
+Version: 0.1 Draft
+
+===========================================================
+
+1.  Abstract
+
+This specification defines the concept of Extended Keys within PEP32.
+
+Extended Keys provide deterministic access to a subtree of the
+derivation hierarchy without exposing the Master Seed.
+
+This specification SHALL NOT define blockchain-specific extended key
+formats.
+
+===========================================================
+
+2.  Goals
+
+-   Deterministic
+-   Hierarchical
+-   Chain Independent
+-   Secure
+-   Extensible
+
+===========================================================
+
+3.  Architecture
+
+Master Seed ↓ Chain Adapter ↓ Extended Private Key ↓ Extended Public Key
+↓ Accounts / Addresses
+
+===========================================================
+
+4.  Extended Key Types
+
+Extended Private Key
+
+-   May derive child private keys.
+-   May derive child public keys.
+
+Extended Public Key
+
+-   SHALL derive public information only.
+-   SHALL NOT derive private keys.
+
+===========================================================
+
+5.  Requirements
+
+Extended Keys SHALL:
+
+-   Preserve deterministic hierarchy.
+-   Never modify the Master Seed.
+-   Support future protocol versions.
+-   Be suitable for watch-only implementations.
+
+===========================================================
+
+6.  Watch-only
+
+Implementations MAY expose Extended Public Keys for read-only wallets.
+
+Watch-only wallets SHALL NOT sign transactions.
+
+===========================================================
+
+7.  Security Considerations
+
+Implementations SHOULD:
+
+-   Protect Extended Private Keys.
+-   Avoid exposing sensitive key material.
+-   Erase temporary secrets after use.
+
+===========================================================
+
+8.  Compatibility
+
+PEP32 defines only the logical concept of Extended Keys.
+
+Blockchain-specific serialization formats are outside the scope of this
+specification.
+
+===========================================================
+
+9.  Future Work
+
+PEP32-0005 HD Wallet
+
+PEP32-0006 Export & Compatibility

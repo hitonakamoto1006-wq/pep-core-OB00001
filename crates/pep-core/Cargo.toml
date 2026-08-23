@@ -1,0 +1,77 @@
+[package]
+name = "pep-core"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+sha2 = "0.10"
+hex = "0.4"
+
+k256 = {
+    version = "0.13",
+    features = [
+        "ecdsa",
+        "arithmetic",
+    ],
+}
+
+rand = "0.8"
+bitvec = "1.0"
+primitive-types = "0.12"
+
+argon2 = "0.5"
+base64 = "0.22"
+hmac = "0.12"
+ripemd = "0.1"
+bs58 = "0.5"
+
+ecdsa = "0.16"
+bip32 = "0.5"
+sha3 = "0.10"
+
+alloy-rlp = "0.3"
+
+reqwest = {
+    version = "0.12",
+    features = [
+        "json",
+        "blocking",
+    ],
+}
+
+serde = {
+    version = "1",
+    features = [
+        "derive",
+    ],
+}
+
+serde_json = "1"
+
+zeroize = "1"
+anyhow = "1"
+
+alloy-consensus = "1"
+alloy-eips = "1"
+alloy-signer = "1"
+alloy-signer-local = "1"
+alloy-primitives = "1"
+
+ethers = "2"
+
+axum = "0.8"
+
+tokio = {
+    version = "1",
+    features = [
+        "full",
+    ],
+}
+
+tower-http = {
+    version = "0.6",
+    features = [
+        "cors",
+        "fs",
+    ],
+}

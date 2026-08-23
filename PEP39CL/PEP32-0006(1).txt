@@ -1,0 +1,91 @@
+PEP32-0006 Export & Compatibility
+
+Version: 0.1 Draft
+
+===========================================================
+
+1.  Abstract
+
+This specification defines interoperability requirements for PEP32.
+
+It specifies how implementations may export or import wallet information
+while preserving the security model of PEP32.
+
+This specification does not define blockchain-specific export formats.
+
+===========================================================
+
+2.  Goals
+
+-   Interoperable
+-   Secure
+-   Deterministic
+-   Chain Independent
+-   Forward Compatible
+
+===========================================================
+
+3.  Export
+
+Implementations MAY export:
+
+-   Public information
+-   Extended Public Keys
+-   Wallet metadata
+
+Exporting private material SHOULD require explicit user approval.
+
+===========================================================
+
+4.  Import
+
+Implementations SHALL validate imported data before use.
+
+Invalid or unsupported data SHALL be rejected.
+
+===========================================================
+
+5.  Compatibility
+
+PEP32 SHALL remain independent of blockchain-specific standards.
+
+Compatibility with external ecosystems MAY be implemented through Chain
+Adapters.
+
+===========================================================
+
+6.  Security
+
+Implementations SHOULD:
+
+-   Authenticate export operations.
+-   Protect sensitive material.
+-   Avoid unnecessary exposure of secrets.
+-   Validate imported content.
+
+===========================================================
+
+7.  User Recovery
+
+Users SHALL be able to recover a PEP wallet using only the PEP39CL
+mnemonic.
+
+Chain-specific recovery phrases are OPTIONAL implementation features and
+are not required by PEP32.
+
+===========================================================
+
+8.  Future Extensions
+
+Future specifications MAY define:
+
+-   Additional export formats
+-   Hardware wallet integration
+-   Enterprise key management
+-   Cross-platform synchronization
+
+===========================================================
+
+9.  Status
+
+This document completes the initial PEP32 specification set.
