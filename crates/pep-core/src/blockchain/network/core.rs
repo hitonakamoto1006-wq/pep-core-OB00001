@@ -152,55 +152,96 @@ Self::start_discovery_broadcaster(
 );
 
         // ====================================================
-        // INTERNET BOOTSTRAP
-        // ====================================================
+// CONTINUOUS INTERNET BOOTSTRAP
+// ====================================================
+//
+// Bootstrap không chỉ chạy một lần.
+//
+// Node có thể bật trước peer.
+// Peer có thể xuất hiện sau.
+// Vì vậy Core phải định kỳ:
+//   1. đăng ký lại với bootstrap
+//   2. lấy danh sách peer mới
+//   3. thử kết nối
+//   4. sync chain/state nếu peer đã online
+//
+// ====================================================
 
-        if let Some(
-            bootstrap_address
-        ) = bootstrap {
+if let Some(
+    bootstrap_address
+) = bootstrap {
 
-            println!(
-                "Bootstrapping through {}...",
-                bootstrap_address
-            );
+    let bootstrap_url =
+        bootstrap_address.to_string();
 
-            match Self::bootstrap(
-                bootstrap_address,
-                address,
-                Arc::clone(&peers),
-                Arc::clone(&node),
-            ) {
+    let listen_address =
+        address.to_string();
 
-                Ok(()) => {
+    let peers_clone =
+        Arc::clone(&peers);
 
-                    let count =
-                        peers
-                            .lock()
-                            .map(
-                                |manager|
-                                    manager.len()
-                            )
-                            .unwrap_or(0);
+    let node_clone =
+        Arc::clone(&node);
 
-                    println!(
-                        "Bootstrap completed."
-                    );
+    println!(
+        "[PEP Bootstrap] Continuous bootstrap worker starting..."
+    );
 
-                    println!(
-                        "Known peers: {}",
-                        count
-                    );
+    thread::spawn(
+        move || {
+
+            loop {
+
+                println!();
+
+                println!(
+                    "[PEP Bootstrap] Refreshing peer registry..."
+                );
+
+                match Self::bootstrap(
+                    &bootstrap_url,
+                    &listen_address,
+                    Arc::clone(&peers_clone),
+                    Arc::clone(&node_clone),
+                ) {
+
+                    Ok(()) => {
+
+                        let count =
+                            peers_clone
+                                .lock()
+                                .map(
+                                    |manager|
+                                        manager.len()
+                                )
+                                .unwrap_or(0);
+
+                        println!(
+                            "[PEP Bootstrap] Refresh completed. Known peers: {}",
+                            count
+                        );
+                    }
+
+                    Err(error) => {
+
+                        println!(
+                            "[PEP Bootstrap] Refresh failed: {}",
+                            error
+                        );
+                    }
                 }
 
-                Err(error) => {
+                println!(
+                    "[PEP Bootstrap] Next refresh in 15 seconds."
+                );
 
-                    println!(
-                        "Bootstrap failed: {}",
-                        error
-                    );
-                }
+                thread::sleep(
+                    Duration::from_secs(15)
+                );
             }
         }
+    );
+}
 
         // ====================================================
         // TCP P2P SERVER
