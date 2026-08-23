@@ -548,19 +548,43 @@ fn main() {
     // BOOTSTRAP URL
     // ========================================================
 
-    let bootstrap =
-        env::var(
-            "PEP_BOOTSTRAP"
-        )
-        .ok()
-        .map(
-            |value|
-                value.trim().to_string()
-        )
-        .filter(
-            |value|
-                !value.is_empty()
-        );
+    // ========================================================
+// BOOTSTRAP URL
+// ========================================================
+//
+// PEP_BOOTSTRAP:
+//   - Nếu được cấu hình -> dùng URL đó.
+//   - Nếu không -> dùng bootstrap mặc định của PEP Network.
+//
+// Máy mới chỉ cần tải PEP Core và chạy node.
+// Không cần nhập IP peer thủ công.
+//
+// ========================================================
+
+const DEFAULT_PEP_BOOTSTRAP: &str =
+    "https://YOUR-PEP-BOOTSTRAP-URL";
+
+let bootstrap =
+    env::var(
+        "PEP_BOOTSTRAP"
+    )
+    .ok()
+    .map(
+        |value|
+            value.trim().to_string()
+    )
+    .filter(
+        |value|
+            !value.is_empty()
+    )
+    .or_else(
+        || {
+            Some(
+                DEFAULT_PEP_BOOTSTRAP
+                    .to_string()
+            )
+        }
+    );
 
 
     match bootstrap.as_deref() {
