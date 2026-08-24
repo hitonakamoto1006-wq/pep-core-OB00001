@@ -8,18 +8,17 @@ use std::{
 };
 
 use tauri::{Manager, State};
-use pep_core::wallet::Wallet;
-use pep_core::blockchain::{
-    network::client::Client,
-    transaction::TransactionType,
+
+use pep_core::{
+    blockchain::{
+        network::client::Client,
+        transaction::TransactionType,
+    },
+    wallet::{Address, Wallet},
 };
 
 #[cfg(target_os = "windows")]
 use std::os::windows::process::CommandExt;
-
-use tauri::{Manager, State};
-
-use pep_core::wallet::Wallet;
 
 #[cfg(target_os = "windows")]
 const CREATE_NO_WINDOW: u32 = 0x08000000;
@@ -27,38 +26,7 @@ const CREATE_NO_WINDOW: u32 = 0x08000000;
 
 /*
  * ============================================================
- * WINDOWS PROCESS FLAGS
- * ============================================================
- *
- * CREATE_NO_WINDOW:
- *
- * Node process chạy background hoàn toàn.
- *
- * User chỉ thấy PEP Wallet.
- *
- * ============================================================
- */
-
-
-/*
- * ============================================================
  * CORE PROCESS
- * ============================================================
- *
- * Wallet GUI và PEP Node vẫn là hai process riêng.
- *
- * Nhưng cả hai process đều sử dụng:
- *
- *     PEP Wallet.exe
- *
- * Process chính:
- *
- *     PEP Wallet.exe
- *
- * Process daemon:
- *
- *     PEP Wallet.exe --pep-node-daemon
- *
  * ============================================================
  */
 
@@ -67,11 +35,9 @@ struct CoreProcess {
     status: Arc<Mutex<String>>,
 }
 
-
 impl CoreProcess {
 
     fn new() -> Self {
-
         Self {
             child: Arc::new(
                 Mutex::new(None)
@@ -86,12 +52,10 @@ impl CoreProcess {
         }
     }
 
-
     fn set_status(
         &self,
         value: &str,
     ) {
-
         if let Ok(mut status) =
             self.status.lock()
         {
@@ -99,13 +63,6 @@ impl CoreProcess {
                 value.to_string();
         }
     }
-
-
-    /*
-     * ========================================================
-     * START PEP NODE DAEMON
-     * ========================================================
-     */
 
     fn start(&self) {
 
@@ -115,16 +72,11 @@ impl CoreProcess {
         let status_store =
             Arc::clone(&self.status);
 
-
         thread::spawn(
             move || {
 
                 /*
-                 * ==================================================
-                 * STEP 1
-                 *
-                 * Check whether PEP Node is already running.
-                 * ==================================================
+                 * Check local Core.
                  */
 
                 if try_handshake(
@@ -146,14 +98,7 @@ impl CoreProcess {
 
 
                 /*
-                 * ==================================================
-                 * STEP 2
-                 *
-                 * No Node.
-                 *
-                 * Launch THIS executable again.
-                 *
-                 * ==================================================
+                 * Locate current executable.
                  */
 
                 let executable =
@@ -197,16 +142,8 @@ impl CoreProcess {
 
 
                 /*
-                 * ==================================================
-                 * CHILD PROCESS
-                 *
-                 * Same executable.
-                 *
-                 * Argument:
-                 *
-                 *     --pep-node-daemon
-                 *
-                 * ==================================================
+                 * Start same executable
+                 * in daemon mode.
                  */
 
                 let mut command =
@@ -214,19 +151,12 @@ impl CoreProcess {
                         &executable
                     );
 
-
                 command
                     .arg("--pep-node-daemon")
                     .stdin(Stdio::null())
                     .stdout(Stdio::null())
                     .stderr(Stdio::null());
 
-
-                /*
-                 * Windows:
-                 *
-                 * Do not create console window.
-                 */
 
                 #[cfg(target_os = "windows")]
                 command.creation_flags(
@@ -262,10 +192,6 @@ impl CoreProcess {
                     };
 
 
-                /*
-                 * Save child process.
-                 */
-
                 {
                     let mut guard =
                         child_store
@@ -289,20 +215,11 @@ impl CoreProcess {
 
 
                 /*
-                 * ==================================================
-                 * STEP 3
-                 *
-                 * Wait for Node.
-                 *
-                 * 100 × 100ms
-                 *
-                 * Maximum ≈ 10 seconds.
-                 * ==================================================
+                 * Wait up to ~10 seconds.
                  */
 
                 let mut connected =
                     false;
-
 
                 for _ in 0..100 {
 
@@ -316,7 +233,6 @@ impl CoreProcess {
                         break;
                     }
 
-
                     thread::sleep(
                         Duration::from_millis(
                             100
@@ -324,12 +240,6 @@ impl CoreProcess {
                     );
                 }
 
-
-                /*
-                 * ==================================================
-                 * STEP 4
-                 * ==================================================
-                 */
 
                 if connected {
 
@@ -363,48 +273,111 @@ impl CoreProcess {
 
 /*
  * ============================================================
- * DROP
+ * WALLET SESSION
  * ============================================================
  *
- * IMPORTANT:
- *
- * Wallet đóng KHÔNG kill Node.
- *
- * Node là daemon độc lập.
- *
+ * Wallet private material stays in Rust.
+ * JavaScript only receives public information.
+ * ============================================================
+ */
+
+struct WalletSession {
+    mnemonic: Mutex<Option<String>>,
+}
+
+impl WalletSession {
+
+    fn new() -> Self {
+        Self {
+            mnemonic: Mutex::new(None),
+        }
+    }
+
+    fn set_mnemonic(
+        &self,
+        mnemonic: String,
+    ) -> Result<(), String> {
+
+        let mut guard =
+            self.mnemonic
+                .lock()
+                .map_err(
+                    |_| {
+                        "Wallet session lock failed."
+                            .to_string()
+                    }
+                )?;
+
+        *guard =
+            Some(mnemonic);
+
+        Ok(())
+    }
+
+    fn wallet(
+        &self,
+    ) -> Result<Wallet, String> {
+
+        let guard =
+            self.mnemonic
+                .lock()
+                .map_err(
+                    |_| {
+                        "Wallet session lock failed."
+                            .to_string()
+                    }
+                )?;
+
+        let mnemonic =
+            guard
+                .as_ref()
+                .ok_or_else(
+                    || {
+                        "No wallet loaded."
+                            .to_string()
+                    }
+                )?;
+
+        Wallet::from_phrase(
+            mnemonic
+        )
+    }
+}
+
+
+/*
+ * ============================================================
+ * DROP
  * ============================================================
  */
 
 impl Drop for CoreProcess {
 
-    fn drop(&mut self) {
+    fn drop(
+        &mut self
+    ) {
 
-        /*
-         * Wallet GUI đang quản lý daemon mà nó đã spawn.
-         *
-         * Khi Wallet đóng:
-         *
-         *     PEP Wallet GUI
-         *          ↓
-         *        DROP
-         *          ↓
-         *     kill embedded node
-         *
-         * Vì vậy Node không tồn tại độc lập sau khi
-         * Wallet đóng.
-         */
+        if let Ok(
+            mut guard
+        ) =
+            self.child.lock()
+        {
 
-        if let Ok(mut guard) = self.child.lock() {
-
-            if let Some(mut child) = guard.take() {
+            if let Some(
+                mut child
+            ) =
+                guard.take()
+            {
 
                 println!(
                     "[PEP Wallet] Stopping embedded PEP Node..."
                 );
 
-                let _ = child.kill();
+                let _ =
+                    child.kill();
 
-                let _ = child.wait();
+                let _ =
+                    child.wait();
             }
         }
     }
@@ -413,24 +386,7 @@ impl Drop for CoreProcess {
 
 /*
  * ============================================================
- * PEP NODE DAEMON MODE
- * ============================================================
- *
- * Đây chính là phần khiến một EXE có thể đóng vai trò Node.
- *
- * Khi chạy:
- *
- *     PEP Wallet.exe
- *
- * → Wallet GUI.
- *
- *
- * Khi chạy:
- *
- *     PEP Wallet.exe --pep-node-daemon
- *
- * → PEP Core / Node.
- *
+ * DAEMON MODE
  * ============================================================
  */
 
@@ -439,14 +395,6 @@ fn run_pep_node_daemon() {
     println!(
         "[PEP Node] Starting embedded PEP Core..."
     );
-
-
-    /*
-     * Core::start() là Node engine hiện tại
-     * của PEP Chain.
-     *
-     * Không mở Wallet UI ở mode này.
-     */
 
     pep_core::blockchain::network::core::Core::start(
         "0.0.0.0:6000",
@@ -458,16 +406,6 @@ fn run_pep_node_daemon() {
 /*
  * ============================================================
  * HANDSHAKE
- * ============================================================
- *
- * Ping:
- *
- *     01 00 00 00 00
- *
- * Pong:
- *
- *     02 00 00 00 00
- *
  * ============================================================
  */
 
@@ -510,7 +448,9 @@ fn try_handshake(
 
 
     if stream
-        .read_exact(&mut header)
+        .read_exact(
+            &mut header
+        )
         .is_err()
     {
         return false;
@@ -519,7 +459,6 @@ fn try_handshake(
 
     let message_type =
         header[0];
-
 
     let payload_length =
         u32::from_be_bytes([
@@ -556,16 +495,13 @@ struct CreateWalletResponse {
 #[tauri::command]
 fn create_wallet(
     state: State<'_, CoreProcess>,
+    wallet_session: State<'_, WalletSession>,
 )
     -> Result<
         CreateWalletResponse,
         String
     >
 {
-
-    /*
-     * Wallet creation requires Core.
-     */
 
     if !try_handshake(
         "127.0.0.1:6000"
@@ -577,10 +513,6 @@ fn create_wallet(
         );
     }
 
-
-    /*
-     * Use existing PEP wallet engine.
-     */
 
     let wallet =
         Wallet::new();
@@ -596,6 +528,12 @@ fn create_wallet(
         wallet
             .mnemonic()
             .to_string();
+
+
+    wallet_session
+        .set_mnemonic(
+            mnemonic.clone()
+        )?;
 
 
     let _ =
@@ -631,6 +569,7 @@ struct ImportWalletResponse {
 #[tauri::command]
 fn import_wallet(
     mnemonic: String,
+    wallet_session: State<'_, WalletSession>,
 )
     -> Result<
         ImportWalletResponse,
@@ -656,7 +595,7 @@ fn import_wallet(
 
 
     let wallet =
-        pep_core::wallet::Wallet::from_phrase(
+        Wallet::from_phrase(
             &phrase
         )?;
 
@@ -667,9 +606,355 @@ fn import_wallet(
             .to_string();
 
 
+    wallet_session
+        .set_mnemonic(
+            phrase
+        )?;
+
+
     Ok(
         ImportWalletResponse {
             address,
+        }
+    )
+}
+
+
+/*
+ * ============================================================
+ * BALANCE
+ * ============================================================
+ */
+
+#[derive(
+    serde::Serialize
+)]
+struct BalanceItem {
+
+    asset: String,
+
+    amount: u64,
+}
+
+
+#[derive(
+    serde::Serialize
+)]
+struct BalanceResponse {
+
+    balances:
+        Vec<BalanceItem>,
+
+    nonce: u64,
+
+    stake: u64,
+}
+
+
+#[tauri::command]
+fn wallet_balance(
+    wallet_session:
+        State<'_, WalletSession>,
+)
+    -> Result<
+        BalanceResponse,
+        String
+    >
+{
+
+    let wallet =
+        wallet_session
+            .wallet()?;
+
+
+    let result =
+        Client::get_balance(
+            "127.0.0.1:6000",
+            wallet.address(),
+        )
+        .ok_or_else(
+            || {
+                "Cannot connect to local PEP Core."
+                    .to_string()
+            }
+        )?;
+
+
+    let (
+        balances,
+        nonce,
+        stake,
+    ) =
+        result;
+
+
+    Ok(
+        BalanceResponse {
+
+            balances:
+                balances
+                    .into_iter()
+                    .map(
+                        |(
+                            asset,
+                            amount
+                        )| {
+
+                            BalanceItem {
+                                asset,
+                                amount,
+                            }
+                        }
+                    )
+                    .collect(),
+
+            nonce,
+
+            stake,
+        }
+    )
+}
+
+
+/*
+ * ============================================================
+ * WALLET INFO
+ * ============================================================
+ */
+
+#[derive(
+    serde::Serialize
+)]
+struct WalletInfoResponse {
+
+    address: String,
+
+    public_key: String,
+}
+
+
+#[tauri::command]
+fn wallet_info(
+    wallet_session:
+        State<'_, WalletSession>,
+)
+    -> Result<
+        WalletInfoResponse,
+        String
+    >
+{
+
+    let wallet =
+        wallet_session
+            .wallet()?;
+
+
+    Ok(
+        WalletInfoResponse {
+
+            address:
+                wallet
+                    .address()
+                    .to_string(),
+
+            public_key:
+                format!(
+                    "{:02x?}",
+                    wallet
+                        .public_key()
+                        .bytes()
+                ),
+        }
+    )
+}
+
+
+/*
+ * ============================================================
+ * TRANSFER
+ * ============================================================
+ */
+
+#[tauri::command]
+fn transfer(
+    wallet_session:
+        State<'_, WalletSession>,
+
+    to: String,
+
+    amount: u64,
+)
+    -> Result<
+        String,
+        String
+    >
+{
+
+    if amount == 0 {
+
+        return Err(
+            "Amount must be greater than zero."
+                .to_string()
+        );
+    }
+
+
+    let wallet =
+        wallet_session
+            .wallet()?;
+
+
+    let address =
+        Address::new(
+            to.trim().to_string()
+        );
+
+
+    wallet.send(
+        "127.0.0.1:6000",
+        &address,
+        amount,
+        TransactionType::Transfer,
+    );
+
+
+    Ok(
+        "Transfer transaction broadcast."
+            .to_string()
+    )
+}
+
+
+/*
+ * ============================================================
+ * MINT
+ * ============================================================
+ */
+
+#[tauri::command]
+fn mint(
+    wallet_session:
+        State<'_, WalletSession>,
+
+    to: String,
+
+    amount: u64,
+)
+    -> Result<
+        String,
+        String
+    >
+{
+
+    if amount == 0 {
+
+        return Err(
+            "Amount must be greater than zero."
+                .to_string()
+        );
+    }
+
+
+    let wallet =
+        wallet_session
+            .wallet()?;
+
+
+    let address =
+        Address::new(
+            to.trim().to_string()
+        );
+
+
+    wallet.send(
+        "127.0.0.1:6000",
+        &address,
+        amount,
+        TransactionType::Mint,
+    );
+
+
+    Ok(
+        "Mint transaction broadcast."
+            .to_string()
+    )
+}
+
+
+/*
+ * ============================================================
+ * ADD ASSET
+ * ============================================================
+ */
+
+#[tauri::command]
+fn add_asset(
+    name: String,
+    asset_type: String,
+    decimals: u8,
+    supply: u64,
+    deploy_address: String,
+    transferable: bool,
+    gas_eligible: bool,
+    peg: String,
+)
+    -> Result<
+        String,
+        String
+    >
+{
+
+    let name =
+        name.trim();
+
+    let asset_type =
+        asset_type.trim();
+
+
+    if name.is_empty() {
+
+        return Err(
+            "Asset name cannot be empty."
+                .to_string()
+        );
+    }
+
+
+    if asset_type.is_empty() {
+
+        return Err(
+            "Asset type cannot be empty."
+                .to_string()
+        );
+    }
+
+
+    Client::register_asset(
+        "127.0.0.1:6000",
+
+        &format!(
+            "{}|{}",
+            name,
+            asset_type
+        ),
+
+        decimals,
+
+        supply,
+
+        deploy_address
+            .trim(),
+
+        transferable,
+
+        gas_eligible,
+
+        peg.trim(),
+    )
+    .ok_or_else(
+        || {
+            "Asset registration failed."
+                .to_string()
         }
     )
 }
@@ -683,7 +968,8 @@ fn import_wallet(
 
 #[tauri::command]
 fn core_status(
-    state: State<'_, CoreProcess>,
+    state:
+        State<'_, CoreProcess>,
 )
     -> String
 {
@@ -720,7 +1006,7 @@ fn core_status(
 
 /*
  * ============================================================
- * TAURI ENTRY POINT
+ * TAURI ENTRY
  * ============================================================
  */
 
@@ -729,17 +1015,6 @@ fn core_status(
     tauri::mobile_entry_point
 )]
 pub fn run() {
-
-    /*
-     * ========================================================
-     * IMPORTANT
-     *
-     * Check daemon mode BEFORE creating Tauri.
-     *
-     * Otherwise the Node child would also create
-     * a Wallet GUI.
-     * ========================================================
-     */
 
     let is_node_daemon =
         std::env::args()
@@ -750,6 +1025,12 @@ pub fn run() {
             );
 
 
+    /*
+     * Node mode:
+     *
+     * No Tauri GUI.
+     */
+
     if is_node_daemon {
 
         run_pep_node_daemon();
@@ -759,18 +1040,10 @@ pub fn run() {
 
 
     /*
-     * ========================================================
-     * NORMAL WALLET MODE
-     * ========================================================
+     * Normal Desktop Wallet.
      */
 
     tauri::Builder::default()
-
-        /*
-         * ====================================================
-         * SETUP
-         * ====================================================
-         */
 
         .setup(
             |app| {
@@ -779,19 +1052,16 @@ pub fn run() {
                     CoreProcess::new();
 
 
-                /*
-                 * Automatically start/check Node.
-                 */
-
                 core.start();
 
 
-                /*
-                 * Register Core state.
-                 */
-
                 app.manage(
                     core
+                );
+
+
+                app.manage(
+                    WalletSession::new()
                 );
 
 
@@ -799,27 +1069,18 @@ pub fn run() {
             }
         )
 
-
-        /*
-         * ====================================================
-         * COMMANDS
-         * ====================================================
-         */
-
         .invoke_handler(
             tauri::generate_handler![
                 core_status,
                 create_wallet,
-                import_wallet
+                import_wallet,
+                wallet_balance,
+                wallet_info,
+                transfer,
+                mint,
+                add_asset
             ]
         )
-
-
-        /*
-         * ====================================================
-         * RUN
-         * ====================================================
-         */
 
         .run(
             tauri::generate_context!()
