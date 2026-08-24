@@ -30,6 +30,8 @@ use crate::blockchain::network::{
     peer::PeerManager,
 };
 
+use crate::blockchain::transaction::Transaction;
+
 use crate::blockchain::node::Node;
 
 use crate::wallet::Address;
@@ -2552,7 +2554,148 @@ if advertised.port() == 0 {
             }
         )
     }
+    // ========================================================
+// BROADCAST TRANSACTION
+// ========================================================
+//
+// Transaction đã được Node verify + accept vào mempool.
+//
+// Core chỉ chịu trách nhiệm relay P2P.
+// Không sửa state.
+// Không execute.
+// Không mine.
+//
+// Payload:
+//
+//     canonical Transaction::serialize()
+//
+// Message:
+//
+//     NewTransaction
+//
+// ========================================================
 
+fn broadcast_transaction(
+    peers: &Arc<Mutex<PeerManager>>,
+    payload: Vec<u8>,
+    tx_id: String,
+) {
+    let candidates =
+        match peers.lock() {
+            Ok(manager) =>
+                manager.candidates(),
+
+            Err(_) => {
+                println!(
+                    "[PEP TX] Cannot lock peer manager for broadcast."
+                );
+
+                return;
+            }
+        };
+
+    if candidates.is_empty() {
+        println!(
+            "[PEP TX] No peers available for transaction {}.",
+            tx_id
+        );
+
+        return;
+    }
+
+    println!(
+        "[PEP TX] Broadcasting {} to {} peer(s).",
+        tx_id,
+        candidates.len()
+    );
+
+    for peer in candidates {
+        let peers_clone =
+            Arc::clone(peers);
+
+        let payload_clone =
+            payload.clone();
+
+        let tx_id_clone =
+            tx_id.clone();
+
+        thread::spawn(
+            move || {
+                let mut stream =
+                    match TcpStream::connect_timeout(
+                        &peer,
+                        Duration::from_secs(3),
+                    ) {
+                        Ok(stream) =>
+                            stream,
+
+                        Err(error) => {
+                            println!(
+                                "[PEP TX] Relay {} -> {} failed: {}",
+                                tx_id_clone,
+                                peer,
+                                error
+                            );
+
+                            if let Ok(
+                                mut manager
+                            ) =
+                                peers_clone.lock()
+                            {
+                                manager.mark_failure(
+                                    peer
+                                );
+                            }
+
+                            return;
+                        }
+                    };
+
+                if let Err(error) =
+                    Message::NewTransaction.write_to(
+                        &mut stream,
+                        &payload_clone,
+                    )
+                {
+                    println!(
+                        "[PEP TX] Relay {} -> {} failed: {}",
+                        tx_id_clone,
+                        peer,
+                        error
+                    );
+
+                    if let Ok(
+                        mut manager
+                    ) =
+                        peers_clone.lock()
+                    {
+                        manager.mark_failure(
+                            peer
+                        );
+                    }
+
+                    return;
+                }
+
+                if let Ok(
+                    mut manager
+                ) =
+                    peers_clone.lock()
+                {
+                    manager.mark_success(
+                        peer
+                    );
+                }
+
+                println!(
+                    "[PEP TX] Relayed {} -> {}",
+                    tx_id_clone,
+                    peer
+                );
+            }
+        );
+    }
+}
 
     // ========================================================
     // HANDLE CONNECTION
@@ -3088,69 +3231,138 @@ if advertised.port() == 0 {
                     peer_address
                 );
             }
-
-
             // =================================================
-            // TRANSACTION
-            // =================================================
+// TRANSACTION / NEW TRANSACTION
+// =================================================
+//
+// Message::Transaction
+//
+//     Client -> Node
+//
+// Message::NewTransaction
+//
+//     Node -> Node
+//
+// Cả hai đều đi qua cùng một validation path.
+//
+// Nếu transaction mới được accept:
+//
+//     Node
+//       ↓
+//     Mempool
+//       ↓
+//     NewTransaction
+//       ↓
+//     Peers
+//
+// Duplicate transaction:
+//
+//     rejected by Node::on_transaction()
+//     and MUST NOT be relayed again.
+//
+// =================================================
 
-            Message::Transaction => {
+Message::Transaction |
+Message::NewTransaction => {
 
-                let data =
-                    String::from_utf8_lossy(
-                        &payload
-                    );
+    let data =
+        String::from_utf8_lossy(
+            &payload
+        );
 
-                let tx =
-                    match crate::blockchain::transaction::Transaction::deserialize(
-                        &data
-                    ) {
+    let tx =
+        match Transaction::deserialize(
+            &data
+        ) {
+            Some(tx) =>
+                tx,
 
-                        Some(tx) =>
-                            tx,
+            None => {
+                println!(
+                    "[PEP TX] Invalid transaction from {}",
+                    peer_address
+                );
 
-                        None => {
-
-                            println!(
-                                "Invalid transaction from {}",
-                                peer_address
-                            );
-
-                            return;
-                        }
-                    };
-
-                let result =
-                    match node.lock() {
-
-                        Ok(mut guard) => {
-
-                            guard.on_transaction(
-                                tx
-                            )
-                        }
-
-                        Err(_) => {
-
-                            println!(
-                                "Node lock poisoned."
-                            );
-
-                            return;
-                        }
-                    };
-
-                if let Err(error) =
-                    result
-                {
-
-                    println!(
-                        "Transaction processing failed from {}: {:?}",
-                        peer_address,
-                        error
-                    );
-                }
+                return;
             }
+        };
+
+    let tx_id =
+        tx.id();
+
+    /*
+     * Keep the canonical serialized transaction
+     * before moving tx into Node::on_transaction().
+     */
+    let serialized =
+        tx.serialize();
+
+    let result =
+        match node.lock() {
+            Ok(mut guard) =>
+                guard.on_transaction(
+                    tx
+                ),
+
+            Err(_) => {
+                println!(
+                    "[PEP TX] Node lock poisoned."
+                );
+
+                return;
+            }
+        };
+
+    match result {
+
+        Ok(true) => {
+
+            println!(
+                "[PEP TX] Accepted transaction {} from {}",
+                tx_id,
+                peer_address
+            );
+
+            /*
+             * Transaction is now in local mempool.
+             *
+             * Only accepted transactions are relayed.
+             */
+            Self::broadcast_transaction(
+                peers,
+                serialized.into_bytes(),
+                tx_id,
+            );
+        }
+
+        Ok(false) => {
+
+            /*
+             * This includes:
+             *
+             * - invalid transaction
+             * - duplicate transaction
+             * - other Node-level rejection
+             *
+             * Do NOT relay.
+             */
+            println!(
+                "[PEP TX] Transaction {} was not accepted.",
+                tx_id
+            );
+        }
+
+        Err(error) => {
+
+            println!(
+                "[PEP TX] Transaction {} processing failed from {}: {:?}",
+                tx_id,
+                peer_address,
+                error
+            );
+        }
+    }
+}
 
 
             // =================================================
@@ -3338,9 +3550,7 @@ if advertised.port() == 0 {
             Message::Headers |
             Message::GetBlock |
             Message::Block |
-            Message::NewBlock |
-            Message::NewTransaction => {
-
+            Message::NewBlock => {
                 println!(
                     "Received reserved P2P message {:?} from {}",
                     message,
