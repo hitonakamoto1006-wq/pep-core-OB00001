@@ -279,16 +279,6 @@ if let Some(
                         continue;
                     }
 
-                    if let Ok(
-                        mut manager
-                    ) =
-                        peers.lock()
-                    {
-                        manager.add(
-                            peer_address
-                        );
-                    }
-
                     println!(
                         "Connection received from {}",
                         peer_address
@@ -299,18 +289,35 @@ if let Some(
 
                     let peers_clone =
                         Arc::clone(&peers);
+                        thread::spawn(
+    move || {
 
-                    thread::spawn(
-                        move || {
+        let local_advertised =
+            match Self::advertised_address(address) {
 
-                            Self::handle_connection(
-                                &mut stream,
-                                &node_clone,
-                                &peers_clone,
-                                peer_address,
-                            );
-                        }
+                Ok(address) =>
+                    address,
+
+                Err(error) => {
+
+                    println!(
+                        "Cannot determine advertised address: {}",
+                        error
                     );
+
+                    return;
+                }
+            };
+
+        Self::handle_connection(
+            &mut stream,
+            &node_clone,
+            &peers_clone,
+            peer_address,
+            local_advertised,
+        );
+    }
+);
                 }
 
                 Err(error) => {
@@ -1357,6 +1364,7 @@ for value in response.peers {
                 peer,
                 &node,
                 &peers,
+                advertised,
             ) {
 
                 Ok(()) => {
@@ -1421,19 +1429,21 @@ for value in response.peers {
     // ========================================================
 
     fn connect_and_sync(
-        peer: SocketAddr,
-        node: &Arc<
-            Mutex<Node>
-        >,
-        peers: &Arc<
-            Mutex<PeerManager>
-        >,
-    ) -> Result<(), String> {
+    peer: SocketAddr,
+    node: &Arc<
+        Mutex<Node>
+    >,
+    peers: &Arc<
+        Mutex<PeerManager>
+    >,
+    local_advertised: SocketAddr,
+) -> Result<(), String> {
 
         Self::perform_handshake(
-            peer,
-            node,
-        )?;
+    peer,
+    node,
+    local_advertised,
+)?;
 
         match Self::sync_from_peer(
             peer,
@@ -1478,11 +1488,12 @@ for value in response.peers {
     // ========================================================
 
     fn perform_handshake(
-        peer: SocketAddr,
-        node: &Arc<
-            Mutex<Node>
-        >,
-    ) -> Result<(), String> {
+    peer: SocketAddr,
+    node: &Arc<
+        Mutex<Node>
+    >,
+    local_advertised: SocketAddr,
+) -> Result<(), String> {
 
         let (
             height,
@@ -1493,13 +1504,14 @@ for value in response.peers {
             )?;
 
         let payload =
-            Message::hello_payload(
-                PEP_NETWORK,
-                PEP_PROTOCOL_VERSION,
-                PEP_CHAIN_ID,
-                height as u64,
-                &tip,
-            );
+        Message::hello_payload(
+            PEP_NETWORK,
+            PEP_PROTOCOL_VERSION,
+            PEP_CHAIN_ID,
+            height as u64,
+            &tip,
+            &local_advertised.to_string(),
+        );
 
         let mut stream =
             TcpStream::connect_timeout(
@@ -1572,9 +1584,9 @@ for value in response.peers {
     // ========================================================
 
     fn validate_hello_payload(
-        payload: &[u8],
-        peer: SocketAddr,
-    ) -> Result<(), String> {
+    payload: &[u8],
+    peer: SocketAddr,
+) -> Result<SocketAddr, String> {
 
         let data =
             String::from_utf8_lossy(
@@ -1586,16 +1598,14 @@ for value in response.peers {
                 .split('|')
                 .collect::<Vec<_>>();
 
-        if parts.len() != 5 {
-
-            return Err(
-                format!(
-                    "Invalid HELLO from {}",
-                    peer
-                )
-            );
-        }
-
+        if parts.len() != 6 {
+    return Err(
+        format!(
+            "Invalid HELLO from {}: expected 6 fields",
+            peer
+        )
+    );
+}
         let network =
             parts[0];
 
@@ -1640,6 +1650,43 @@ for value in response.peers {
 
         let tip =
             parts[4];
+
+            let advertised_address =
+    parts[5];
+
+let advertised:
+    SocketAddr =
+    advertised_address
+        .parse()
+        .map_err(
+            |_| {
+                format!(
+                    "Invalid advertised address from {}: {}",
+                    peer,
+                    advertised_address
+                )
+            }
+        )?;
+
+if advertised.ip().is_unspecified() {
+    return Err(
+        format!(
+            "Peer {} advertised unspecified address {}",
+            peer,
+            advertised
+        )
+    );
+}
+
+if advertised.port() == 0 {
+    return Err(
+        format!(
+            "Peer {} advertised invalid port {}",
+            peer,
+            advertised
+        )
+    );
+}
 
         if network !=
             PEP_NETWORK
@@ -1690,7 +1737,7 @@ for value in response.peers {
             );
         }
 
-        Ok(())
+        Ok(advertised)
     }
 
 
@@ -2523,15 +2570,16 @@ for value in response.peers {
     // ========================================================
 
     fn handle_connection(
-        stream: &mut TcpStream,
-        node: &Arc<
-            Mutex<Node>
-        >,
-        peers: &Arc<
-            Mutex<PeerManager>
-        >,
-        peer_address: SocketAddr,
-    ) {
+    stream: &mut TcpStream,
+    node: &Arc<
+        Mutex<Node>
+    >,
+    peers: &Arc<
+        Mutex<PeerManager>
+    >,
+    peer_address: SocketAddr,
+    local_advertised: SocketAddr,
+) {
 
         let (
             message,
@@ -2578,8 +2626,7 @@ for value in response.peers {
                     &payload,
                     peer_address,
                 ) {
-
-                    Ok(()) => {
+                    Ok(remote_advertised) => {
 
                         let (
                             height,
@@ -2604,13 +2651,14 @@ for value in response.peers {
                             };
 
                         let response =
-                            Message::hello_ack_payload(
-                                PEP_NETWORK,
-                                PEP_PROTOCOL_VERSION,
-                                PEP_CHAIN_ID,
-                                height as u64,
-                                &tip,
-                            );
+                        Message::hello_ack_payload(
+                            PEP_NETWORK,
+                            PEP_PROTOCOL_VERSION,
+                            PEP_CHAIN_ID,
+                            height as u64,
+                            &tip,
+                            &local_advertised.to_string(),
+                        );
 
                         if let Err(error) =
                             Message::HelloAck
@@ -2819,7 +2867,7 @@ for value in response.peers {
                     );
 
                     manager.mark_success(
-                        peer_address
+                        remote_advertised
                     );
                 }
 
