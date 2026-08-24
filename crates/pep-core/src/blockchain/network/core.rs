@@ -246,7 +246,13 @@ if let Some(
         // ====================================================
         // TCP P2P SERVER
         // ====================================================
-
+        let local_advertised =
+    Self::advertised_address(
+        address
+    )
+    .expect(
+        "Cannot determine PEP advertised address"
+    );
         for incoming in
             listener.incoming()
         {
@@ -291,23 +297,6 @@ if let Some(
                         Arc::clone(&peers);
                         thread::spawn(
     move || {
-
-        let local_advertised =
-            match Self::advertised_address(address) {
-
-                Ok(address) =>
-                    address,
-
-                Err(error) => {
-
-                    println!(
-                        "Cannot determine advertised address: {}",
-                        error
-                    );
-
-                    return;
-                }
-            };
 
         Self::handle_connection(
             &mut stream,
@@ -2690,10 +2679,9 @@ if advertised.port() == 0 {
                         if let Ok(
                             mut manager
                         ) =
-                            peers.lock()
-                        {
+                        peers.lock(){
                             manager.mark_success(
-                                peer_address
+                                remote_advertised
                             );
                         }
 
@@ -2867,7 +2855,7 @@ if advertised.port() == 0 {
                     );
 
                     manager.mark_success(
-                        remote_advertised
+                        address
                     );
                 }
 
@@ -2895,8 +2883,8 @@ if advertised.port() == 0 {
                                 address,
                                 &node_clone,
                                 &peers_clone,
-                            )
-                        {
+                                local_advertised,
+                            ){
 
                             println!(
                                 "Sync from {} failed: {}",
