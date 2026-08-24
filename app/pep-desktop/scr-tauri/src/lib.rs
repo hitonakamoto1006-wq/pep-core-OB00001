@@ -7,6 +7,13 @@ use std::{
     time::Duration,
 };
 
+use tauri::{Manager, State};
+use pep_core::wallet::Wallet;
+use pep_core::blockchain::{
+    network::client::Client,
+    transaction::TransactionType,
+};
+
 #[cfg(target_os = "windows")]
 use std::os::windows::process::CommandExt;
 
