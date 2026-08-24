@@ -41,7 +41,7 @@ use crate::wallet::Address;
 // PEP NETWORK CONSTANTS
 // ============================================================
 
-
+const BLOCK_SIZE: usize = 1;
 
 const PEP_PROTOCOL_VERSION: u32 = 1;
 
@@ -3317,23 +3317,85 @@ Message::NewTransaction => {
 
         Ok(true) => {
 
-            println!(
-                "[PEP TX] Accepted transaction {} from {}",
-                tx_id,
-                peer_address
-            );
+    println!(
+        "[PEP TX] Accepted transaction {} from {}",
+        tx_id,
+        peer_address
+    );
 
-            /*
-             * Transaction is now in local mempool.
-             *
-             * Only accepted transactions are relayed.
-             */
-            Self::broadcast_transaction(
-                peers,
-                serialized.into_bytes(),
-                tx_id,
-            );
+    /*
+     * --------------------------------------------------------
+     * LOCAL TRANSACTION -> BLOCK PRODUCTION
+     * --------------------------------------------------------
+     *
+     * Message::Transaction:
+     *     Wallet -> local node
+     *
+     * Message::NewTransaction:
+     *     Peer -> local node
+     *
+     * Only the original local transaction triggers
+     * local block production.
+     *
+     * This prevents every peer from independently mining
+     * the same transaction after relay.
+     */
+    if message == Message::Transaction {
+
+        let should_mine =
+            match node.lock() {
+
+                Ok(guard) => {
+                    guard.mempool_len() >= 1
+                }
+
+                Err(_) => {
+                    println!(
+                        "[PEP TX] Cannot inspect mempool: node lock poisoned."
+                    );
+
+                    false
+                }
+            };
+
+        if should_mine {
+
+            match node.lock() {
+
+                Ok(mut guard) => {
+
+                    println!(
+                        "[PEP TX] Block trigger reached. Mining pending transaction(s)..."
+                    );
+
+                    if let Err(error) =
+                        guard.mine_pending()
+                    {
+                        println!(
+                            "[PEP TX] Block production failed: {:?}",
+                            error
+                        );
+                    }
+                }
+
+                Err(_) => {
+                    println!(
+                        "[PEP TX] Cannot mine: node lock poisoned."
+                    );
+                }
+            }
         }
+    }
+
+    /*
+     * Only accepted transactions are relayed.
+     */
+    Self::broadcast_transaction(
+        peers,
+        serialized.into_bytes(),
+        tx_id,
+    );
+}
 
         Ok(false) => {
 
