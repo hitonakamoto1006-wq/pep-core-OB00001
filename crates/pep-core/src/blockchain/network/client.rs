@@ -16,6 +16,81 @@ impl Client {
     // =========================
 
     pub fn discover_node() -> Option<String> {
+                // =========================================================
+        // LOCAL NODE FALLBACK
+        //
+        // Wallet và PEP Node có thể chạy trên cùng một máy.
+        // Core cố tình bỏ qua discovery broadcast từ chính nó,
+        // nên wallet phải thử local PEP node trực tiếp trước.
+        // =========================================================
+        let local_nodes = [
+            "127.0.0.1:6000",
+        ];
+
+        for node_address in local_nodes {
+            println!(
+                "Checking local PEP Node {}...",
+                node_address
+            );
+
+            let address:
+                std::net::SocketAddr =
+                match node_address.parse() {
+                    Ok(address) => address,
+                    Err(_) => continue,
+                };
+
+            let mut stream =
+                match TcpStream::connect_timeout(
+                    &address,
+                    Duration::from_secs(1),
+                ) {
+                    Ok(stream) => stream,
+                    Err(_) => continue,
+                };
+
+            let _ =
+                stream.set_read_timeout(
+                    Some(Duration::from_secs(2))
+                );
+
+            let _ =
+                stream.set_write_timeout(
+                    Some(Duration::from_secs(2))
+                );
+
+            if Message::Ping.write_to(
+                &mut stream,
+                &[],
+            ).is_err() {
+                continue;
+            }
+
+            let (
+                message,
+                _payload,
+            ) =
+                match Message::read_from(
+                    &mut stream,
+                ) {
+                    Ok(result) => result,
+                    Err(_) => continue,
+                };
+
+            if matches!(
+                message,
+                Message::Pong
+            ) {
+                println!(
+                    "✓ Local PEP Node found: {}",
+                    node_address
+                );
+
+                return Some(
+                    node_address.to_string()
+                );
+            }
+        }
 
         let discovery_port =
             6001;

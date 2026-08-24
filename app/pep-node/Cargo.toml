@@ -31,3 +31,7 @@ path = "scr/main.rs"
 [[bin]]
 name = "pep-node-console"
 path = "scr/bin/pep-node-console.rs"
+
+[[bin]]
+name = "pep-wallet"
+path = "scr/bin/pep-wallet.rs"
