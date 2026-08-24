@@ -1419,6 +1419,18 @@
     let walletAddress = null;
     let walletMnemonic = null;
 
+    /*
+     * LIVE WALLET STATE
+     *
+     * Không hardcode balance.
+     * Tất cả balance đều lấy từ PEP Core
+     * đang chạy trên CHÍNH MÁY NÀY.
+     */
+    let walletBalance = 0;
+    let walletAssets = [];
+    let walletNonce = 0;
+    let walletStake = 0;
+
 
     /* ==========================================
        DOM
@@ -1460,14 +1472,12 @@
             "visible"
         );
 
-
         if (toastTimer) {
 
             clearTimeout(
                 toastTimer
             );
         }
-
 
         toastTimer =
             setTimeout(() => {
@@ -1490,12 +1500,10 @@
             return;
         }
 
-
         try {
 
             if (
-                navigator.clipboard
-                &&
+                navigator.clipboard &&
                 typeof navigator.clipboard.writeText === "function"
             ) {
 
@@ -1517,7 +1525,6 @@
                 error
             );
         }
-
 
         try {
 
@@ -1559,15 +1566,12 @@
                 textarea.value.length
             );
 
-
             const copied =
                 document.execCommand(
                     "copy"
                 );
 
-
             textarea.remove();
-
 
             if (!copied) {
 
@@ -1575,7 +1579,6 @@
                     "Clipboard fallback failed"
                 );
             }
-
 
             showToast(
                 message || "Copied"
@@ -1606,7 +1609,6 @@
             status
         );
 
-
         const coreStatusElement =
             document.getElementById(
                 "core-status"
@@ -1616,7 +1618,6 @@
             document.getElementById(
                 "core-dot"
             );
-
 
         if (!coreStatusElement) {
 
@@ -1635,43 +1636,34 @@
                 networkDot.classList.remove(
                     "error"
                 );
-
             }
 
             return;
         }
 
-
         coreStatusElement.textContent =
             status;
-
 
         const connected =
             status ===
             "PEP Core connected.";
 
-
         const lowerStatus =
             status.toLowerCase();
-
 
         const error =
             lowerStatus.includes(
                 "failed"
-            )
-            ||
+            ) ||
             lowerStatus.includes(
                 "not found"
-            )
-            ||
+            ) ||
             lowerStatus.includes(
                 "unable"
-            )
-            ||
+            ) ||
             lowerStatus.includes(
                 "unavailable"
             );
-
 
         if (connected) {
 
@@ -1683,7 +1675,6 @@
                 "error"
             );
 
-
             networkDot.classList.add(
                 "connected"
             );
@@ -1692,10 +1683,8 @@
                 "error"
             );
 
-
             networkStatus.textContent =
                 "Connected";
-
 
             const createButton =
                 document.getElementById(
@@ -1707,7 +1696,6 @@
                     "import-wallet"
                 );
 
-
             if (createButton) {
                 createButton.disabled = false;
             }
@@ -1716,10 +1704,8 @@
                 importButton.disabled = false;
             }
 
-
             return;
         }
-
 
         if (error) {
 
@@ -1731,7 +1717,6 @@
                 "error"
             );
 
-
             networkDot.classList.remove(
                 "connected"
             );
@@ -1740,10 +1725,8 @@
                 "error"
             );
 
-
             networkStatus.textContent =
                 "Offline";
-
 
             const createButton =
                 document.getElementById(
@@ -1755,7 +1738,6 @@
                     "import-wallet"
                 );
 
-
             if (createButton) {
                 createButton.disabled = true;
             }
@@ -1764,11 +1746,9 @@
                 importButton.disabled = true;
             }
 
-
             return;
         }
 
-
         coreDot.classList.remove(
             "connected"
         );
@@ -1777,7 +1757,6 @@
             "error"
         );
 
-
         networkDot.classList.remove(
             "connected"
         );
@@ -1785,11 +1764,9 @@
         networkDot.classList.remove(
             "error"
         );
-
 
         networkStatus.textContent =
             "Connecting";
-
 
         const createButton =
             document.getElementById(
@@ -1800,7 +1777,6 @@
             document.getElementById(
                 "import-wallet"
             );
-
 
         if (createButton) {
             createButton.disabled = true;
@@ -1813,7 +1789,7 @@
 
 
     /* ==========================================
-       HOME SCREEN
+       HOME
        ========================================== */
 
     function renderHome() {
@@ -1828,7 +1804,6 @@
                 <p class="wallet-subtitle">
                     Secure access to the PEP Network
                 </p>
-
 
                 <div class="core-status">
 
@@ -1846,7 +1821,6 @@
 
                 </div>
 
-
                 <div class="actions">
 
                     <button
@@ -1856,7 +1830,6 @@
                     >
                         Create Wallet
                     </button>
-
 
                     <button
                         id="import-wallet"
@@ -1868,14 +1841,12 @@
 
                 </div>
 
-
                 <div class="footer">
                     PEP Chain
                 </div>
 
             </section>
         `;
-
 
         const createWallet =
             document.getElementById(
@@ -1887,319 +1858,273 @@
                 "import-wallet"
             );
 
-
         createWallet.addEventListener(
             "click",
             createWalletHandler
         );
-
 
         importWallet.addEventListener(
             "click",
             importWalletHandler
         );
 
-
         getCoreStatus();
     }
+
+
     /* ==========================================
-   IMPORT WALLET SCREEN
-   ========================================== */
+       IMPORT WALLET
+       ========================================== */
 
-function renderImportScreen() {
+    function renderImportScreen() {
 
-    content.innerHTML = `
-        <section class="backup-card">
+        content.innerHTML = `
+            <section class="backup-card">
 
-            <div class="screen-header">
+                <div class="screen-header">
 
-                <h1 class="screen-title">
-                    Import Wallet
-                </h1>
+                    <h1 class="screen-title">
+                        Import Wallet
+                    </h1>
 
-                <p class="screen-subtitle">
-                    Enter your recovery phrase to restore
-                    your PEP wallet.
-                </p>
+                    <p class="screen-subtitle">
+                        Enter your recovery phrase to restore
+                        your PEP wallet.
+                    </p>
 
-            </div>
-
-
-            <div class="warning-box">
-
-                <div class="warning-icon">
-                    !
                 </div>
 
-                <div>
-                    Never share your recovery phrase
-                    with anyone. Anyone who has it can
-                    access this wallet.
+                <div class="warning-box">
+
+                    <div class="warning-icon">
+                        !
+                    </div>
+
+                    <div>
+                        Never share your recovery phrase
+                        with anyone. Anyone who has it can
+                        access this wallet.
+                    </div>
+
                 </div>
 
-            </div>
+                <div class="address-box">
 
+                    <span class="field-label">
+                        Recovery Phrase
+                    </span>
 
-            <div class="address-box">
+                    <textarea
+                        id="import-mnemonic"
+                        class="mnemonic-input"
+                        placeholder="Enter your recovery phrase..."
+                        spellcheck="false"
+                        autocomplete="off"
+                    ></textarea>
 
-                <span class="field-label">
-                    Recovery Phrase
-                </span>
+                    <div
+                        id="import-word-count"
+                        class="import-word-count"
+                    >
+                        0 words
+                    </div>
 
-                <textarea
-                    id="import-mnemonic"
-                    class="mnemonic-input"
-                    placeholder="Enter your recovery phrase..."
-                    spellcheck="false"
-                    autocomplete="off"
-                ></textarea>
+                </div>
 
                 <div
-                    id="import-word-count"
-                    class="import-word-count"
-                >
-                    0 words
+                    id="import-error"
+                    class="import-error"
+                ></div>
+
+                <div class="backup-actions">
+
+                    <button
+                        id="import-submit"
+                        class="primary"
+                        disabled
+                    >
+                        Import Wallet
+                    </button>
+
+                    <button
+                        id="import-back"
+                        class="secondary"
+                    >
+                        Back
+                    </button>
+
                 </div>
 
-            </div>
+                <div class="footer">
+                    PEP Chain
+                </div>
 
+            </section>
+        `;
 
-            <div
-                id="import-error"
-                class="import-error"
-            ></div>
+        const mnemonicInput =
+            document.getElementById(
+                "import-mnemonic"
+            );
 
+        const wordCount =
+            document.getElementById(
+                "import-word-count"
+            );
 
-            <div class="backup-actions">
+        const importError =
+            document.getElementById(
+                "import-error"
+            );
 
-                <button
-                    id="import-submit"
-                    class="primary"
-                    disabled
-                >
-                    Import Wallet
-                </button>
+        const importSubmit =
+            document.getElementById(
+                "import-submit"
+            );
 
+        const importBack =
+            document.getElementById(
+                "import-back"
+            );
 
-                <button
-                    id="import-back"
-                    class="secondary"
-                >
-                    Back
-                </button>
-
-            </div>
-
-
-            <div class="footer">
-                PEP Chain
-            </div>
-
-        </section>
-    `;
-
-
-    const mnemonicInput =
-        document.getElementById(
-            "import-mnemonic"
-        );
-
-    const wordCount =
-        document.getElementById(
-            "import-word-count"
-        );
-
-    const importError =
-        document.getElementById(
-            "import-error"
-        );
-
-    const importSubmit =
-        document.getElementById(
-            "import-submit"
-        );
-
-    const importBack =
-        document.getElementById(
-            "import-back"
-        );
-
-
-    function updateImportState() {
-
-        const phrase =
-            mnemonicInput.value
-                .trim()
-                .replace(/\s+/g, " ");
-
-
-        const words =
-            phrase
-                ? phrase.split(" ")
-                : [];
-
-
-        wordCount.textContent =
-            `${words.length} ${
-                words.length === 1
-                    ? "word"
-                    : "words"
-            }`;
-
-
-        importError.textContent =
-            "";
-
-
-        /*
-         * Don't hardcode 12/24 here.
-         * The Core remains authoritative about
-         * the actual recovery phrase format.
-         */
-
-        importSubmit.disabled =
-            words.length === 0;
-    }
-
-
-    mnemonicInput.addEventListener(
-        "input",
-        updateImportState
-    );
-
-
-    importSubmit.addEventListener(
-        "click",
-        async () => {
+        function updateImportState() {
 
             const phrase =
                 mnemonicInput.value
                     .trim()
                     .replace(/\s+/g, " ");
 
+            const words =
+                phrase
+                    ? phrase.split(" ")
+                    : [];
 
-            if (!phrase) {
-                return;
-            }
-
-
-            importSubmit.disabled =
-                true;
-
-            importSubmit.textContent =
-                "Importing Wallet...";
-
+            wordCount.textContent =
+                `${words.length} ${
+                    words.length === 1
+                        ? "word"
+                        : "words"
+                }`;
 
             importError.textContent =
                 "";
 
+            importSubmit.disabled =
+                words.length === 0;
+        }
 
-            try {
+        mnemonicInput.addEventListener(
+            "input",
+            updateImportState
+        );
 
-                const tauri =
-                    window.__TAURI__;
+        importSubmit.addEventListener(
+            "click",
+            async () => {
 
+                const phrase =
+                    mnemonicInput.value
+                        .trim()
+                        .replace(/\s+/g, " ");
 
-                if (
-                    !tauri
-                    ||
-                    !tauri.core
-                ) {
-
-                    throw new Error(
-                        "Tauri Core API unavailable."
-                    );
+                if (!phrase) {
+                    return;
                 }
-
-
-                console.log(
-                    "[PEP] Importing wallet..."
-                );
-
-
-                const result =
-                    await tauri.core.invoke(
-                        "import_wallet",
-                        {
-                            mnemonic: phrase
-                        }
-                    );
-
-
-                console.log(
-                    "[PEP] Wallet imported:",
-                    result
-                );
-
-
-                if (
-                    !result
-                    ||
-                    !result.address
-                ) {
-
-                    throw new Error(
-                        "Invalid wallet response from PEP Core."
-                    );
-                }
-
-
-                /*
-                 * Store only the address.
-                 *
-                 * The recovery phrase must not remain
-                 * in frontend state after import.
-                 */
-
-                walletAddress =
-                    result.address;
-
-                walletMnemonic =
-                    null;
-
-
-                renderDashboard();
-
-
-                showToast(
-                    "Wallet imported"
-                );
-
-
-            } catch (error) {
-
-                console.error(
-                    "[PEP] Import Wallet failed:",
-                    error
-                );
-
 
                 importSubmit.disabled =
-                    false;
+                    true;
 
                 importSubmit.textContent =
-                    "Import Wallet";
-
+                    "Importing Wallet...";
 
                 importError.textContent =
-                    "Invalid recovery phrase or wallet import failed.";
+                    "";
+
+                try {
+
+                    const tauri =
+                        window.__TAURI__;
+
+                    if (
+                        !tauri ||
+                        !tauri.core
+                    ) {
+
+                        throw new Error(
+                            "Tauri Core API unavailable."
+                        );
+                    }
+
+                    const result =
+                        await tauri.core.invoke(
+                            "import_wallet",
+                            {
+                                mnemonic: phrase
+                            }
+                        );
+
+                    if (
+                        !result ||
+                        !result.address
+                    ) {
+
+                        throw new Error(
+                            "Invalid wallet response from PEP Core."
+                        );
+                    }
+
+                    walletAddress =
+                        result.address;
+
+                    walletMnemonic =
+                        null;
+
+                    walletBalance =
+                        0;
+
+                    walletAssets =
+                        [];
+
+                    walletNonce =
+                        0;
+
+                    walletStake =
+                        0;
+
+                    await renderDashboard();
+
+                    showToast(
+                        "Wallet imported"
+                    );
+
+                } catch (error) {
+
+                    console.error(
+                        "[PEP] Import Wallet failed:",
+                        error
+                    );
+
+                    importSubmit.disabled =
+                        false;
+
+                    importSubmit.textContent =
+                        "Import Wallet";
+
+                    importError.textContent =
+                        "Invalid recovery phrase or wallet import failed.";
+                }
             }
-        }
-    );
+        );
 
+        importBack.addEventListener(
+            "click",
+            () => {
+                renderHome();
+            }
+        );
 
-    importBack.addEventListener(
-        "click",
-        () => {
-
-            renderHome();
-
-        }
-    );
-
-
-    mnemonicInput.focus();
-}
+        mnemonicInput.focus();
+    }
 
 
     /* ==========================================
@@ -2209,8 +2134,7 @@ function renderImportScreen() {
     function renderBackupScreen() {
 
         if (
-            !walletAddress
-            ||
+            !walletAddress ||
             !walletMnemonic
         ) {
 
@@ -2223,13 +2147,11 @@ function renderImportScreen() {
             return;
         }
 
-
         const words =
             walletMnemonic
                 .trim()
                 .split(/\s+/)
                 .filter(Boolean);
-
 
         const wordMarkup =
             words
@@ -2250,7 +2172,6 @@ function renderImportScreen() {
                 )
                 .join("");
 
-
         content.innerHTML = `
             <section class="backup-card">
 
@@ -2267,7 +2188,6 @@ function renderImportScreen() {
 
                 </div>
 
-
                 <div class="warning-box">
 
                     <div class="warning-icon">
@@ -2282,14 +2202,12 @@ function renderImportScreen() {
 
                 </div>
 
-
                 <div
                     id="mnemonic-grid"
                     class="mnemonic-grid"
                 >
                     ${wordMarkup}
                 </div>
-
 
                 <div class="backup-actions">
 
@@ -2300,7 +2218,6 @@ function renderImportScreen() {
                     >
                         Copy Recovery Phrase
                     </button>
-
 
                     <div class="address-box">
 
@@ -2329,7 +2246,6 @@ function renderImportScreen() {
 
                     </div>
 
-
                     <label
                         class="confirm-row"
                         for="backup-confirm"
@@ -2349,7 +2265,6 @@ function renderImportScreen() {
 
                     </label>
 
-
                     <button
                         id="continue-wallet"
                         class="primary"
@@ -2361,14 +2276,12 @@ function renderImportScreen() {
 
                 </div>
 
-
                 <div class="footer">
                     PEP Chain
                 </div>
 
             </section>
         `;
-
 
         const copyMnemonic =
             document.getElementById(
@@ -2390,7 +2303,6 @@ function renderImportScreen() {
                 "continue-wallet"
             );
 
-
         copyMnemonic.addEventListener(
             "click",
             async () => {
@@ -2401,7 +2313,6 @@ function renderImportScreen() {
                 );
             }
         );
-
 
         copyAddress.addEventListener(
             "click",
@@ -2414,7 +2325,6 @@ function renderImportScreen() {
             }
         );
 
-
         backupConfirm.addEventListener(
             "change",
             () => {
@@ -2423,7 +2333,6 @@ function renderImportScreen() {
                     !backupConfirm.checked;
             }
         );
-
 
         continueWallet.addEventListener(
             "click",
@@ -2435,10 +2344,8 @@ function renderImportScreen() {
                     return;
                 }
 
-
                 walletMnemonic =
                     null;
-
 
                 renderDashboard();
             }
@@ -2447,10 +2354,106 @@ function renderImportScreen() {
 
 
     /* ==========================================
+       BALANCE
+       ========================================== */
+
+    async function loadWalletBalance() {
+
+        if (!walletAddress) {
+
+            walletBalance = 0;
+            walletAssets = [];
+            walletNonce = 0;
+            walletStake = 0;
+
+            return null;
+        }
+
+        const tauri =
+            window.__TAURI__;
+
+        if (
+            !tauri ||
+            !tauri.core
+        ) {
+
+            throw new Error(
+                "Tauri Core API unavailable."
+            );
+        }
+
+        /*
+         * QUAN TRỌNG:
+         *
+         * wallet_balance ở Rust tự lấy wallet
+         * từ WalletSession rồi gọi:
+         *
+         * Client::get_balance("127.0.0.1:6000", ...)
+         *
+         * => luôn là Core local của máy hiện tại.
+         */
+        const result =
+            await tauri.core.invoke(
+                "wallet_balance"
+            );
+
+        if (
+            !result ||
+            !Array.isArray(result.balances)
+        ) {
+
+            throw new Error(
+                "Invalid balance response from PEP Core."
+            );
+        }
+
+        walletAssets =
+            result.balances;
+
+        walletNonce =
+            Number(
+                result.nonce || 0
+            );
+
+        walletStake =
+            Number(
+                result.stake || 0
+            );
+
+        const pep =
+            walletAssets.find(
+                item =>
+                    String(
+                        item.asset
+                    ).toUpperCase() === "PEP"
+            );
+
+        walletBalance =
+            pep
+                ? Number(
+                    pep.amount || 0
+                )
+                : 0;
+
+        return result;
+    }
+
+
+    function getPepBalance() {
+
+        return Number.isFinite(
+            walletBalance
+        )
+            ? walletBalance
+            : 0;
+    }
+
+
+    /* ==========================================
        DASHBOARD
        ========================================== */
 
-    function renderDashboard() {
+    async function renderDashboard() {
 
         if (!walletAddress) {
 
@@ -2459,6 +2462,27 @@ function renderImportScreen() {
             return;
         }
 
+        /*
+         * Không được dùng 0 mặc định nữa.
+         * Mỗi lần mở Dashboard đều hỏi Core.
+         */
+        try {
+
+            await loadWalletBalance();
+
+        } catch (error) {
+
+            console.error(
+                "[PEP] Balance load failed:",
+                error
+            );
+        }
+
+        const pepBalance =
+            getPepBalance();
+
+        const assetCount =
+            walletAssets.length;
 
         content.innerHTML = `
             <section class="dashboard">
@@ -2521,7 +2545,6 @@ function renderImportScreen() {
 
                     </div>
 
-
                     <div class="dashboard-network">
 
                         <span
@@ -2541,8 +2564,11 @@ function renderImportScreen() {
                         Total Balance
                     </div>
 
-                    <div class="balance-value">
-                        0
+                    <div
+                        id="dashboard-balance"
+                        class="balance-value"
+                    >
+                        ${pepBalance}
 
                         <span class="balance-symbol">
                             PEP
@@ -2560,8 +2586,11 @@ function renderImportScreen() {
                             PEP
                         </div>
 
-                        <div class="asset-value">
-                            0 PEP
+                        <div
+                            id="dashboard-pep-balance"
+                            class="asset-value"
+                        >
+                            ${pepBalance} PEP
                         </div>
 
                     </div>
@@ -2573,8 +2602,11 @@ function renderImportScreen() {
                             Assets
                         </div>
 
-                        <div class="asset-value">
-                            0
+                        <div
+                            id="dashboard-asset-count"
+                            class="asset-value"
+                        >
+                            ${assetCount}
                         </div>
 
                     </div>
@@ -2624,7 +2656,6 @@ function renderImportScreen() {
             </section>
         `;
 
-
         const receiveButton =
             document.getElementById(
                 "receive-button"
@@ -2640,7 +2671,6 @@ function renderImportScreen() {
                 "copy-dashboard-address"
             );
 
-
         copyDashboardAddress.addEventListener(
             "click",
             async () => {
@@ -2652,7 +2682,6 @@ function renderImportScreen() {
             }
         );
 
-
         receiveButton.addEventListener(
             "click",
             () => {
@@ -2660,7 +2689,6 @@ function renderImportScreen() {
                 renderReceive();
             }
         );
-
 
         sendButton.addEventListener(
             "click",
@@ -2673,7 +2701,7 @@ function renderImportScreen() {
 
 
     /* ==========================================
-       RECEIVE SCREEN
+       RECEIVE
        ========================================== */
 
     function renderReceive() {
@@ -2684,7 +2712,6 @@ function renderImportScreen() {
 
             return;
         }
-
 
         content.innerHTML = `
             <section class="receive-screen">
@@ -2700,7 +2727,6 @@ function renderImportScreen() {
                     >
                         ←
                     </button>
-
 
                     <div class="receive-header-text">
 
@@ -2732,7 +2758,6 @@ function renderImportScreen() {
                             </div>
 
                         </div>
-
 
                         <div class="receive-asset-network">
                             PEP NETWORK
@@ -2811,7 +2836,6 @@ function renderImportScreen() {
             </section>
         `;
 
-
         const backButton =
             document.getElementById(
                 "receive-back"
@@ -2822,7 +2846,6 @@ function renderImportScreen() {
                 "receive-copy"
             );
 
-
         backButton.addEventListener(
             "click",
             () => {
@@ -2830,7 +2853,6 @@ function renderImportScreen() {
                 renderDashboard();
             }
         );
-
 
         copyButton.addEventListener(
             "click",
@@ -2846,10 +2868,10 @@ function renderImportScreen() {
 
 
     /* ==========================================
-       SEND SCREEN
+       SEND
        ========================================== */
 
-    function renderSendScreen() {
+    async function renderSendScreen() {
 
         if (!walletAddress) {
 
@@ -2858,6 +2880,23 @@ function renderImportScreen() {
             return;
         }
 
+        /*
+         * Refresh balance immediately before Send.
+         */
+        try {
+
+            await loadWalletBalance();
+
+        } catch (error) {
+
+            console.error(
+                "[PEP] Send balance load failed:",
+                error
+            );
+        }
+
+        const pepBalance =
+            getPepBalance();
 
         content.innerHTML = `
             <section class="send-screen">
@@ -2909,13 +2948,13 @@ function renderImportScreen() {
 
                         <div class="send-balance">
                             Balance:
-                            <strong>0 PEP</strong>
+                            <strong id="send-balance-value">
+                                ${pepBalance} PEP
+                            </strong>
                         </div>
 
                     </div>
 
-
-                    <!-- RECIPIENT -->
 
                     <div class="send-field">
 
@@ -2948,8 +2987,6 @@ function renderImportScreen() {
 
                     </div>
 
-
-                    <!-- AMOUNT -->
 
                     <div class="send-field">
 
@@ -2997,8 +3034,6 @@ function renderImportScreen() {
                     </div>
 
 
-                    <!-- NETWORK -->
-
                     <div class="send-network">
 
                         <div class="send-network-left">
@@ -3020,8 +3055,6 @@ function renderImportScreen() {
 
                     </div>
 
-
-                    <!-- FEE -->
 
                     <div class="send-fee-row">
 
@@ -3057,7 +3090,6 @@ function renderImportScreen() {
 
             </section>
         `;
-
 
         const backButton =
             document.getElementById(
@@ -3120,20 +3152,14 @@ function renderImportScreen() {
             const amount =
                 amountInput.value.trim();
 
-
             recipientError.textContent =
                 "";
 
             amountError.textContent =
                 "";
 
-
             let valid = true;
 
-
-            /*
-             * Recipient
-             */
 
             if (!recipient) {
 
@@ -3143,7 +3169,9 @@ function renderImportScreen() {
                 valid = false;
 
             } else if (
-                !recipient.toLowerCase().startsWith("pep")
+                !recipient
+                    .toLowerCase()
+                    .startsWith("pep")
             ) {
 
                 recipientError.textContent =
@@ -3152,10 +3180,6 @@ function renderImportScreen() {
                 valid = false;
             }
 
-
-            /*
-             * Amount
-             */
 
             if (!amount) {
 
@@ -3169,17 +3193,25 @@ function renderImportScreen() {
                 const numericAmount =
                     Number(amount);
 
-
                 if (
                     !Number.isFinite(
                         numericAmount
-                    )
-                    ||
+                    ) ||
                     numericAmount <= 0
                 ) {
 
                     amountError.textContent =
                         "Enter a valid amount.";
+
+                    valid = false;
+
+                } else if (
+                    numericAmount >
+                    getPepBalance()
+                ) {
+
+                    amountError.textContent =
+                        "Insufficient PEP balance.";
 
                     valid = false;
                 }
@@ -3188,7 +3220,6 @@ function renderImportScreen() {
 
             reviewButton.disabled =
                 !valid;
-
 
             return valid;
         }
@@ -3204,10 +3235,6 @@ function renderImportScreen() {
             "input",
             () => {
 
-                /*
-                 * Only numbers and decimal point.
-                 */
-
                 amountInput.value =
                     amountInput.value
                         .replace(
@@ -3215,14 +3242,10 @@ function renderImportScreen() {
                             ""
                         );
 
-
-                /*
-                 * Only one decimal point.
-                 */
-
                 const parts =
-                    amountInput.value.split(".");
-
+                    amountInput.value.split(
+                        "."
+                    );
 
                 if (parts.length > 2) {
 
@@ -3233,7 +3256,6 @@ function renderImportScreen() {
                             .slice(1)
                             .join("");
                 }
-
 
                 validateSendForm();
             }
@@ -3246,27 +3268,58 @@ function renderImportScreen() {
 
         maxButton.addEventListener(
             "click",
-            () => {
+            async () => {
 
-                /*
-                 * Balance is still hardcoded to 0
-                 * until Core balance RPC is connected.
-                 */
+                try {
 
-                showToast(
-                    "Balance not available yet"
-                );
+                    await loadWalletBalance();
+
+                } catch (error) {
+
+                    console.error(
+                        "[PEP] MAX balance refresh failed:",
+                        error
+                    );
+
+                    showToast(
+                        "Cannot read balance"
+                    );
+
+                    return;
+                }
+
+                const balance =
+                    getPepBalance();
+
+                if (balance <= 0) {
+
+                    amountInput.value =
+                        "";
+
+                    validateSendForm();
+
+                    showToast(
+                        "Balance is 0 PEP"
+                    );
+
+                    return;
+                }
+
+                amountInput.value =
+                    String(balance);
+
+                validateSendForm();
             }
         );
 
 
         /* =========================
-           REVIEW
+           REAL TRANSFER
            ========================= */
 
         reviewButton.addEventListener(
             "click",
-            () => {
+            async () => {
 
                 if (
                     !validateSendForm()
@@ -3274,27 +3327,155 @@ function renderImportScreen() {
                     return;
                 }
 
-
                 const recipient =
                     recipientInput.value.trim();
 
                 const amount =
                     amountInput.value.trim();
 
+                const numericAmount =
+                    Number(amount);
 
-                console.log(
-                    "[PEP] Send review:",
-                    {
-                        asset: "PEP",
-                        recipient,
-                        amount
+                if (
+                    !Number.isFinite(
+                        numericAmount
+                    ) ||
+                    numericAmount <= 0
+                ) {
+                    return;
+                }
+
+                /*
+                 * Check one more time against
+                 * current local Core balance.
+                 */
+                try {
+
+                    await loadWalletBalance();
+
+                } catch (error) {
+
+                    console.error(
+                        "[PEP] Pre-transfer balance refresh failed:",
+                        error
+                    );
+
+                    showToast(
+                        "Cannot read wallet balance"
+                    );
+
+                    return;
+                }
+
+                if (
+                    numericAmount >
+                    getPepBalance()
+                ) {
+
+                    amountError.textContent =
+                        "Insufficient PEP balance.";
+
+                    return;
+                }
+
+                reviewButton.disabled =
+                    true;
+
+                reviewButton.textContent =
+                    "Sending...";
+
+                try {
+
+                    const tauri =
+                        window.__TAURI__;
+
+                    if (
+                        !tauri ||
+                        !tauri.core
+                    ) {
+
+                        throw new Error(
+                            "Tauri Core API unavailable."
+                        );
                     }
-                );
 
+                    /*
+                     * Gọi Rust:
+                     *
+                     * transfer(
+                     *     wallet_session,
+                     *     to,
+                     *     amount
+                     * )
+                     *
+                     * Rust tự ký bằng WalletSession
+                     * và broadcast tới 127.0.0.1:6000.
+                     */
+                    const result =
+                        await tauri.core.invoke(
+                            "transfer",
+                            {
+                                to: recipient,
+                                amount: numericAmount
+                            }
+                        );
 
-                showToast(
-                    "Review — next step"
-                );
+                    console.log(
+                        "[PEP] Transfer result:",
+                        result
+                    );
+
+                    showToast(
+                        result ||
+                        "Transfer transaction broadcast."
+                    );
+
+                    /*
+                     * Chờ Core xử lý rồi đọc lại balance.
+                     */
+                    setTimeout(
+                        async () => {
+
+                            try {
+
+                                await loadWalletBalance();
+
+                            } catch (error) {
+
+                                console.warn(
+                                    "[PEP] Post-transfer balance refresh failed:",
+                                    error
+                                );
+                            }
+
+                        },
+                        500
+                    );
+
+                } catch (error) {
+
+                    console.error(
+                        "[PEP] Transfer failed:",
+                        error
+                    );
+
+                    showToast(
+                        String(
+                            error ||
+                            "Transfer failed"
+                        )
+                    );
+
+                } finally {
+
+                    reviewButton.disabled =
+                        false;
+
+                    reviewButton.textContent =
+                        "Review Send";
+
+                    validateSendForm();
+                }
             }
         );
     }
@@ -3311,15 +3492,12 @@ function renderImportScreen() {
                 "create-wallet"
             );
 
-
         if (
-            !createButton
-            ||
+            !createButton ||
             createButton.disabled
         ) {
             return;
         }
-
 
         createButton.disabled =
             true;
@@ -3327,21 +3505,17 @@ function renderImportScreen() {
         createButton.textContent =
             "Creating Wallet...";
 
-
         try {
 
             console.log(
                 "[PEP] Creating wallet..."
             );
 
-
             const tauri =
                 window.__TAURI__;
 
-
             if (
-                !tauri
-                ||
+                !tauri ||
                 !tauri.core
             ) {
 
@@ -3350,24 +3524,19 @@ function renderImportScreen() {
                 );
             }
 
-
             const result =
                 await tauri.core.invoke(
                     "create_wallet"
                 );
-
 
             console.log(
                 "[PEP] Wallet created:",
                 result
             );
 
-
             if (
-                !result
-                ||
-                !result.address
-                ||
+                !result ||
+                !result.address ||
                 !result.mnemonic
             ) {
 
@@ -3376,16 +3545,25 @@ function renderImportScreen() {
                 );
             }
 
-
             walletAddress =
                 result.address;
 
             walletMnemonic =
                 result.mnemonic;
 
+            walletBalance =
+                0;
+
+            walletAssets =
+                [];
+
+            walletNonce =
+                0;
+
+            walletStake =
+                0;
 
             renderBackupScreen();
-
 
         } catch (error) {
 
@@ -3394,13 +3572,11 @@ function renderImportScreen() {
                 error
             );
 
-
             createButton.disabled =
                 false;
 
             createButton.textContent =
                 "Create Wallet";
-
 
             showToast(
                 "Create Wallet failed"
@@ -3410,14 +3586,13 @@ function renderImportScreen() {
 
 
     /* ==========================================
-       IMPORT WALLET
+       IMPORT BUTTON
        ========================================== */
 
     function importWalletHandler() {
 
-    renderImportScreen();
-
-}
+        renderImportScreen();
+    }
 
 
     /* ==========================================
@@ -3451,7 +3626,7 @@ function renderImportScreen() {
 
 
     /* ==========================================
-       QUERY TAURI
+       CORE STATUS QUERY
        ========================================== */
 
     async function getCoreStatus() {
@@ -3460,10 +3635,8 @@ function renderImportScreen() {
             "[PEP] Checking Tauri API..."
         );
 
-
         const tauri =
             window.__TAURI__;
-
 
         if (!tauri) {
 
@@ -3471,15 +3644,12 @@ function renderImportScreen() {
                 "[PEP] window.__TAURI__ unavailable"
             );
 
-
             updateCoreStatus(
                 "Desktop API unavailable."
             );
 
-
             return;
         }
-
 
         if (!tauri.core) {
 
@@ -3487,20 +3657,12 @@ function renderImportScreen() {
                 "[PEP] Tauri core API unavailable"
             );
 
-
             updateCoreStatus(
                 "Desktop Core API unavailable."
             );
 
-
             return;
         }
-
-
-        console.log(
-            "[PEP] Tauri API detected."
-        );
-
 
         try {
 
@@ -3509,12 +3671,10 @@ function renderImportScreen() {
                     "core_status"
                 );
 
-
             console.log(
                 "[PEP] Initial Core status:",
                 status
             );
-
 
             updateCoreStatus(
                 status
@@ -3526,7 +3686,6 @@ function renderImportScreen() {
                 "[PEP] core_status failed:",
                 error
             );
-
 
             updateCoreStatus(
                 "Unable to query PEP Core."
@@ -3544,15 +3703,12 @@ function renderImportScreen() {
         const tauri =
             window.__TAURI__;
 
-
         if (
-            !tauri
-            ||
+            !tauri ||
             !tauri.event
         ) {
             return;
         }
-
 
         try {
 
@@ -3564,7 +3720,6 @@ function renderImportScreen() {
                         "[PEP] Core event:",
                         event.payload
                     );
-
 
                     updateCoreStatus(
                         event.payload
@@ -3592,15 +3747,11 @@ function renderImportScreen() {
             "[PEP] PEP Wallet UI started."
         );
 
-
         renderHome();
-
 
         await listenCoreStatus();
 
-
         await getCoreStatus();
-
 
         const statusTimer =
             setInterval(
@@ -3611,7 +3762,6 @@ function renderImportScreen() {
                             "core-status"
                         );
 
-
                     if (!statusElement) {
 
                         clearInterval(
@@ -3621,10 +3771,8 @@ function renderImportScreen() {
                         return;
                     }
 
-
                     const status =
                         statusElement.textContent;
-
 
                     if (
                         status ===
@@ -3637,7 +3785,6 @@ function renderImportScreen() {
 
                         return;
                     }
-
 
                     await getCoreStatus();
 
