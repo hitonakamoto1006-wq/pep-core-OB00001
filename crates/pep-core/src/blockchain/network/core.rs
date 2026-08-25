@@ -3396,7 +3396,6 @@ Message::NewTransaction => {
         tx_id,
     );
 }
-
         Ok(false) => {
 
             /*
