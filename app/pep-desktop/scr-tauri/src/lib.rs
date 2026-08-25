@@ -150,6 +150,16 @@ impl CoreProcess {
                     Command::new(
                         &executable
                     );
+                    let data_root =
+    executable
+        .parent()
+        .and_then(|p| p.parent())
+        .and_then(|p| p.parent())
+        .map(|p| p.to_path_buf());
+
+if let Some(root) = data_root {
+    command.current_dir(root);
+}
 
                 command
     .arg("--pep-node-daemon")
