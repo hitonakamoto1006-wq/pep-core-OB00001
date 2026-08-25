@@ -57,18 +57,26 @@ pub enum Message {
     HelloAck = 16,
 
     /*
-     * ========================================================
-     * FUTURE HEADER SYNCHRONIZATION
-     * ========================================================
-     *
-     * These messages are reserved now so the protocol can
-     * evolve without renumbering existing messages.
-     *
-     * ========================================================
-     */
-
-    GetHeaders = 17,
-    Headers = 18,
+ * ========================================================
+ * HEADER SYNCHRONIZATION
+ * ========================================================
+ *
+ * Headers-first sync.
+ *
+ * GetHeaders:
+ *
+ *     locator_hash_1,locator_hash_2,...|stop_hash
+ *
+ * Headers:
+ *
+ *     header_1
+ *     header_2
+ *     ...
+ *
+ * ========================================================
+ */
+GetHeaders = 17,
+Headers = 18,
 
     /*
      * ========================================================

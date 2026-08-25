@@ -23,7 +23,10 @@ use crate::blockchain::asset::{
     AssetType,
 };
 
-use crate::blockchain::block::Block;
+use crate::blockchain::{
+    block::Block,
+    block_header::BlockHeader,
+};
 
 use crate::blockchain::network::{
     message::Message,
@@ -35,7 +38,9 @@ use crate::blockchain::transaction::Transaction;
 use crate::blockchain::node::Node;
 
 use crate::wallet::Address;
-
+use crate::blockchain::consensus::{
+    difficulty::Difficulty,
+};
 
 // ============================================================
 // PEP NETWORK CONSTANTS
@@ -50,6 +55,8 @@ const PEP_CHAIN_ID: u64 = 1;
 const PEP_NETWORK: &str = "mainnet";
 
 const MAX_BLOCK_BATCH: usize = 128;
+
+const MAX_HEADER_BATCH: usize = 2000;
 
 
 // ============================================================
@@ -76,7 +83,7 @@ struct BootstrapPeersResponse {
 pub struct Core;
 
 impl Core {
-        // ========================================================
+    // ========================================================
     // DISCOVERY PORT
     // ========================================================
 
@@ -1926,7 +1933,99 @@ if advertised.port() == 0 {
             )
         )
     }
+// ========================================================
+// BUILD BLOCK LOCATOR
+// ========================================================
+//
+// Bitcoin-style locator:
+//
+//     tip
+//     tip - 1
+//     tip - 2
+//     tip - 4
+//     tip - 8
+//     ...
+//     genesis
+//
+// Dùng hash thay vì height để peer có thể tìm
+// common ancestor nếu hai chain không cùng tip.
+//
+// ========================================================
 
+fn build_block_locator(
+    node: &Arc<Mutex<Node>>,
+) -> Result<Vec<String>, String> {
+
+    let guard =
+        node.lock()
+            .map_err(
+                |_| {
+                    "Node lock poisoned.".to_string()
+                }
+            )?;
+
+    let blocks =
+        &guard
+            .blockchain()
+            .blocks;
+
+    if blocks.is_empty() {
+        return Err(
+            "Cannot build locator from empty chain."
+                .to_string()
+        );
+    }
+
+    let mut locator =
+        Vec::<String>::new();
+
+    let mut index =
+        blocks.len()
+            .saturating_sub(1);
+
+    let mut step =
+        1usize;
+
+    loop {
+
+        locator.push(
+            blocks[index]
+                .hash()
+                .to_string()
+        );
+
+        if index == 0 {
+            break;
+        }
+
+        /*
+         * Sau vài block đầu,
+         * locator thưa dần theo cấp số 2.
+         */
+        if locator.len() >= 10 {
+            step = step.saturating_mul(2);
+        }
+
+        index =
+            index.saturating_sub(step);
+    }
+
+    /*
+     * Genesis luôn phải nằm trong locator.
+     */
+    let genesis =
+        blocks[0]
+            .hash()
+            .to_string();
+
+    if locator.last()
+        != Some(&genesis)
+    {
+        locator.push(genesis);
+    }
+
+    Ok(locator)
+}
 
     // ========================================================
     // REQUEST STATUS
@@ -2031,6 +2130,132 @@ if advertised.port() == 0 {
         )
     }
 
+    // ========================================================
+// REQUEST HEADERS
+// ========================================================
+
+fn request_headers(
+    peer: SocketAddr,
+    locator: &[String],
+    stop_hash: &str,
+) -> Result<Vec<BlockHeader>, String> {
+
+    if locator.is_empty() {
+        return Err(
+            "Header locator cannot be empty."
+                .to_string()
+        );
+    }
+
+    let payload =
+        format!(
+            "{}|{}",
+            locator.join(","),
+            stop_hash,
+        );
+
+    let mut stream =
+        TcpStream::connect_timeout(
+            &peer,
+            Duration::from_secs(5),
+        )
+        .map_err(
+            |error| {
+                format!(
+                    "Cannot connect to {} for headers: {}",
+                    peer,
+                    error
+                )
+            }
+        )?;
+
+    Message::GetHeaders
+        .write_to(
+            &mut stream,
+            payload.as_bytes(),
+        )
+        .map_err(
+            |error| {
+                format!(
+                    "Failed to request headers from {}: {}",
+                    peer,
+                    error
+                )
+            }
+        )?;
+
+    let (
+        message,
+        payload,
+    ) =
+        Message::read_from(
+            &mut stream,
+        )
+        .map_err(
+            |error| {
+                format!(
+                    "Failed to read Headers from {}: {}",
+                    peer,
+                    error
+                )
+            }
+        )?;
+
+    if !matches!(
+        message,
+        Message::Headers
+    ) {
+        return Err(
+            format!(
+                "Unexpected header response from {}: {:?}",
+                peer,
+                message
+            )
+        );
+    }
+
+    let data =
+        String::from_utf8(
+            payload
+        )
+        .map_err(
+            |_| {
+                "Headers payload is not valid UTF-8."
+                    .to_string()
+            }
+        )?;
+
+    let mut headers =
+        Vec::<BlockHeader>::new();
+
+    for line in
+        data.lines()
+    {
+        let line =
+            line.trim();
+
+        if line.is_empty() {
+            continue;
+        }
+
+        let header =
+            BlockHeader::deserialize(
+                line
+            )?;
+
+        headers.push(
+            header
+        );
+
+        if headers.len()
+            >= MAX_HEADER_BATCH
+        {
+            break;
+        }
+    }
+
+    Ok(headers)
+}
 
     // ========================================================
     // REQUEST BLOCKS
@@ -2140,144 +2365,373 @@ if advertised.port() == 0 {
 
 
     // ========================================================
-    // SYNC FROM PEER
-    // ========================================================
+// SYNC FROM PEER
+// ========================================================
+//
+// Headers-first synchronization.
+//
+// 1. Ask remote status.
+// 2. Build block locator.
+// 3. Download headers only.
+// 4. Validate header chain + PoW.
+// 5. Download full blocks.
+// 6. Pass every block through Node::accept_block().
+//
+// NOTE:
+//
+// Fork/reorg chưa được tự động commit ở phase này.
+// Nếu header chain không nối vào local canonical tip,
+// sync sẽ FAIL an toàn thay vì overwrite state.
+//
+// ========================================================
 
-    fn sync_from_peer(
-        peer: SocketAddr,
-        node: &Arc<
-            Mutex<Node>
-        >,
-    ) -> Result<(), String> {
+fn sync_from_peer(
+    peer: SocketAddr,
+    node: &Arc<Mutex<Node>>,
+) -> Result<(), String> {
 
-        let local_height =
-            Self::local_chain_status(
-                node
-            )?
-            .0;
+    let local_height =
+        Self::local_chain_status(
+            node
+        )?
+        .0;
 
-        let (
-            remote_height,
-            remote_tip,
-        ) =
-            Self::request_status(
-                peer
-            )?;
+    let (
+        remote_height,
+        remote_tip,
+    ) =
+        Self::request_status(
+            peer
+        )?;
 
+    println!(
+        "[PEP Sync] {} local={} remote={} tip={}",
+        peer,
+        local_height,
+        remote_height,
+        remote_tip
+    );
+
+    if remote_height <=
+        local_height
+    {
         println!(
-            "Sync check {}: local={} remote={} tip={}",
-            peer,
-            local_height,
-            remote_height,
-            remote_tip
+            "[PEP Sync] {} already synchronized.",
+            peer
         );
 
-        if remote_height <=
-            local_height
+        return Ok(());
+    }
+
+    /*
+     * ====================================================
+     * STEP 1
+     * Build Bitcoin-style locator.
+     * ====================================================
+     */
+
+    let locator =
+        Self::build_block_locator(
+            node
+        )?;
+
+    println!(
+        "[PEP Sync] Requesting headers from {} using {} locator(s).",
+        peer,
+        locator.len()
+    );
+
+    /*
+     * ====================================================
+     * STEP 2
+     * Headers-first.
+     * ====================================================
+     */
+
+    let headers =
+        Self::request_headers(
+            peer,
+            &locator,
+            &remote_tip,
+        )?;
+
+    if headers.is_empty() {
+
+        return Err(
+            format!(
+                "Peer {} returned no headers while remote height {} > local height {}.",
+                peer,
+                remote_height,
+                local_height,
+            )
+        );
+    }
+
+    println!(
+        "[PEP Sync] Received {} header(s) from {}.",
+        headers.len(),
+        peer
+    );
+
+    /*
+     * ====================================================
+     * STEP 3
+     * Validate header chain.
+     * ====================================================
+     */
+
+    let expected_previous =
         {
-            return Ok(());
-        }
+            let guard =
+                node.lock()
+                    .map_err(
+                        |_| {
+                            "Node lock poisoned."
+                                .to_string()
+                        }
+                    )?;
 
-        let mut next =
-            local_height
-                .saturating_add(1);
+            guard
+                .blockchain()
+                .blocks
+                .last()
+                .ok_or_else(
+                    || {
+                        "Local blockchain has no tip."
+                            .to_string()
+                    }
+                )?
+                .hash()
+        };
 
-        let mut downloaded =
-            Vec::<Block>::new();
+    let mut previous_hash =
+        expected_previous;
 
-        while next <=
-            remote_height
+    for (
+        index,
+        header
+    ) in headers.iter().enumerate()
+    {
+
+        /*
+         * Header must connect to previous header.
+         */
+        if header.previous_hash
+            != previous_hash
         {
-
-            let count =
-                remote_height
-                    .saturating_sub(next)
-                    .saturating_add(1)
-                    .min(
-                        MAX_BLOCK_BATCH
-                    );
-
-            let blocks =
-                Self::request_blocks(
+            return Err(
+                format!(
+                    "[PEP Sync] Header chain from {} does not connect at header {}.",
                     peer,
-                    next,
-                    count
-                )?;
-
-            if blocks.is_empty() {
-
-                return Err(
-                    format!(
-                        "Peer {} returned no blocks at height {}",
-                        peer,
-                        next
-                    )
-                );
-            }
-
-            next =
-                next.saturating_add(
-                    blocks.len()
-                );
-
-            downloaded.extend(
-                blocks
+                    index
+                )
             );
         }
 
-        let mut guard =
-            node.lock()
-                .map_err(
-                    |_| {
-                        "Node lock poisoned."
-                            .to_string()
-                    }
-                )?;
+        /*
+         * Header hash must be internally valid.
+         */
+        let calculated =
+            header.calculate_hash();
 
-        let current_height =
-            guard
-                .blockchain()
-                .blocks
-                .len()
-                .saturating_sub(1);
+        let actual =
+            header.hash();
 
-        if current_height >
-            local_height
+        if actual !=
+            calculated
         {
-            return Ok(());
-        }
-
-        for block in
-            downloaded
-        {
-
-            guard
-                .accept_block(
-                    block
+            return Err(
+                format!(
+                    "[PEP Sync] Invalid header hash from {} at header {}.",
+                    peer,
+                    index
                 )
-                .map_err(
-                    |error|
-                        format!(
-                            "Rejected block from {}: {}",
-                            peer,
-                            error
-                        )
-                )?;
+            );
         }
+
+        /*
+         * Proof-of-work must be valid.
+         */
+        if !Difficulty::verify_hash(
+            actual,
+            header.bits,
+        ) {
+            return Err(
+                format!(
+                    "[PEP Sync] Invalid header PoW from {} at header {}.",
+                    peer,
+                    index
+                )
+            );
+        }
+
+        previous_hash =
+            actual;
+    }
+
+    /*
+     * The final advertised tip must match
+     * the final downloaded header if the peer
+     * returned a complete batch.
+     */
+    if headers
+        .last()
+        .map(
+            |header|
+                header.hash()
+                    .to_string()
+        )
+        == Some(
+            remote_tip.clone()
+        )
+    {
+        println!(
+            "[PEP Sync] Header chain reaches remote tip {}.",
+            remote_tip
+        );
+    } else {
 
         println!(
-            "Synchronized from {}: {} -> {}",
-            peer,
-            local_height,
-            guard
-                .blockchain()
-                .blocks
-                .len()
-                .saturating_sub(1)
+            "[PEP Sync] Header batch does not yet reach remote tip. Continuing block sync."
         );
-
-        Ok(())
     }
+
+    /*
+     * ====================================================
+     * STEP 4
+     * Download actual blocks.
+     *
+     * We deliberately keep the existing GetBlocks path
+     * because Node::accept_block() already owns the
+     * canonical validation/state transition.
+     * ====================================================
+     */
+
+    let mut next =
+        local_height
+            .saturating_add(1);
+
+    let mut synchronized =
+        0usize;
+
+    while next <=
+        remote_height
+    {
+
+        let count =
+            remote_height
+                .saturating_sub(next)
+                .saturating_add(1)
+                .min(
+                    MAX_BLOCK_BATCH
+                );
+
+        let blocks =
+            Self::request_blocks(
+                peer,
+                next,
+                count,
+            )?;
+
+        if blocks.is_empty() {
+            return Err(
+                format!(
+                    "[PEP Sync] Peer {} returned no blocks at height {}.",
+                    peer,
+                    next
+                )
+            );
+        }
+
+        {
+            let mut guard =
+                node.lock()
+                    .map_err(
+                        |_| {
+                            "Node lock poisoned."
+                                .to_string()
+                        }
+                    )?;
+
+            for block in
+                blocks.iter()
+            {
+
+                guard
+                    .accept_block(
+                        block.clone()
+                    )
+                    .map_err(
+                        |error| {
+                            format!(
+                                "[PEP Sync] Rejected block from {} at sync height {}: {}",
+                                peer,
+                                next + synchronized,
+                                error
+                            )
+                        }
+                    )?;
+
+                synchronized =
+                    synchronized
+                        .saturating_add(1);
+            }
+        }
+
+        next =
+            next.saturating_add(
+                blocks.len()
+            );
+
+        println!(
+            "[PEP Sync] {} downloaded through height {} / {}.",
+            peer,
+            next.saturating_sub(1),
+            remote_height
+        );
+    }
+
+    let (
+        final_height,
+        final_tip,
+    ) =
+        Self::local_chain_status(
+            node
+        )?;
+
+    if final_height !=
+        remote_height
+    {
+        return Err(
+            format!(
+                "[PEP Sync] Height mismatch after sync: local={} remote={}.",
+                final_height,
+                remote_height
+            )
+        );
+    }
+
+    if final_tip !=
+        remote_tip
+    {
+        return Err(
+            format!(
+                "[PEP Sync] Tip mismatch after sync: local={} remote={}.",
+                final_tip,
+                remote_tip
+            )
+        );
+    }
+
+    println!(
+        "[PEP Sync] Synchronized from {}: {} -> {}.",
+        peer,
+        local_height,
+        final_height
+    );
+
+    Ok(())
+}
 
 
     // ========================================================
@@ -3103,6 +3557,193 @@ fn broadcast_transaction(
                     peer_address
                 );
             }
+            // =================================================
+// GET HEADERS
+// =================================================
+
+Message::GetHeaders => {
+
+    let request =
+        String::from_utf8_lossy(
+            &payload
+        );
+
+    let parts =
+        request
+            .trim()
+            .splitn(2, '|')
+            .collect::<Vec<_>>();
+
+    if parts.len() != 2 {
+
+        println!(
+            "Invalid GetHeaders request from {}",
+            peer_address
+        );
+
+        return;
+    }
+
+    let locator =
+        parts[0]
+            .split(',')
+            .map(str::trim)
+            .filter(
+                |value|
+                    !value.is_empty()
+            )
+            .collect::<Vec<_>>();
+
+    let stop_hash =
+        parts[1]
+            .trim();
+
+    if locator.is_empty() {
+
+        println!(
+            "Empty header locator from {}",
+            peer_address
+        );
+
+        return;
+    }
+
+    let headers =
+        match node.lock()
+        {
+            Ok(guard) => {
+
+                let blocks =
+                    &guard
+                        .blockchain()
+                        .blocks;
+
+                /*
+                 * Find the first locator that belongs
+                 * to our canonical chain.
+                 *
+                 * Locator is ordered:
+                 *
+                 *     tip
+                 *     tip-1
+                 *     tip-2
+                 *     tip-4
+                 *     ...
+                 *     genesis
+                 *
+                 * Therefore the first match is the best
+                 * common ancestor we know.
+                 */
+
+                let mut start_index =
+                    None;
+
+                'locator:
+                for locator_hash
+                    in locator
+                {
+                    for (
+                        index,
+                        block
+                    ) in blocks
+                        .iter()
+                        .enumerate()
+                    {
+                        if block
+                            .hash()
+                            .to_string()
+                            == locator_hash
+                        {
+                            start_index =
+                                Some(index);
+
+                            break 'locator;
+                        }
+                    }
+                }
+
+                let start =
+                    match start_index
+                    {
+                        Some(index) =>
+                            index,
+
+                        None => {
+                            println!(
+                                "No locator match for {}",
+                                peer_address
+                            );
+
+                            return;
+                        }
+                    };
+
+                let mut result =
+                    Vec::<String>::new();
+
+                for block in
+                    blocks
+                        .iter()
+                        .skip(
+                            start
+                                .saturating_add(1)
+                        )
+                        .take(
+                            MAX_HEADER_BATCH
+                        )
+                {
+
+                    let hash =
+                        block
+                            .hash()
+                            .to_string();
+
+                    result.push(
+                        block
+                            .header
+                            .serialize()
+                    );
+
+                    /*
+                     * Stop hash:
+                     *
+                     * "" means no explicit stop.
+                     */
+                    if !stop_hash.is_empty()
+                        &&
+                        hash == stop_hash
+                    {
+                        break;
+                    }
+                }
+
+                result.join("\n")
+            }
+
+            Err(_) => {
+
+                println!(
+                    "Node lock poisoned while serving GetHeaders."
+                );
+
+                return;
+            }
+        };
+
+    if let Err(error) =
+        Message::Headers
+            .write_to(
+                stream,
+                headers.as_bytes()
+            )
+    {
+        println!(
+            "Failed Headers response to {}: {}",
+            peer_address,
+            error
+        );
+    }
+}
 
 
             // =================================================
