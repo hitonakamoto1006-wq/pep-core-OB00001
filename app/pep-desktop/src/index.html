@@ -1342,498 +1342,11 @@
 
     font-size: 12px;
 }
-    
-        /* =========================
-           PEP WALLET — MONERO STYLE
-           ========================= */
-
-        .wallet-shell {
-            width: min(1180px, 100%);
-            height: min(760px, calc(100vh - 110px));
-            min-height: 560px;
-
-            display: flex;
-            overflow: hidden;
-
-            border: 1px solid #292932;
-            border-radius: 16px;
-
-            background: #111117;
-
-            box-shadow:
-                0 24px 70px rgba(0, 0, 0, 0.38);
-        }
-
-        .wallet-sidebar {
-            width: 235px;
-            flex: 0 0 235px;
-
-            padding: 18px 10px;
-
-            display: flex;
-            flex-direction: column;
-
-            background: #15151b;
-            border-right: 1px solid #292932;
-        }
-
-        .account-card {
-            margin: 0 5px 16px;
-            padding: 15px 13px;
-
-            border: 1px solid #34343d;
-            border-radius: 10px;
-
-            background:
-                linear-gradient(135deg, #514b45, #25252b);
-        }
-
-        .account-icon {
-            width: 34px;
-            height: 34px;
-            margin-bottom: 9px;
-
-            display: flex;
-            align-items: center;
-            justify-content: center;
-
-            border-radius: 50%;
-            background: #eeeeee;
-            color: #333333;
-
-            font-size: 14px;
-            font-weight: 800;
-        }
-
-        .account-number {
-            color: #b2b2bd;
-            font-size: 10px;
-        }
-
-        .account-name {
-            margin-top: 3px;
-            color: #ffffff;
-            font-size: 13px;
-            font-weight: 650;
-        }
-
-        .sidebar-nav {
-            display: flex;
-            flex-direction: column;
-            gap: 3px;
-        }
-
-        .sidebar-section {
-            margin: 12px 12px 6px;
-
-            color: #64646f;
-            font-size: 9px;
-            font-weight: 700;
-            letter-spacing: .7px;
-            text-transform: uppercase;
-        }
-
-        .sidebar-button {
-            width: 100%;
-            height: 43px;
-
-            padding: 0 13px;
-
-            display: flex;
-            align-items: center;
-            gap: 12px;
-
-            border: 0;
-            border-radius: 7px;
-
-            background: transparent;
-            color: #92929e;
-
-            text-align: left;
-            font-size: 12px;
-            font-weight: 500;
-        }
-
-        .sidebar-button:hover {
-            background: #24242c;
-            color: #eeeeee;
-        }
-
-        .sidebar-button.active {
-            background: #2a2930;
-            color: #ffffff;
-        }
-
-        .sidebar-icon {
-            width: 18px;
-            flex: 0 0 18px;
-
-            text-align: center;
-            color: #777783;
-            font-size: 14px;
-        }
-
-        .sidebar-button.active .sidebar-icon {
-            color: #ffffff;
-        }
-
-        .sidebar-spacer {
-            flex: 1;
-        }
-
-        .sidebar-status {
-            margin: 8px 5px 0;
-            padding: 13px 8px 3px;
-
-            border-top: 1px solid #292932;
-        }
-
-        .sync-row {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-
-            margin-top: 8px;
-
-            color: #777783;
-            font-size: 9px;
-        }
-
-        .sync-row:first-child {
-            margin-top: 0;
-        }
-
-        .sync-dot {
-            width: 7px;
-            height: 7px;
-            flex: 0 0 7px;
-
-            border-radius: 50%;
-            background: #777;
-        }
-
-        .sync-dot.online {
-            background: #32d583;
-            box-shadow: 0 0 7px rgba(50, 213, 131, .35);
-        }
-
-        .wallet-workspace {
-            min-width: 0;
-            flex: 1;
-
-            padding: 32px 42px;
-
-            overflow: auto;
-            background: #111117;
-        }
-
-        .workspace-inner {
-            width: min(900px, 100%);
-            margin: 0 auto;
-        }
-
-        .page-title {
-            margin: 0;
-
-            color: #eeeeee;
-            font-size: 23px;
-            font-weight: 600;
-        }
-
-        .page-subtitle {
-            margin: 6px 0 26px;
-
-            color: #777783;
-            font-size: 11px;
-        }
-
-        .account-header {
-            display: flex;
-            align-items: flex-start;
-            justify-content: space-between;
-
-            margin-bottom: 18px;
-        }
-
-        .account-address-row {
-            display: flex;
-            align-items: center;
-            gap: 5px;
-
-            margin-top: 8px;
-            min-width: 0;
-        }
-
-        .account-address {
-            max-width: 620px;
-            min-width: 0;
-
-            color: #6f6f7a;
-
-            font-family:
-                "SFMono-Regular",
-                Consolas,
-                "Liberation Mono",
-                monospace;
-
-            font-size: 10px;
-
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-        }
-
-        .icon-copy {
-            width: 25px;
-            height: 25px;
-
-            padding: 0;
-
-            display: flex;
-            align-items: center;
-            justify-content: center;
-
-            border: 0;
-            border-radius: 6px;
-
-            background: transparent;
-            color: #777783;
-        }
-
-        .icon-copy:hover {
-            background: #24242c;
-            color: #ffffff;
-        }
-
-        .balance-panel {
-            padding: 25px 27px;
-            margin-bottom: 18px;
-
-            border: 1px solid #292932;
-            border-radius: 10px;
-
-            background: #15151b;
-        }
-
-        .balance-caption {
-            color: #777783;
-            font-size: 10px;
-            font-weight: 700;
-            letter-spacing: .6px;
-            text-transform: uppercase;
-        }
-
-        .wallet-balance {
-            margin-top: 8px;
-
-            color: #eeeeee;
-            font-size: 34px;
-            font-weight: 600;
-            letter-spacing: -1px;
-        }
-
-        .wallet-balance-unit {
-            margin-left: 7px;
-            color: #777783;
-            font-size: 14px;
-            font-weight: 600;
-        }
-
-        .asset-panel,
-        .history-panel,
-        .settings-panel {
-            overflow: hidden;
-
-            border: 1px solid #292932;
-            border-radius: 10px;
-
-            background: #15151b;
-        }
-
-        .panel-title {
-            padding: 16px 19px;
-
-            color: #ddddE4;
-            font-size: 13px;
-            font-weight: 650;
-
-            border-bottom: 1px solid #292932;
-        }
-
-        .asset-row {
-            min-height: 62px;
-
-            padding: 0 19px;
-
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-
-            border-bottom: 1px solid #26262e;
-        }
-
-        .asset-row:last-child {
-            border-bottom: 0;
-        }
-
-        .asset-left {
-            display: flex;
-            align-items: center;
-            gap: 11px;
-        }
-
-        .asset-logo {
-            width: 34px;
-            height: 34px;
-
-            display: flex;
-            align-items: center;
-            justify-content: center;
-
-            border-radius: 50%;
-
-            background: #292930;
-            color: #ffffff;
-
-            font-size: 11px;
-            font-weight: 750;
-        }
-
-        .asset-title {
-            color: #eeeeee;
-            font-size: 12px;
-            font-weight: 650;
-        }
-
-        .asset-type {
-            margin-top: 3px;
-            color: #666672;
-            font-size: 9px;
-        }
-
-        .asset-amount {
-            color: #eeeeee;
-
-            font-family:
-                "SFMono-Regular",
-                Consolas,
-                "Liberation Mono",
-                monospace;
-
-            font-size: 12px;
-        }
-
-        .asset-unit {
-            margin-left: 5px;
-            color: #777783;
-        }
-
-        .account-actions {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-
-            margin-top: 18px;
-        }
-
-        .wallet-action {
-            height: 46px;
-        }
-
-        .wallet-action.primary-action {
-            background: #7c3aed;
-        }
-
-        .wallet-action.primary-action:hover {
-            background: #8b5cf6;
-        }
-
-        .wallet-action.secondary-action {
-            background: #1c1c24;
-            border: 1px solid #30303a;
-        }
-
-        .history-empty {
-            padding: 68px 20px;
-
-            color: #666672;
-            font-size: 12px;
-            text-align: center;
-        }
-
-        .settings-row {
-            min-height: 66px;
-
-            padding: 0 20px;
-
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-
-            border-bottom: 1px solid #292932;
-        }
-
-        .settings-row:last-child {
-            border-bottom: 0;
-        }
-
-        .settings-name {
-            color: #ddddE4;
-            font-size: 12px;
-        }
-
-        .settings-description {
-            margin-top: 4px;
-            color: #666672;
-            font-size: 9px;
-        }
-
-        .settings-value {
-            color: #888894;
-            font-size: 11px;
-        }
-
-        @media (max-width: 820px) {
-            .wallet-shell {
-                height: calc(100vh - 104px);
-                min-height: 500px;
-            }
-
-            .wallet-sidebar {
-                width: 68px;
-                flex-basis: 68px;
-                padding-left: 7px;
-                padding-right: 7px;
-            }
-
-            .account-card {
-                padding: 10px;
-            }
-
-            .account-number,
-            .account-name,
-            .sidebar-section,
-            .sidebar-button span:not(.sidebar-icon),
-            .sidebar-status {
-                display: none;
-            }
-
-            .sidebar-button {
-                justify-content: center;
-                padding: 0;
-            }
-
-            .wallet-workspace {
-                padding: 22px 18px;
-            }
-        }
-
     </style>
 </head>
 
 
 <body>
-<!-- PEP Wallet UI: single JS boot block; duplicate pasted script removed. -->
 
 <div class="app">
 
@@ -2943,534 +2456,2638 @@
     async function renderDashboard() {
 
         if (!walletAddress) {
+
             renderHome();
+
             return;
         }
 
+        /*
+         * Không được dùng 0 mặc định nữa.
+         * Mỗi lần mở Dashboard đều hỏi Core.
+         */
         try {
+
             await loadWalletBalance();
+
         } catch (error) {
-            console.error("[PEP] Balance load failed:", error);
+
+            console.error(
+                "[PEP] Balance load failed:",
+                error
+            );
         }
 
-        const pepBalance = getPepBalance();
+        const pepBalance =
+            getPepBalance();
 
-        const assetRows = walletAssets.length
-            ? walletAssets.map(item => `
-                <div class="asset-row">
-                    <div class="asset-left">
-                        <div class="asset-logo">
-                            ${escapeHtml(
-                                String(item.asset || "?")
-                                    .slice(0, 1)
-                                    .toUpperCase()
-                            )}
-                        </div>
+        const assetCount =
+            walletAssets.length;
 
-                        <div>
-                            <div class="asset-title">
-                                ${escapeHtml(String(item.asset || "Unknown"))}
+        content.innerHTML = `
+            <section class="dashboard">
+
+                <div class="dashboard-header">
+
+                    <div class="dashboard-wallet-info">
+
+                        <h1 class="dashboard-title">
+                            Wallet
+                        </h1>
+
+                        <div class="dashboard-address-row">
+
+                            <div
+                                id="dashboard-address"
+                                class="dashboard-address"
+                                title="${escapeHtml(walletAddress)}"
+                            >
+                                ${escapeHtml(walletAddress)}
                             </div>
 
-                            <div class="asset-type">
-                                PEP Chain asset
-                            </div>
+                            <button
+                                id="copy-dashboard-address"
+                                class="dashboard-copy-button"
+                                type="button"
+                                title="Copy address"
+                                aria-label="Copy wallet address"
+                            >
+
+                                <svg
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    aria-hidden="true"
+                                >
+
+                                    <rect
+                                        x="8"
+                                        y="8"
+                                        width="11"
+                                        height="11"
+                                        rx="2"
+                                        stroke="currentColor"
+                                        stroke-width="1.8"
+                                    />
+
+                                    <path
+                                        d="M16 8V6C16 4.89543 15.1046 4 14 4H6C4.89543 4 4 4.89543 4 6V14C4 15.1046 5 16 6 16H8"
+                                        stroke="currentColor"
+                                        stroke-width="1.8"
+                                        stroke-linecap="round"
+                                    />
+
+                                </svg>
+
+                            </button>
+
                         </div>
+
                     </div>
 
-                    <div class="asset-amount">
-                        ${escapeHtml(String(item.amount ?? 0))}
-                        <span class="asset-unit">
-                            ${escapeHtml(String(item.asset || ""))}
+                    <div class="dashboard-network">
+
+                        <span
+                            class="status-dot connected"
+                        ></span>
+
+                        PEP Network
+
+                    </div>
+
+                </div>
+
+
+                <div class="balance-card">
+
+                    <div class="balance-label">
+                        Total Balance
+                    </div>
+
+                    <div
+                        id="dashboard-balance"
+                        class="balance-value"
+                    >
+                        ${pepBalance}
+
+                        <span class="balance-symbol">
+                            PEP
                         </span>
                     </div>
-                </div>
-            `).join("")
-            : `
-                <div class="asset-row">
-                    <div class="asset-left">
-                        <div class="asset-logo">P</div>
-                        <div>
-                            <div class="asset-title">PEP</div>
-                            <div class="asset-type">Native Asset</div>
-                        </div>
-                    </div>
-
-                    <div class="asset-amount">
-                        ${pepBalance}
-                        <span class="asset-unit">PEP</span>
-                    </div>
-                </div>
-            `;
-
-        content.innerHTML = `
-            <section class="wallet-shell">
-
-                <aside class="wallet-sidebar">
-
-                    <div class="account-card">
-                        <div class="account-icon">P</div>
-
-                        <div class="account-number">
-                            TÀI KHOẢN #0
-                        </div>
-
-                        <div class="account-name">
-                            Primary account
-                        </div>
-                    </div>
-
-                    <div class="sidebar-nav">
-
-                        <div class="sidebar-section">
-                            Ví
-                        </div>
-
-                        <button
-                            id="nav-account"
-                            class="sidebar-button active"
-                            type="button"
-                        >
-                            <span class="sidebar-icon">◉</span>
-                            <span>Tài khoản</span>
-                        </button>
-
-                        <button
-                            id="nav-send"
-                            class="sidebar-button"
-                            type="button"
-                        >
-                            <span class="sidebar-icon">↑</span>
-                            <span>Gửi</span>
-                        </button>
-
-                        <button
-                            id="nav-receive"
-                            class="sidebar-button"
-                            type="button"
-                        >
-                            <span class="sidebar-icon">↓</span>
-                            <span>Nhận</span>
-                        </button>
-
-                        <button
-                            id="nav-history"
-                            class="sidebar-button"
-                            type="button"
-                        >
-                            <span class="sidebar-icon">◷</span>
-                            <span>Lịch sử giao dịch</span>
-                        </button>
-
-                        <div class="sidebar-section">
-                            Hệ thống
-                        </div>
-
-                        <button
-                            id="nav-settings"
-                            class="sidebar-button"
-                            type="button"
-                        >
-                            <span class="sidebar-icon">⚙</span>
-                            <span>Cài đặt</span>
-                        </button>
-
-                    </div>
-
-                    <div class="sidebar-spacer"></div>
-
-                    <div class="sidebar-status">
-
-                        <div class="sync-row">
-                            <span class="sync-dot online"></span>
-                            Wallet synchronized
-                        </div>
-
-                        <div class="sync-row">
-                            <span class="sync-dot online"></span>
-                            Core synchronized
-                        </div>
-
-                        <div class="sync-row">
-                            <span class="sync-dot online"></span>
-                            Đã kết nối
-                        </div>
-
-                    </div>
-
-                </aside>
-
-                <main class="wallet-workspace">
-
-                    <div class="workspace-inner">
-
-                        <div class="account-header">
-
-                            <div>
-                                <h1 class="page-title">
-                                    Chi tiết tài khoản
-                                </h1>
-
-                                <div class="account-address-row">
-
-                                    <div
-                                        class="account-address"
-                                        title="${escapeHtml(walletAddress)}"
-                                    >
-                                        ${escapeHtml(walletAddress)}
-                                    </div>
-
-                                    <button
-                                        id="copy-dashboard-address"
-                                        class="icon-copy"
-                                        type="button"
-                                        title="Copy address"
-                                        aria-label="Copy address"
-                                    >
-                                        ⧉
-                                    </button>
-
-                                </div>
-                            </div>
-
-                        </div>
-
-                        <div class="balance-panel">
-
-                            <div class="balance-caption">
-                                Tổng số dư
-                            </div>
-
-                            <div class="wallet-balance">
-                                ${pepBalance}
-                                <span class="wallet-balance-unit">
-                                    PEP
-                                </span>
-                            </div>
-
-                        </div>
-
-                        <div class="asset-panel">
-
-                            <div class="panel-title">
-                                Tài sản
-                            </div>
-
-                            ${assetRows}
-
-                        </div>
-
-                        <div class="account-actions">
-
-                            <button
-                                id="receive-button"
-                                class="primary wallet-action primary-action"
-                                type="button"
-                            >
-                                Nhận
-                            </button>
-
-                            <button
-                                id="send-button"
-                                class="secondary wallet-action secondary-action"
-                                type="button"
-                            >
-                                Gửi
-                            </button>
-
-                        </div>
-
-                    </div>
-
-                </main>
-
-            </section>
-        `;
-
-        document
-            .getElementById("copy-dashboard-address")
-            .addEventListener("click", async () => {
-                await copyText(
-                    walletAddress,
-                    "Address copied"
-                );
-            });
-
-        document
-            .getElementById("receive-button")
-            .addEventListener("click", renderReceive);
-
-        document
-            .getElementById("send-button")
-            .addEventListener("click", renderSendScreen);
-
-        document
-            .getElementById("nav-account")
-            .addEventListener("click", renderDashboard);
-
-        document
-            .getElementById("nav-send")
-            .addEventListener("click", renderSendScreen);
-
-        document
-            .getElementById("nav-receive")
-            .addEventListener("click", renderReceive);
-
-        document
-            .getElementById("nav-history")
-            .addEventListener("click", renderHistory);
-
-        document
-            .getElementById("nav-settings")
-            .addEventListener("click", renderSettings);
-    }
-
-
-    function renderWalletShell(active, bodyHtml) {
-
-        const activeMap = {
-            account: "nav-account",
-            send: "nav-send",
-            receive: "nav-receive",
-            history: "nav-history",
-            settings: "nav-settings"
-        };
-
-        const activeId = activeMap[active] || "nav-account";
-
-        content.innerHTML = `
-            <section class="wallet-shell">
-
-                <aside class="wallet-sidebar">
-
-                    <div class="account-card">
-                        <div class="account-icon">P</div>
-
-                        <div class="account-number">
-                            TÀI KHOẢN #0
-                        </div>
-
-                        <div class="account-name">
-                            Primary account
-                        </div>
-                    </div>
-
-                    <div class="sidebar-nav">
-
-                        <div class="sidebar-section">
-                            Ví
-                        </div>
-
-                        <button
-                            id="nav-account"
-                            class="sidebar-button ${activeId === "nav-account" ? "active" : ""}"
-                            type="button"
-                        >
-                            <span class="sidebar-icon">◉</span>
-                            <span>Tài khoản</span>
-                        </button>
-
-                        <button
-                            id="nav-send"
-                            class="sidebar-button ${activeId === "nav-send" ? "active" : ""}"
-                            type="button"
-                        >
-                            <span class="sidebar-icon">↑</span>
-                            <span>Gửi</span>
-                        </button>
-
-                        <button
-                            id="nav-receive"
-                            class="sidebar-button ${activeId === "nav-receive" ? "active" : ""}"
-                            type="button"
-                        >
-                            <span class="sidebar-icon">↓</span>
-                            <span>Nhận</span>
-                        </button>
-
-                        <button
-                            id="nav-history"
-                            class="sidebar-button ${activeId === "nav-history" ? "active" : ""}"
-                            type="button"
-                        >
-                            <span class="sidebar-icon">◷</span>
-                            <span>Lịch sử giao dịch</span>
-                        </button>
-
-                        <div class="sidebar-section">
-                            Hệ thống
-                        </div>
-
-                        <button
-                            id="nav-settings"
-                            class="sidebar-button ${activeId === "nav-settings" ? "active" : ""}"
-                            type="button"
-                        >
-                            <span class="sidebar-icon">⚙</span>
-                            <span>Cài đặt</span>
-                        </button>
-
-                    </div>
-
-                    <div class="sidebar-spacer"></div>
-
-                    <div class="sidebar-status">
-
-                        <div class="sync-row">
-                            <span class="sync-dot online"></span>
-                            Wallet synchronized
-                        </div>
-
-                        <div class="sync-row">
-                            <span class="sync-dot online"></span>
-                            Core synchronized
-                        </div>
-
-                        <div class="sync-row">
-                            <span class="sync-dot online"></span>
-                            Đã kết nối
-                        </div>
-
-                    </div>
-
-                </aside>
-
-                <main class="wallet-workspace">
-                    <div class="workspace-inner">
-                        ${bodyHtml}
-                    </div>
-                </main>
-
-            </section>
-        `;
-
-        document.getElementById("nav-account")
-            .addEventListener("click", renderDashboard);
-
-        document.getElementById("nav-send")
-            .addEventListener("click", renderSendScreen);
-
-        document.getElementById("nav-receive")
-            .addEventListener("click", renderReceive);
-
-        document.getElementById("nav-history")
-            .addEventListener("click", renderHistory);
-
-        document.getElementById("nav-settings")
-            .addEventListener("click", renderSettings);
-    }
-
-
-    function renderHistory() {
-
-        if (!walletAddress) {
-            renderHome();
-            return;
-        }
-
-        renderWalletShell(
-            "history",
-            `
-                <h1 class="page-title">
-                    Lịch sử giao dịch
-                </h1>
-
-                <p class="page-subtitle">
-                    Các giao dịch của tài khoản này
-                </p>
-
-                <div class="history-panel">
-
-                    <div class="panel-title">
-                        Giao dịch
-                    </div>
-
-                    <div class="history-empty">
-                        Chưa có giao dịch nào.
-                    </div>
 
                 </div>
-            `
-        );
-    }
 
 
-    function renderSettings() {
+                <div class="asset-grid">
 
-        if (!walletAddress) {
-            renderHome();
-            return;
-        }
+                    <div class="asset-card">
 
-        renderWalletShell(
-            "settings",
-            `
-                <h1 class="page-title">
-                    Cài đặt
-                </h1>
-
-                <p class="page-subtitle">
-                    Cấu hình PEP Wallet
-                </p>
-
-                <div class="settings-panel">
-
-                    <div class="settings-row">
-
-                        <div>
-                            <div class="settings-name">
-                                Network
-                            </div>
-
-                            <div class="settings-description">
-                                Mạng blockchain hiện tại
-                            </div>
+                        <div class="asset-name">
+                            PEP
                         </div>
 
-                        <div class="settings-value">
+                        <div
+                            id="dashboard-pep-balance"
+                            class="asset-value"
+                        >
+                            ${pepBalance} PEP
+                        </div>
+
+                    </div>
+
+
+                    <div class="asset-card">
+
+                        <div class="asset-name">
+                            Assets
+                        </div>
+
+                        <div
+                            id="dashboard-asset-count"
+                            class="asset-value"
+                        >
+                            ${assetCount}
+                        </div>
+
+                    </div>
+
+
+                    <div class="asset-card">
+
+                        <div class="asset-name">
+                            Network
+                        </div>
+
+                        <div class="asset-value">
                             PEP Chain
                         </div>
 
                     </div>
 
-                    <div class="settings-row">
+                </div>
+
+
+                <div class="dashboard-actions">
+
+                    <button
+                        id="receive-button"
+                        class="primary"
+                        type="button"
+                    >
+                        Receive
+                    </button>
+
+
+                    <button
+                        id="send-button"
+                        class="secondary"
+                        type="button"
+                    >
+                        Send
+                    </button>
+
+                </div>
+
+
+                <div class="footer">
+                    ${escapeHtml(walletAddress)}
+                </div>
+
+            </section>
+        `;
+
+        const receiveButton =
+            document.getElementById(
+                "receive-button"
+            );
+
+        const sendButton =
+            document.getElementById(
+                "send-button"
+            );
+
+        const copyDashboardAddress =
+            document.getElementById(
+                "copy-dashboard-address"
+            );
+
+        copyDashboardAddress.addEventListener(
+            "click",
+            async () => {
+
+                await copyText(
+                    walletAddress,
+                    "Address copied"
+                );
+            }
+        );
+
+        receiveButton.addEventListener(
+            "click",
+            () => {
+
+                renderReceive();
+            }
+        );
+
+        sendButton.addEventListener(
+            "click",
+            () => {
+
+                renderSendScreen();
+            }
+        );
+    }
+
+
+    /* ==========================================
+       RECEIVE
+       ========================================== */
+
+    function renderReceive() {
+
+        if (!walletAddress) {
+
+            renderHome();
+
+            return;
+        }
+
+        content.innerHTML = `
+            <section class="receive-screen">
+
+                <div class="receive-header">
+
+                    <button
+                        id="receive-back"
+                        class="receive-back"
+                        type="button"
+                        title="Back"
+                        aria-label="Back to wallet"
+                    >
+                        ←
+                    </button>
+
+                    <div class="receive-header-text">
+
+                        <h1 class="receive-title">
+                            Receive
+                        </h1>
+
+                        <p class="receive-subtitle">
+                            Receive assets on PEP Chain
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="receive-card">
+
+                    <div class="receive-asset">
 
                         <div>
-                            <div class="settings-name">
-                                Node
+
+                            <div class="receive-asset-name">
+                                PEP
                             </div>
 
-                            <div class="settings-description">
-                                PEP Core daemon
+                            <div class="receive-asset-type">
+                                Native Asset
                             </div>
+
                         </div>
 
-                        <div class="settings-value">
-                            Local Core
+                        <div class="receive-asset-network">
+                            PEP NETWORK
                         </div>
 
                     </div>
 
-                    <div class="settings-row">
 
-                        <div>
-                            <div class="settings-name">
-                                Account
-                            </div>
+                    <div class="receive-address-label">
+                        Your wallet address
+                    </div>
 
-                            <div class="settings-description">
-                                Tài khoản đang sử dụng
-                            </div>
+
+                    <div class="receive-address-box">
+
+                        <div
+                            id="receive-address"
+                            class="receive-address"
+                            title="${escapeHtml(walletAddress)}"
+                        >
+                            ${escapeHtml(walletAddress)}
                         </div>
 
-                        <div class="settings-value">
-                            #0 Primary
+
+                        <button
+                            id="receive-copy"
+                            class="receive-copy-button"
+                            type="button"
+                            title="Copy address"
+                            aria-label="Copy wallet address"
+                        >
+
+                            <svg
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                xmlns="http://www.w3.org/2000/svg"
+                                aria-hidden="true"
+                            >
+
+                                <rect
+                                    x="8"
+                                    y="8"
+                                    width="11"
+                                    height="11"
+                                    rx="2"
+                                    stroke="currentColor"
+                                    stroke-width="1.8"
+                                />
+
+                                <path
+                                    d="M16 8V6C16 4.89543 15.1046 4 14 4H6C4.89543 4 4 4.89543 4 6V14C4 15.1046 5 16 6 16H8"
+                                    stroke="currentColor"
+                                    stroke-width="1.8"
+                                    stroke-linecap="round"
+                                />
+
+                            </svg>
+
+                        </button>
+
+                    </div>
+
+
+                    <div class="receive-note">
+                        Only send assets supported by PEP Chain
+                        to this address.
+                    </div>
+
+                </div>
+
+
+                <div class="footer">
+                    PEP Chain
+                </div>
+
+            </section>
+        `;
+
+        const backButton =
+            document.getElementById(
+                "receive-back"
+            );
+
+        const copyButton =
+            document.getElementById(
+                "receive-copy"
+            );
+
+        backButton.addEventListener(
+            "click",
+            () => {
+
+                renderDashboard();
+            }
+        );
+
+        copyButton.addEventListener(
+            "click",
+            async () => {
+
+                await copyText(
+                    walletAddress,
+                    "Address copied"
+                );
+            }
+        );
+    }
+
+
+    /* ==========================================
+       SEND
+       ========================================== */
+
+    async function renderSendScreen() {
+
+        if (!walletAddress) {
+
+            renderHome();
+
+            return;
+        }
+
+        /*
+         * Refresh balance immediately before Send.
+         */
+        try {
+
+            await loadWalletBalance();
+
+        } catch (error) {
+
+            console.error(
+                "[PEP] Send balance load failed:",
+                error
+            );
+        }
+
+        const pepBalance =
+            getPepBalance();
+
+        content.innerHTML = `
+            <section class="send-screen">
+
+                <div class="send-header">
+
+                    <button
+                        id="send-back"
+                        class="send-back"
+                        type="button"
+                        title="Back"
+                        aria-label="Back to wallet"
+                    >
+                        ←
+                    </button>
+
+
+                    <div class="send-header-text">
+
+                        <h1 class="send-title">
+                            Send
+                        </h1>
+
+                        <p class="send-subtitle">
+                            Send assets on PEP Chain
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="send-card">
+
+                    <div class="send-asset">
+
+                        <div>
+
+                            <div class="send-asset-name">
+                                PEP
+                            </div>
+
+                            <div class="send-asset-type">
+                                Native Asset
+                            </div>
+
+                        </div>
+
+
+                        <div class="send-balance">
+                            Balance:
+                            <strong id="send-balance-value">
+                                ${pepBalance} PEP
+                            </strong>
+                        </div>
+
+                    </div>
+
+
+                    <div class="send-field">
+
+                        <label
+                            class="send-label"
+                            for="send-recipient"
+                        >
+                            Recipient Address
+                        </label>
+
+
+                        <div class="send-input-wrap">
+
+                            <input
+                                id="send-recipient"
+                                class="send-input"
+                                type="text"
+                                autocomplete="off"
+                                spellcheck="false"
+                                placeholder="pep42..."
+                            >
+
+                        </div>
+
+
+                        <div
+                            id="recipient-error"
+                            class="send-error"
+                        ></div>
+
+                    </div>
+
+
+                    <div class="send-field">
+
+                        <label
+                            class="send-label"
+                            for="send-amount"
+                        >
+                            Amount
+                        </label>
+
+
+                        <div class="send-input-wrap">
+
+                            <input
+                                id="send-amount"
+                                class="send-input send-amount-input"
+                                type="text"
+                                inputmode="decimal"
+                                autocomplete="off"
+                                placeholder="0.00"
+                            >
+
+
+                            <button
+                                id="send-max"
+                                class="send-max"
+                                type="button"
+                            >
+                                MAX
+                            </button>
+
+
+                            <span class="send-unit">
+                                PEP
+                            </span>
+
+                        </div>
+
+
+                        <div
+                            id="amount-error"
+                            class="send-error"
+                        ></div>
+
+                    </div>
+
+
+                    <div class="send-network">
+
+                        <div class="send-network-left">
+
+                            <span
+                                class="status-dot connected"
+                            ></span>
+
+                            <span class="send-network-name">
+                                PEP Network
+                            </span>
+
+                        </div>
+
+
+                        <div class="send-network-right">
+                            PEP
+                        </div>
+
+                    </div>
+
+
+                    <div class="send-fee-row">
+
+                        <span>
+                            Network Fee
+                        </span>
+
+                        <span
+                            id="send-fee"
+                            class="send-fee-value"
+                        >
+                            -- PEP
+                        </span>
+
+                    </div>
+
+
+                    <button
+                        id="review-send"
+                        class="primary send-review"
+                        type="button"
+                        disabled
+                    >
+                        Review Send
+                    </button>
+
+                </div>
+
+
+                <div class="footer">
+                    PEP Chain
+                </div>
+
+            </section>
+        `;
+
+        const backButton =
+            document.getElementById(
+                "send-back"
+            );
+
+        const recipientInput =
+            document.getElementById(
+                "send-recipient"
+            );
+
+        const amountInput =
+            document.getElementById(
+                "send-amount"
+            );
+
+        const maxButton =
+            document.getElementById(
+                "send-max"
+            );
+
+        const reviewButton =
+            document.getElementById(
+                "review-send"
+            );
+
+        const recipientError =
+            document.getElementById(
+                "recipient-error"
+            );
+
+        const amountError =
+            document.getElementById(
+                "amount-error"
+            );
+
+
+        /* =========================
+           BACK
+           ========================= */
+
+        backButton.addEventListener(
+            "click",
+            () => {
+
+                renderDashboard();
+            }
+        );
+
+
+        /* =========================
+           VALIDATE
+           ========================= */
+
+        function validateSendForm() {
+
+            const recipient =
+                recipientInput.value.trim();
+
+            const amount =
+                amountInput.value.trim();
+
+            recipientError.textContent =
+                "";
+
+            amountError.textContent =
+                "";
+
+            let valid = true;
+
+
+            if (!recipient) {
+
+                recipientError.textContent =
+                    "Recipient address is required.";
+
+                valid = false;
+
+            } else if (
+                !recipient
+                    .toLowerCase()
+                    .startsWith("pep")
+            ) {
+
+                recipientError.textContent =
+                    "Invalid PEP address.";
+
+                valid = false;
+            }
+
+
+            if (!amount) {
+
+                amountError.textContent =
+                    "Amount is required.";
+
+                valid = false;
+
+            } else {
+
+                const numericAmount =
+                    Number(amount);
+
+                if (
+                    !Number.isFinite(
+                        numericAmount
+                    ) ||
+                    numericAmount <= 0
+                ) {
+
+                    amountError.textContent =
+                        "Enter a valid amount.";
+
+                    valid = false;
+
+                } else if (
+                    numericAmount >
+                    getPepBalance()
+                ) {
+
+                    amountError.textContent =
+                        "Insufficient PEP balance.";
+
+                    valid = false;
+                }
+            }
+
+
+            reviewButton.disabled =
+                !valid;
+
+            return valid;
+        }
+
+
+        recipientInput.addEventListener(
+            "input",
+            validateSendForm
+        );
+
+
+        amountInput.addEventListener(
+            "input",
+            () => {
+
+                amountInput.value =
+                    amountInput.value
+                        .replace(
+                            /[^0-9.]/g,
+                            ""
+                        );
+
+                const parts =
+                    amountInput.value.split(
+                        "."
+                    );
+
+                if (parts.length > 2) {
+
+                    amountInput.value =
+                        parts[0]
+                        + "."
+                        + parts
+                            .slice(1)
+                            .join("");
+                }
+
+                validateSendForm();
+            }
+        );
+
+
+        /* =========================
+           MAX
+           ========================= */
+
+        maxButton.addEventListener(
+            "click",
+            async () => {
+
+                try {
+
+                    await loadWalletBalance();
+
+                } catch (error) {
+
+                    console.error(
+                        "[PEP] MAX balance refresh failed:",
+                        error
+                    );
+
+                    showToast(
+                        "Cannot read balance"
+                    );
+
+                    return;
+                }
+
+                const balance =
+                    getPepBalance();
+
+                if (balance <= 0) {
+
+                    amountInput.value =
+                        "";
+
+                    validateSendForm();
+
+                    showToast(
+                        "Balance is 0 PEP"
+                    );
+
+                    return;
+                }
+
+                amountInput.value =
+                    String(balance);
+
+                validateSendForm();
+            }
+        );
+
+
+        /* =========================
+           REAL TRANSFER
+           ========================= */
+
+        reviewButton.addEventListener(
+            "click",
+            async () => {
+
+                if (
+                    !validateSendForm()
+                ) {
+                    return;
+                }
+
+                const recipient =
+                    recipientInput.value.trim();
+
+                const amount =
+                    amountInput.value.trim();
+
+                const numericAmount =
+                    Number(amount);
+
+                if (
+                    !Number.isFinite(
+                        numericAmount
+                    ) ||
+                    numericAmount <= 0
+                ) {
+                    return;
+                }
+
+                /*
+                 * Check one more time against
+                 * current local Core balance.
+                 */
+                try {
+
+                    await loadWalletBalance();
+
+                } catch (error) {
+
+                    console.error(
+                        "[PEP] Pre-transfer balance refresh failed:",
+                        error
+                    );
+
+                    showToast(
+                        "Cannot read wallet balance"
+                    );
+
+                    return;
+                }
+
+                if (
+                    numericAmount >
+                    getPepBalance()
+                ) {
+
+                    amountError.textContent =
+                        "Insufficient PEP balance.";
+
+                    return;
+                }
+
+                reviewButton.disabled =
+                    true;
+
+                reviewButton.textContent =
+                    "Sending...";
+
+                try {
+
+                    const tauri =
+                        window.__TAURI__;
+
+                    if (
+                        !tauri ||
+                        !tauri.core
+                    ) {
+
+                        throw new Error(
+                            "Tauri Core API unavailable."
+                        );
+                    }
+
+                    /*
+                     * Gọi Rust:
+                     *
+                     * transfer(
+                     *     wallet_session,
+                     *     to,
+                     *     amount
+                     * )
+                     *
+                     * Rust tự ký bằng WalletSession
+                     * và broadcast tới 127.0.0.1:6000.
+                     */
+                    const result =
+                        await tauri.core.invoke(
+                            "transfer",
+                            {
+                                to: recipient,
+                                amount: numericAmount
+                            }
+                        );
+
+                    console.log(
+                        "[PEP] Transfer result:",
+                        result
+                    );
+
+                    showToast(
+                        result ||
+                        "Transfer transaction broadcast."
+                    );
+
+                    /*
+                     * Chờ Core xử lý rồi đọc lại balance.
+                     */
+                    setTimeout(
+                        async () => {
+
+                            try {
+
+                                await loadWalletBalance();
+
+                            } catch (error) {
+
+                                console.warn(
+                                    "[PEP] Post-transfer balance refresh failed:",
+                                    error
+                                );
+                            }
+
+                        },
+                        500
+                    );
+
+                } catch (error) {
+
+                    console.error(
+                        "[PEP] Transfer failed:",
+                        error
+                    );
+
+                    showToast(
+                        String(
+                            error ||
+                            "Transfer failed"
+                        )
+                    );
+
+                } finally {
+
+                    reviewButton.disabled =
+                        false;
+
+                    reviewButton.textContent =
+                        "Review Send";
+
+                    validateSendForm();
+                }
+            }
+        );
+    }
+
+
+    /* ==========================================
+       CREATE WALLET
+       ========================================== */
+
+    async function createWalletHandler() {
+
+        const createButton =
+            document.getElementById(
+                "create-wallet"
+            );
+
+        if (
+            !createButton ||
+            createButton.disabled
+        ) {
+            return;
+        }
+
+        createButton.disabled =
+            true;
+
+        createButton.textContent =
+            "Creating Wallet...";
+
+        try {
+
+            console.log(
+                "[PEP] Creating wallet..."
+            );
+
+            const tauri =
+                window.__TAURI__;
+
+            if (
+                !tauri ||
+                !tauri.core
+            ) {
+
+                throw new Error(
+                    "Tauri Core API unavailable."
+                );
+            }
+
+            const result =
+                await tauri.core.invoke(
+                    "create_wallet"
+                );
+
+            console.log(
+                "[PEP] Wallet created:",
+                result
+            );
+
+            if (
+                !result ||
+                !result.address ||
+                !result.mnemonic
+            ) {
+
+                throw new Error(
+                    "Invalid wallet response from PEP Core."
+                );
+            }
+
+            walletAddress =
+                result.address;
+
+            walletMnemonic =
+                result.mnemonic;
+
+            walletBalance =
+                0;
+
+            walletAssets =
+                [];
+
+            walletNonce =
+                0;
+
+            walletStake =
+                0;
+
+            renderBackupScreen();
+
+        } catch (error) {
+
+            console.error(
+                "[PEP] Create Wallet failed:",
+                error
+            );
+
+            createButton.disabled =
+                false;
+
+            createButton.textContent =
+                "Create Wallet";
+
+            showToast(
+                "Create Wallet failed"
+            );
+        }
+    }
+
+
+    /* ==========================================
+       IMPORT BUTTON
+       ========================================== */
+
+    function importWalletHandler() {
+
+        renderImportScreen();
+    }
+
+
+    /* ==========================================
+       HTML ESCAPE
+       ========================================== */
+
+    function escapeHtml(value) {
+
+        return String(value)
+            .replace(
+                /&/g,
+                "&amp;"
+            )
+            .replace(
+                /</g,
+                "&lt;"
+            )
+            .replace(
+                />/g,
+                "&gt;"
+            )
+            .replace(
+                /"/g,
+                "&quot;"
+            )
+            .replace(
+                /'/g,
+                "&#039;"
+            );
+    }
+
+
+    /* ==========================================
+       CORE STATUS QUERY
+       ========================================== */
+
+    async function getCoreStatus() {
+
+        console.log(
+            "[PEP] Checking Tauri API..."
+        );
+
+        const tauri =
+            window.__TAURI__;
+
+        if (!tauri) {
+
+            console.error(
+                "[PEP] window.__TAURI__ unavailable"
+            );
+
+            updateCoreStatus(
+                "Desktop API unavailable."
+            );
+
+            return;
+        }
+
+        if (!tauri.core) {
+
+            console.error(
+                "[PEP] Tauri core API unavailable"
+            );
+
+            updateCoreStatus(
+                "Desktop Core API unavailable."
+            );
+
+            return;
+        }
+
+        try {
+
+            const status =
+                await tauri.core.invoke(
+                    "core_status"
+                );
+
+            console.log(
+                "[PEP] Initial Core status:",
+                status
+            );
+
+            updateCoreStatus(
+                status
+            );
+
+        } catch (error) {
+
+            console.error(
+                "[PEP] core_status failed:",
+                error
+            );
+
+            updateCoreStatus(
+                "Unable to query PEP Core."
+            );
+        }
+    }
+
+
+    /* ==========================================
+       CORE STATUS EVENTS
+       ========================================== */
+
+    async function listenCoreStatus() {
+
+        const tauri =
+            window.__TAURI__;
+
+        if (
+            !tauri ||
+            !tauri.event
+        ) {
+            return;
+        }
+
+        try {
+
+            await tauri.event.listen(
+                "core-status",
+                (event) => {
+
+                    console.log(
+                        "[PEP] Core event:",
+                        event.payload
+                    );
+
+                    updateCoreStatus(
+                        event.payload
+                    );
+                }
+            );
+
+        } catch (error) {
+
+            console.error(
+                "[PEP] Event listener failed:",
+                error
+            );
+        }
+    }
+
+
+    /* ==========================================
+       START
+       ========================================== */
+
+    async function start() {
+
+        console.log(
+            "[PEP] PEP Wallet UI started."
+        );
+
+        renderHome();
+
+        await listenCoreStatus();
+
+        await getCoreStatus();
+
+        const statusTimer =
+            setInterval(
+                async () => {
+
+                    const statusElement =
+                        document.getElementById(
+                            "core-status"
+                        );
+
+                    if (!statusElement) {
+
+                        clearInterval(
+                            statusTimer
+                        );
+
+                        return;
+                    }
+
+                    const status =
+                        statusElement.textContent;
+
+                    if (
+                        status ===
+                        "PEP Core connected."
+                    ) {
+
+                        clearInterval(
+                            statusTimer
+                        );
+
+                        return;
+                    }
+
+                    await getCoreStatus();
+
+                },
+                500
+            );
+    }
+
+
+    /* ==========================================
+       BOOT
+       ========================================== */
+
+    start();
+
+})();
+</script><script>
+(() => {
+
+    /* ==========================================
+       STATE
+       ========================================== */
+
+    let walletAddress = null;
+    let walletMnemonic = null;
+
+    /*
+     * LIVE WALLET STATE
+     *
+     * Không hardcode balance.
+     * Tất cả balance đều lấy từ PEP Core
+     * đang chạy trên CHÍNH MÁY NÀY.
+     */
+    let walletBalance = 0;
+    let walletAssets = [];
+    let walletNonce = 0;
+    let walletStake = 0;
+
+
+    /* ==========================================
+       DOM
+       ========================================== */
+
+    const content =
+        document.getElementById(
+            "content"
+        );
+
+    const networkStatus =
+        document.getElementById(
+            "network-status"
+        );
+
+    const networkDot =
+        document.getElementById(
+            "status-dot"
+        );
+
+    const toast =
+        document.getElementById(
+            "toast"
+        );
+
+
+    /* ==========================================
+       TOAST
+       ========================================== */
+
+    let toastTimer = null;
+
+    function showToast(message) {
+
+        toast.textContent =
+            message;
+
+        toast.classList.add(
+            "visible"
+        );
+
+        if (toastTimer) {
+
+            clearTimeout(
+                toastTimer
+            );
+        }
+
+        toastTimer =
+            setTimeout(() => {
+
+                toast.classList.remove(
+                    "visible"
+                );
+
+            }, 1800);
+    }
+
+
+    /* ==========================================
+       COPY
+       ========================================== */
+
+    async function copyText(text, message) {
+
+        if (!text) {
+            return;
+        }
+
+        try {
+
+            if (
+                navigator.clipboard &&
+                typeof navigator.clipboard.writeText === "function"
+            ) {
+
+                await navigator.clipboard.writeText(
+                    text
+                );
+
+                showToast(
+                    message || "Copied"
+                );
+
+                return;
+            }
+
+        } catch (error) {
+
+            console.warn(
+                "[PEP] navigator.clipboard failed:",
+                error
+            );
+        }
+
+        try {
+
+            const textarea =
+                document.createElement(
+                    "textarea"
+                );
+
+            textarea.value =
+                text;
+
+            textarea.setAttribute(
+                "readonly",
+                ""
+            );
+
+            textarea.style.position =
+                "fixed";
+
+            textarea.style.left =
+                "-9999px";
+
+            textarea.style.top =
+                "0";
+
+            textarea.style.opacity =
+                "0";
+
+            document.body.appendChild(
+                textarea
+            );
+
+            textarea.focus();
+
+            textarea.select();
+
+            textarea.setSelectionRange(
+                0,
+                textarea.value.length
+            );
+
+            const copied =
+                document.execCommand(
+                    "copy"
+                );
+
+            textarea.remove();
+
+            if (!copied) {
+
+                throw new Error(
+                    "Clipboard fallback failed"
+                );
+            }
+
+            showToast(
+                message || "Copied"
+            );
+
+        } catch (error) {
+
+            console.error(
+                "[PEP] Clipboard failed:",
+                error
+            );
+
+            showToast(
+                "Copy failed"
+            );
+        }
+    }
+
+
+    /* ==========================================
+       CORE STATUS
+       ========================================== */
+
+    function updateCoreStatus(status) {
+
+        console.log(
+            "[PEP] Core status:",
+            status
+        );
+
+        const coreStatusElement =
+            document.getElementById(
+                "core-status"
+            );
+
+        const coreDot =
+            document.getElementById(
+                "core-dot"
+            );
+
+        if (!coreStatusElement) {
+
+            if (
+                status ===
+                "PEP Core connected."
+            ) {
+
+                networkStatus.textContent =
+                    "Connected";
+
+                networkDot.classList.add(
+                    "connected"
+                );
+
+                networkDot.classList.remove(
+                    "error"
+                );
+            }
+
+            return;
+        }
+
+        coreStatusElement.textContent =
+            status;
+
+        const connected =
+            status ===
+            "PEP Core connected.";
+
+        const lowerStatus =
+            status.toLowerCase();
+
+        const error =
+            lowerStatus.includes(
+                "failed"
+            ) ||
+            lowerStatus.includes(
+                "not found"
+            ) ||
+            lowerStatus.includes(
+                "unable"
+            ) ||
+            lowerStatus.includes(
+                "unavailable"
+            );
+
+        if (connected) {
+
+            coreDot.classList.add(
+                "connected"
+            );
+
+            coreDot.classList.remove(
+                "error"
+            );
+
+            networkDot.classList.add(
+                "connected"
+            );
+
+            networkDot.classList.remove(
+                "error"
+            );
+
+            networkStatus.textContent =
+                "Connected";
+
+            const createButton =
+                document.getElementById(
+                    "create-wallet"
+                );
+
+            const importButton =
+                document.getElementById(
+                    "import-wallet"
+                );
+
+            if (createButton) {
+                createButton.disabled = false;
+            }
+
+            if (importButton) {
+                importButton.disabled = false;
+            }
+
+            return;
+        }
+
+        if (error) {
+
+            coreDot.classList.remove(
+                "connected"
+            );
+
+            coreDot.classList.add(
+                "error"
+            );
+
+            networkDot.classList.remove(
+                "connected"
+            );
+
+            networkDot.classList.add(
+                "error"
+            );
+
+            networkStatus.textContent =
+                "Offline";
+
+            const createButton =
+                document.getElementById(
+                    "create-wallet"
+                );
+
+            const importButton =
+                document.getElementById(
+                    "import-wallet"
+                );
+
+            if (createButton) {
+                createButton.disabled = true;
+            }
+
+            if (importButton) {
+                importButton.disabled = true;
+            }
+
+            return;
+        }
+
+        coreDot.classList.remove(
+            "connected"
+        );
+
+        coreDot.classList.remove(
+            "error"
+        );
+
+        networkDot.classList.remove(
+            "connected"
+        );
+
+        networkDot.classList.remove(
+            "error"
+        );
+
+        networkStatus.textContent =
+            "Connecting";
+
+        const createButton =
+            document.getElementById(
+                "create-wallet"
+            );
+
+        const importButton =
+            document.getElementById(
+                "import-wallet"
+            );
+
+        if (createButton) {
+            createButton.disabled = true;
+        }
+
+        if (importButton) {
+            importButton.disabled = true;
+        }
+    }
+
+
+    /* ==========================================
+       HOME
+       ========================================== */
+
+    function renderHome() {
+
+        content.innerHTML = `
+            <section class="wallet-card">
+
+                <h1 class="wallet-title">
+                    PEP Wallet
+                </h1>
+
+                <p class="wallet-subtitle">
+                    Secure access to the PEP Network
+                </p>
+
+                <div class="core-status">
+
+                    <span
+                        id="core-dot"
+                        class="status-dot"
+                    ></span>
+
+                    <span
+                        id="core-status"
+                        class="core-status-text"
+                    >
+                        Starting PEP Core...
+                    </span>
+
+                </div>
+
+                <div class="actions">
+
+                    <button
+                        id="create-wallet"
+                        class="primary"
+                        disabled
+                    >
+                        Create Wallet
+                    </button>
+
+                    <button
+                        id="import-wallet"
+                        class="secondary"
+                        disabled
+                    >
+                        Import Wallet
+                    </button>
+
+                </div>
+
+                <div class="footer">
+                    PEP Chain
+                </div>
+
+            </section>
+        `;
+
+        const createWallet =
+            document.getElementById(
+                "create-wallet"
+            );
+
+        const importWallet =
+            document.getElementById(
+                "import-wallet"
+            );
+
+        createWallet.addEventListener(
+            "click",
+            createWalletHandler
+        );
+
+        importWallet.addEventListener(
+            "click",
+            importWalletHandler
+        );
+
+        getCoreStatus();
+    }
+
+
+    /* ==========================================
+       IMPORT WALLET
+       ========================================== */
+
+    function renderImportScreen() {
+
+        content.innerHTML = `
+            <section class="backup-card">
+
+                <div class="screen-header">
+
+                    <h1 class="screen-title">
+                        Import Wallet
+                    </h1>
+
+                    <p class="screen-subtitle">
+                        Enter your recovery phrase to restore
+                        your PEP wallet.
+                    </p>
+
+                </div>
+
+                <div class="warning-box">
+
+                    <div class="warning-icon">
+                        !
+                    </div>
+
+                    <div>
+                        Never share your recovery phrase
+                        with anyone. Anyone who has it can
+                        access this wallet.
+                    </div>
+
+                </div>
+
+                <div class="address-box">
+
+                    <span class="field-label">
+                        Recovery Phrase
+                    </span>
+
+                    <textarea
+                        id="import-mnemonic"
+                        class="mnemonic-input"
+                        placeholder="Enter your recovery phrase..."
+                        spellcheck="false"
+                        autocomplete="off"
+                    ></textarea>
+
+                    <div
+                        id="import-word-count"
+                        class="import-word-count"
+                    >
+                        0 words
+                    </div>
+
+                </div>
+
+                <div
+                    id="import-error"
+                    class="import-error"
+                ></div>
+
+                <div class="backup-actions">
+
+                    <button
+                        id="import-submit"
+                        class="primary"
+                        disabled
+                    >
+                        Import Wallet
+                    </button>
+
+                    <button
+                        id="import-back"
+                        class="secondary"
+                    >
+                        Back
+                    </button>
+
+                </div>
+
+                <div class="footer">
+                    PEP Chain
+                </div>
+
+            </section>
+        `;
+
+        const mnemonicInput =
+            document.getElementById(
+                "import-mnemonic"
+            );
+
+        const wordCount =
+            document.getElementById(
+                "import-word-count"
+            );
+
+        const importError =
+            document.getElementById(
+                "import-error"
+            );
+
+        const importSubmit =
+            document.getElementById(
+                "import-submit"
+            );
+
+        const importBack =
+            document.getElementById(
+                "import-back"
+            );
+
+        function updateImportState() {
+
+            const phrase =
+                mnemonicInput.value
+                    .trim()
+                    .replace(/\s+/g, " ");
+
+            const words =
+                phrase
+                    ? phrase.split(" ")
+                    : [];
+
+            wordCount.textContent =
+                `${words.length} ${
+                    words.length === 1
+                        ? "word"
+                        : "words"
+                }`;
+
+            importError.textContent =
+                "";
+
+            importSubmit.disabled =
+                words.length === 0;
+        }
+
+        mnemonicInput.addEventListener(
+            "input",
+            updateImportState
+        );
+
+        importSubmit.addEventListener(
+            "click",
+            async () => {
+
+                const phrase =
+                    mnemonicInput.value
+                        .trim()
+                        .replace(/\s+/g, " ");
+
+                if (!phrase) {
+                    return;
+                }
+
+                importSubmit.disabled =
+                    true;
+
+                importSubmit.textContent =
+                    "Importing Wallet...";
+
+                importError.textContent =
+                    "";
+
+                try {
+
+                    const tauri =
+                        window.__TAURI__;
+
+                    if (
+                        !tauri ||
+                        !tauri.core
+                    ) {
+
+                        throw new Error(
+                            "Tauri Core API unavailable."
+                        );
+                    }
+
+                    const result =
+                        await tauri.core.invoke(
+                            "import_wallet",
+                            {
+                                mnemonic: phrase
+                            }
+                        );
+
+                    if (
+                        !result ||
+                        !result.address
+                    ) {
+
+                        throw new Error(
+                            "Invalid wallet response from PEP Core."
+                        );
+                    }
+
+                    walletAddress =
+                        result.address;
+
+                    walletMnemonic =
+                        null;
+
+                    walletBalance =
+                        0;
+
+                    walletAssets =
+                        [];
+
+                    walletNonce =
+                        0;
+
+                    walletStake =
+                        0;
+
+                    await renderDashboard();
+
+                    showToast(
+                        "Wallet imported"
+                    );
+
+                } catch (error) {
+
+                    console.error(
+                        "[PEP] Import Wallet failed:",
+                        error
+                    );
+
+                    importSubmit.disabled =
+                        false;
+
+                    importSubmit.textContent =
+                        "Import Wallet";
+
+                    importError.textContent =
+                        "Invalid recovery phrase or wallet import failed.";
+                }
+            }
+        );
+
+        importBack.addEventListener(
+            "click",
+            () => {
+                renderHome();
+            }
+        );
+
+        mnemonicInput.focus();
+    }
+
+
+    /* ==========================================
+       BACKUP SCREEN
+       ========================================== */
+
+    function renderBackupScreen() {
+
+        if (
+            !walletAddress ||
+            !walletMnemonic
+        ) {
+
+            console.error(
+                "[PEP] Missing wallet data."
+            );
+
+            renderHome();
+
+            return;
+        }
+
+        const words =
+            walletMnemonic
+                .trim()
+                .split(/\s+/)
+                .filter(Boolean);
+
+        const wordMarkup =
+            words
+                .map(
+                    (word, index) => `
+                        <div class="mnemonic-word">
+
+                            <span class="word-number">
+                                ${index + 1}
+                            </span>
+
+                            <span class="word-text">
+                                ${escapeHtml(word)}
+                            </span>
+
+                        </div>
+                    `
+                )
+                .join("");
+
+        content.innerHTML = `
+            <section class="backup-card">
+
+                <div class="screen-header">
+
+                    <h1 class="screen-title">
+                        Backup your wallet
+                    </h1>
+
+                    <p class="screen-subtitle">
+                        Your recovery phrase is the only
+                        way to restore this wallet.
+                    </p>
+
+                </div>
+
+                <div class="warning-box">
+
+                    <div class="warning-icon">
+                        !
+                    </div>
+
+                    <div>
+                        Write these words down and keep
+                        them somewhere safe. Never share
+                        your recovery phrase with anyone.
+                    </div>
+
+                </div>
+
+                <div
+                    id="mnemonic-grid"
+                    class="mnemonic-grid"
+                >
+                    ${wordMarkup}
+                </div>
+
+                <div class="backup-actions">
+
+                    <button
+                        id="copy-mnemonic"
+                        class="secondary"
+                        type="button"
+                    >
+                        Copy Recovery Phrase
+                    </button>
+
+                    <div class="address-box">
+
+                        <span class="field-label">
+                            Wallet Address
+                        </span>
+
+                        <div class="address-row">
+
+                            <div
+                                id="backup-address"
+                                class="address-value"
+                            >
+                                ${escapeHtml(walletAddress)}
+                            </div>
+
+                            <button
+                                id="copy-address"
+                                class="secondary small-button"
+                                type="button"
+                            >
+                                Copy
+                            </button>
+
+                        </div>
+
+                    </div>
+
+                    <label
+                        class="confirm-row"
+                        for="backup-confirm"
+                    >
+
+                        <input
+                            id="backup-confirm"
+                            type="checkbox"
+                        >
+
+                        <span class="confirm-text">
+                            I have securely backed up my
+                            recovery phrase and understand
+                            that anyone who has it can
+                            access this wallet.
+                        </span>
+
+                    </label>
+
+                    <button
+                        id="continue-wallet"
+                        class="primary"
+                        disabled
+                        type="button"
+                    >
+                        Continue to Wallet
+                    </button>
+
+                </div>
+
+                <div class="footer">
+                    PEP Chain
+                </div>
+
+            </section>
+        `;
+
+        const copyMnemonic =
+            document.getElementById(
+                "copy-mnemonic"
+            );
+
+        const copyAddress =
+            document.getElementById(
+                "copy-address"
+            );
+
+        const backupConfirm =
+            document.getElementById(
+                "backup-confirm"
+            );
+
+        const continueWallet =
+            document.getElementById(
+                "continue-wallet"
+            );
+
+        copyMnemonic.addEventListener(
+            "click",
+            async () => {
+
+                await copyText(
+                    walletMnemonic,
+                    "Recovery phrase copied"
+                );
+            }
+        );
+
+        copyAddress.addEventListener(
+            "click",
+            async () => {
+
+                await copyText(
+                    walletAddress,
+                    "Address copied"
+                );
+            }
+        );
+
+        backupConfirm.addEventListener(
+            "change",
+            () => {
+
+                continueWallet.disabled =
+                    !backupConfirm.checked;
+            }
+        );
+
+        continueWallet.addEventListener(
+            "click",
+            () => {
+
+                if (
+                    !backupConfirm.checked
+                ) {
+                    return;
+                }
+
+                walletMnemonic =
+                    null;
+
+                renderDashboard();
+            }
+        );
+    }
+
+
+    /* ==========================================
+       BALANCE
+       ========================================== */
+
+    async function loadWalletBalance() {
+
+        if (!walletAddress) {
+
+            walletBalance = 0;
+            walletAssets = [];
+            walletNonce = 0;
+            walletStake = 0;
+
+            return null;
+        }
+
+        const tauri =
+            window.__TAURI__;
+
+        if (
+            !tauri ||
+            !tauri.core
+        ) {
+
+            throw new Error(
+                "Tauri Core API unavailable."
+            );
+        }
+
+        /*
+         * QUAN TRỌNG:
+         *
+         * wallet_balance ở Rust tự lấy wallet
+         * từ WalletSession rồi gọi:
+         *
+         * Client::get_balance("127.0.0.1:6000", ...)
+         *
+         * => luôn là Core local của máy hiện tại.
+         */
+        const result =
+            await tauri.core.invoke(
+                "wallet_balance"
+            );
+
+        if (
+            !result ||
+            !Array.isArray(result.balances)
+        ) {
+
+            throw new Error(
+                "Invalid balance response from PEP Core."
+            );
+        }
+
+        walletAssets =
+            result.balances;
+
+        walletNonce =
+            Number(
+                result.nonce || 0
+            );
+
+        walletStake =
+            Number(
+                result.stake || 0
+            );
+
+        const pep =
+            walletAssets.find(
+                item =>
+                    String(
+                        item.asset
+                    ).toUpperCase() === "PEP"
+            );
+
+        walletBalance =
+            pep
+                ? Number(
+                    pep.amount || 0
+                )
+                : 0;
+
+        return result;
+    }
+
+
+    function getPepBalance() {
+
+        return Number.isFinite(
+            walletBalance
+        )
+            ? walletBalance
+            : 0;
+    }
+
+
+    /* ==========================================
+       DASHBOARD
+       ========================================== */
+
+    async function renderDashboard() {
+
+        if (!walletAddress) {
+
+            renderHome();
+
+            return;
+        }
+
+        /*
+         * Không được dùng 0 mặc định nữa.
+         * Mỗi lần mở Dashboard đều hỏi Core.
+         */
+        try {
+
+            await loadWalletBalance();
+
+        } catch (error) {
+
+            console.error(
+                "[PEP] Balance load failed:",
+                error
+            );
+        }
+
+        const pepBalance =
+            getPepBalance();
+
+        const assetCount =
+            walletAssets.length;
+
+        content.innerHTML = `
+            <section class="dashboard">
+
+                <div class="dashboard-header">
+
+                    <div class="dashboard-wallet-info">
+
+                        <h1 class="dashboard-title">
+                            Wallet
+                        </h1>
+
+                        <div class="dashboard-address-row">
+
+                            <div
+                                id="dashboard-address"
+                                class="dashboard-address"
+                                title="${escapeHtml(walletAddress)}"
+                            >
+                                ${escapeHtml(walletAddress)}
+                            </div>
+
+                            <button
+                                id="copy-dashboard-address"
+                                class="dashboard-copy-button"
+                                type="button"
+                                title="Copy address"
+                                aria-label="Copy wallet address"
+                            >
+
+                                <svg
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    aria-hidden="true"
+                                >
+
+                                    <rect
+                                        x="8"
+                                        y="8"
+                                        width="11"
+                                        height="11"
+                                        rx="2"
+                                        stroke="currentColor"
+                                        stroke-width="1.8"
+                                    />
+
+                                    <path
+                                        d="M16 8V6C16 4.89543 15.1046 4 14 4H6C4.89543 4 4 4.89543 4 6V14C4 15.1046 5 16 6 16H8"
+                                        stroke="currentColor"
+                                        stroke-width="1.8"
+                                        stroke-linecap="round"
+                                    />
+
+                                </svg>
+
+                            </button>
+
+                        </div>
+
+                    </div>
+
+                    <div class="dashboard-network">
+
+                        <span
+                            class="status-dot connected"
+                        ></span>
+
+                        PEP Network
+
+                    </div>
+
+                </div>
+
+
+                <div class="balance-card">
+
+                    <div class="balance-label">
+                        Total Balance
+                    </div>
+
+                    <div
+                        id="dashboard-balance"
+                        class="balance-value"
+                    >
+                        ${pepBalance}
+
+                        <span class="balance-symbol">
+                            PEP
+                        </span>
+                    </div>
+
+                </div>
+
+
+                <div class="asset-grid">
+
+                    <div class="asset-card">
+
+                        <div class="asset-name">
+                            PEP
+                        </div>
+
+                        <div
+                            id="dashboard-pep-balance"
+                            class="asset-value"
+                        >
+                            ${pepBalance} PEP
+                        </div>
+
+                    </div>
+
+
+                    <div class="asset-card">
+
+                        <div class="asset-name">
+                            Assets
+                        </div>
+
+                        <div
+                            id="dashboard-asset-count"
+                            class="asset-value"
+                        >
+                            ${assetCount}
+                        </div>
+
+                    </div>
+
+
+                    <div class="asset-card">
+
+                        <div class="asset-name">
+                            Network
+                        </div>
+
+                        <div class="asset-value">
+                            PEP Chain
                         </div>
 
                     </div>
 
                 </div>
-            `
+
+
+                <div class="dashboard-actions">
+
+                    <button
+                        id="receive-button"
+                        class="primary"
+                        type="button"
+                    >
+                        Receive
+                    </button>
+
+
+                    <button
+                        id="send-button"
+                        class="secondary"
+                        type="button"
+                    >
+                        Send
+                    </button>
+
+                </div>
+
+
+                <div class="footer">
+                    ${escapeHtml(walletAddress)}
+                </div>
+
+            </section>
+        `;
+
+        const receiveButton =
+            document.getElementById(
+                "receive-button"
+            );
+
+        const sendButton =
+            document.getElementById(
+                "send-button"
+            );
+
+        const copyDashboardAddress =
+            document.getElementById(
+                "copy-dashboard-address"
+            );
+
+        copyDashboardAddress.addEventListener(
+            "click",
+            async () => {
+
+                await copyText(
+                    walletAddress,
+                    "Address copied"
+                );
+            }
+        );
+
+        receiveButton.addEventListener(
+            "click",
+            () => {
+
+                renderReceive();
+            }
+        );
+
+        sendButton.addEventListener(
+            "click",
+            () => {
+
+                renderSendScreen();
+            }
         );
     }
 
