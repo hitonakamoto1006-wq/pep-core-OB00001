@@ -2370,18 +2370,34 @@ fn request_headers(
 //
 // Headers-first synchronization.
 //
-// 1. Ask remote status.
-// 2. Build block locator.
-// 3. Download headers only.
-// 4. Validate header chain + PoW.
-// 5. Download full blocks.
-// 6. Pass every block through Node::accept_block().
+// Flow:
 //
-// NOTE:
+//     GetStatus
+//         ↓
+//     Build locator
+//         ↓
+//     GetHeaders
+//         ↓
+//     validate up to 2000 headers
+//         ↓
+//     continue from last header
+//         ↓
+//     GetHeaders again
+//         ↓
+//     ...
+//         ↓
+//     remote tip
+//         ↓
+//     GetBlocks
+//         ↓
+//     Node::accept_block()
 //
-// Fork/reorg chưa được tự động commit ở phase này.
-// Nếu header chain không nối vào local canonical tip,
-// sync sẽ FAIL an toàn thay vì overwrite state.
+// IMPORTANT:
+//
+// Header synchronization is completed BEFORE full blocks
+// are downloaded.
+//
+// Each header batch is independently validated.
 //
 // ========================================================
 
@@ -2423,64 +2439,32 @@ fn sync_from_peer(
         return Ok(());
     }
 
-    /*
-     * ====================================================
-     * STEP 1
-     * Build Bitcoin-style locator.
-     * ====================================================
-     */
+    // ====================================================
+    // HEADER SYNC
+    // ====================================================
 
-    let locator =
+    /*
+     * First request uses the full Bitcoin-style locator
+     * built from our canonical chain.
+     */
+    let mut locator =
         Self::build_block_locator(
             node
         )?;
 
-    println!(
-        "[PEP Sync] Requesting headers from {} using {} locator(s).",
-        peer,
-        locator.len()
-    );
-
-    /*
-     * ====================================================
-     * STEP 2
-     * Headers-first.
-     * ====================================================
-     */
-
-    let headers =
-        Self::request_headers(
-            peer,
-            &locator,
-            &remote_tip,
-        )?;
-
-    if headers.is_empty() {
-
+    if locator.is_empty() {
         return Err(
-            format!(
-                "Peer {} returned no headers while remote height {} > local height {}.",
-                peer,
-                remote_height,
-                local_height,
-            )
+            "Cannot build initial block locator."
+                .to_string()
         );
     }
 
-    println!(
-        "[PEP Sync] Received {} header(s) from {}.",
-        headers.len(),
-        peer
-    );
-
     /*
-     * ====================================================
-     * STEP 3
-     * Validate header chain.
-     * ====================================================
+     * This is the hash that the next header must connect to.
+     *
+     * Initially this is our local canonical tip.
      */
-
-    let expected_previous =
+    let mut previous_hash =
         {
             let guard =
                 node.lock()
@@ -2504,108 +2488,236 @@ fn sync_from_peer(
                 .hash()
         };
 
-    let mut previous_hash =
-        expected_previous;
+    /*
+     * Number of headers successfully validated.
+     */
+    let mut total_headers =
+        0usize;
 
-    for (
-        index,
-        header
-    ) in headers.iter().enumerate()
-    {
+    /*
+     * We continue until the last validated header
+     * reaches the remote advertised tip.
+     */
+    loop {
+
+        println!(
+            "[PEP Sync] Requesting header batch from {}. validated={}",
+            peer,
+            total_headers
+        );
+
+        let headers =
+            Self::request_headers(
+                peer,
+                &locator,
+                &remote_tip,
+            )?;
+
+        if headers.is_empty() {
+
+            return Err(
+                format!(
+                    "[PEP Sync] Peer {} returned an empty header batch before reaching tip {}.",
+                    peer,
+                    remote_tip
+                )
+            );
+        }
+
+        println!(
+            "[PEP Sync] Received {} header(s) from {}.",
+            headers.len(),
+            peer
+        );
 
         /*
-         * Header must connect to previous header.
+         * ==================================================
+         * VALIDATE THIS HEADER BATCH
+         * ==================================================
          */
-        if header.previous_hash
-            != previous_hash
+
+        let mut batch_previous =
+            previous_hash;
+
+        for (
+            index,
+            header
+        ) in headers.iter().enumerate()
         {
-            return Err(
-                format!(
-                    "[PEP Sync] Header chain from {} does not connect at header {}.",
-                    peer,
-                    index
-                )
-            );
+
+            /*
+             * Header must connect directly to the
+             * previous validated header.
+             */
+            if header.previous_hash
+                != batch_previous
+            {
+                return Err(
+                    format!(
+                        "[PEP Sync] Header chain from {} does not connect at batch header {}.",
+                        peer,
+                        index
+                    )
+                );
+            }
+
+            /*
+             * Verify header hash.
+             */
+            let calculated =
+                header.calculate_hash();
+
+            let actual =
+                header.hash();
+
+            if actual !=
+                calculated
+            {
+                return Err(
+                    format!(
+                        "[PEP Sync] Invalid header hash from {} at batch header {}.",
+                        peer,
+                        index
+                    )
+                );
+            }
+
+            /*
+             * Verify proof-of-work.
+             */
+            if !Difficulty::verify_hash(
+                actual,
+                header.bits,
+            ) {
+                return Err(
+                    format!(
+                        "[PEP Sync] Invalid header PoW from {} at batch header {}.",
+                        peer,
+                        index
+                    )
+                );
+            }
+
+            batch_previous =
+                actual;
         }
 
         /*
-         * Header hash must be internally valid.
+         * The final header of this batch becomes
+         * the anchor for the next request.
          */
-        let calculated =
-            header.calculate_hash();
+        let last_header =
+            headers
+                .last()
+                .ok_or_else(
+                    || {
+                        "Header batch unexpectedly empty."
+                            .to_string()
+                    }
+                )?;
 
-        let actual =
-            header.hash();
-
-        if actual !=
-            calculated
-        {
-            return Err(
-                format!(
-                    "[PEP Sync] Invalid header hash from {} at header {}.",
-                    peer,
-                    index
-                )
-            );
-        }
-
-        /*
-         * Proof-of-work must be valid.
-         */
-        if !Difficulty::verify_hash(
-            actual,
-            header.bits,
-        ) {
-            return Err(
-                format!(
-                    "[PEP Sync] Invalid header PoW from {} at header {}.",
-                    peer,
-                    index
-                )
-            );
-        }
+        let last_hash =
+            last_header
+                .hash()
+                .to_string();
 
         previous_hash =
-            actual;
-    }
+            last_header.hash();
 
-    /*
-     * The final advertised tip must match
-     * the final downloaded header if the peer
-     * returned a complete batch.
-     */
-    if headers
-        .last()
-        .map(
-            |header|
-                header.hash()
-                    .to_string()
-        )
-        == Some(
-            remote_tip.clone()
-        )
-    {
+        total_headers =
+            total_headers
+                .saturating_add(
+                    headers.len()
+                );
+
         println!(
-            "[PEP Sync] Header chain reaches remote tip {}.",
+            "[PEP Sync] Validated header batch: {} header(s), total={}. Last={}",
+            headers.len(),
+            total_headers,
+            last_hash
+        );
+
+        /*
+         * ==================================================
+         * REMOTE TIP REACHED
+         * ==================================================
+         */
+
+        if last_hash ==
             remote_tip
-        );
-    } else {
+        {
+            println!(
+                "[PEP Sync] Header synchronization reached remote tip {}.",
+                remote_tip
+            );
 
-        println!(
-            "[PEP Sync] Header batch does not yet reach remote tip. Continuing block sync."
-        );
+            break;
+        }
+
+        /*
+         * ==================================================
+         * NEXT HEADER BATCH
+         * ==================================================
+         *
+         * Use the last validated header as the new
+         * locator anchor.
+         *
+         * The remote node will find this hash and return
+         * the following headers.
+         *
+         * We intentionally keep the locator simple here:
+         *
+         *     last_validated_hash
+         *
+         * The initial request already used the full
+         * Bitcoin-style locator to find the common point.
+         */
+
+        locator =
+            vec![
+                last_hash
+            ];
+
+        /*
+         * Safety check:
+         *
+         * If the peer keeps returning batches forever
+         * without reaching its advertised tip, stop.
+         */
+        if total_headers >
+            remote_height
+                .saturating_sub(
+                    local_height
+                )
+                .saturating_add(
+                    MAX_HEADER_BATCH
+                )
+        {
+            return Err(
+                format!(
+                    "[PEP Sync] Header synchronization exceeded expected range. local={} remote={} validated={}",
+                    local_height,
+                    remote_height,
+                    total_headers
+                )
+            );
+        }
     }
 
-    /*
-     * ====================================================
-     * STEP 4
-     * Download actual blocks.
-     *
-     * We deliberately keep the existing GetBlocks path
-     * because Node::accept_block() already owns the
-     * canonical validation/state transition.
-     * ====================================================
-     */
+    // ====================================================
+    // FULL BLOCK SYNC
+    // ====================================================
+    //
+    // At this point ALL headers between local tip and
+    // remote tip have been validated.
+    //
+    // Now download actual blocks in batches of 128.
+    //
+    // ====================================================
+
+    println!(
+        "[PEP Sync] Header phase complete. Starting block download."
+    );
 
     let mut next =
         local_height
@@ -2620,7 +2732,9 @@ fn sync_from_peer(
 
         let count =
             remote_height
-                .saturating_sub(next)
+                .saturating_sub(
+                    next
+                )
                 .saturating_add(1)
                 .min(
                     MAX_BLOCK_BATCH
@@ -2674,7 +2788,9 @@ fn sync_from_peer(
 
                 synchronized =
                     synchronized
-                        .saturating_add(1);
+                        .saturating_add(
+                            1
+                        );
             }
         }
 
@@ -2690,6 +2806,10 @@ fn sync_from_peer(
             remote_height
         );
     }
+
+    // ====================================================
+    // FINAL CONSISTENCY CHECK
+    // ====================================================
 
     let (
         final_height,

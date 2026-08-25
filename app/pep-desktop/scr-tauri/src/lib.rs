@@ -152,10 +152,10 @@ impl CoreProcess {
                     );
 
                 command
-                    .arg("--pep-node-daemon")
-                    .stdin(Stdio::null())
-                    .stdout(Stdio::null())
-                    .stderr(Stdio::null());
+    .arg("--pep-node-daemon")
+    .stdin(Stdio::null())
+    .stdout(Stdio::inherit())
+    .stderr(Stdio::inherit());
 
 
                 #[cfg(target_os = "windows")]
@@ -391,6 +391,20 @@ impl Drop for CoreProcess {
  */
 
 fn run_pep_node_daemon() {
+    println!(
+    "[PEP Node] Current directory: {:?}",
+    std::env::current_dir()
+        .unwrap_or_default()
+);
+
+println!(
+    "[PEP Node] Data directory: {:?}",
+    std::path::Path::new("data")
+        .canonicalize()
+        .unwrap_or_else(|_| {
+            std::path::PathBuf::from("data")
+        })
+);
 
     println!(
         "[PEP Node] Starting embedded PEP Core..."
